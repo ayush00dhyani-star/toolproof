@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ScanKind, ScanReport } from "@/lib/types";
 import { SEV_COLOR, gradeColor } from "@/lib/score";
+import { recordMyVerdict } from "@/lib/my-ledger";
 import ShareRow from "@/components/ShareRow";
 
 type Phase = "idle" | "scanning" | "done" | "error";
@@ -122,7 +123,18 @@ export default function ScanBox() {
         const json = await res.json();
         if (id !== runIdRef.current) return; // reset/superseded — stay quiet
         if (!res.ok) throw new Error(json.error ?? "scan failed");
-        setReport(json.report);
+        const rep = json.report as ScanReport;
+        setReport(rep);
+        // Receipt the verdict in this browser's ledger — the server-side
+        // feed is per-node/per-bundle, so this is what the visitor sees.
+        recordMyVerdict({
+          host: rep.host,
+          target: rep.target,
+          kind: rep.kind,
+          state: rep.state,
+          score: rep.score,
+          grade: rep.grade,
+        });
         setPhase("done");
       } catch (e) {
         if (id !== runIdRef.current) return; // aborted/reset — stay quiet
@@ -191,7 +203,8 @@ export default function ScanBox() {
           </button>
         ))}
         <span className="text-[11px] text-faint">
-          — fresh scans land in the ledger below (in-memory, this node only)
+          — every verdict you pull is receipted in the ledger below (kept in
+          this browser)
         </span>
       </div>
 

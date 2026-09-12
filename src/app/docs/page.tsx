@@ -61,7 +61,7 @@ export default function DocsPage() {
               {
                 m: "GET",
                 p: "/api/v1/feed",
-                d: "Live verdict feed: the newest scans on this node plus a running total. In-memory — resets on cold start, never persisted.",
+                d: "Per-node, in-memory view of the newest scans: resets on cold start, and on Vercel each route is its own bundled function, so it only sees scans that hit the same instance. A shared cross-user ledger ships with v1.",
               },
               {
                 m: "GET",

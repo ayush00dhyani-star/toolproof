@@ -25,7 +25,7 @@ Live: https://toolproof-scan.vercel.app
 | `GET /api/v1/scan?target=` | Full report with findings + evidence |
 | `GET /api/v1/verify?target=` | Signed passport (ed25519, canonical JSON) |
 | `GET /api/v1/registry` | Starter registry, scanned live |
-| `GET /api/v1/feed` | Live verdict feed on this node (in-memory, resets on cold start) |
+| `GET /api/v1/feed` | Per-node, in-memory verdict view (resets on cold start; per-bundle on Vercel). Cross-user ledger ships with v1 |
 | `GET /api/v1/badge?target=&style=grade\|flat` | SVG badge |
 | `GET /api/v1/og?target=` | 1200×630 social share card |
 | `GET /api/v1/pubkey` | Signing public key (PEM) |

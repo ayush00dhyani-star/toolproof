@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import GradeRing from "@/components/GradeRing";
+import RecordOnLoad from "@/components/RecordOnLoad";
 import ShareRow from "@/components/ShareRow";
 import { TargetError } from "@/lib/net";
 import { passportOf } from "@/lib/passport";
@@ -98,6 +99,16 @@ export default async function TrustPage({
 
   return (
     <Shell>
+      {/* pull receipt: viewing this card records the verdict in the
+          visitor's browser ledger (the server feed is per-node only) */}
+      <RecordOnLoad
+        host={report.host}
+        target={report.target}
+        kind={report.kind}
+        state={report.state}
+        score={report.score}
+        grade={report.grade}
+      />
       <div className="fadeup">
         {/* header */}
         <div className="flex flex-wrap items-start gap-6">

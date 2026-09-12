@@ -236,13 +236,11 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="lbl mb-4">06 · The Ledger</div>
           <h2 className="h-display text-4xl font-bold tracking-tight mb-4">
-            Every verdict, as it lands.
+            The Ledger — every verdict, receipted.
           </h2>
           <p className="max-w-2xl text-[13px] leading-7 text-dim mb-10">
-            A live feed of fresh scans — no cache hits, no replays. When
-            someone anywhere runs a scan on this node, it shows up here
-            within seconds. Most security products hide their traffic; this
-            is the moat, in public.
+            verdicts you pull are kept in your browser; a shared cross-user
+            ledger ships with v1.
           </p>
           <div className="max-w-3xl">
             <Ledger />

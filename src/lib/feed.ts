@@ -5,7 +5,10 @@ import type { ScanState } from "./types";
  *
  * HONEST LIMITATION: this is a per-instance, in-memory ring. It lives on
  * one server node, resets on every cold start, and is never persisted.
- * The UI says "on this node" for exactly this reason — it is a live
+ * On Vercel each route is a separately-bundled function, so entries
+ * recorded by /api/v1/scan are invisible to /api/v1/feed — the browser
+ * ledger (src/lib/my-ledger.ts) exists for exactly this reason. The UI
+ * says "on this node" for exactly this reason — it is a live
  * window into scan activity, not an audit log.
  *
  * Deliberately imports nothing from scan.ts (routes wire recording in)

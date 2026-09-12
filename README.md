@@ -28,6 +28,18 @@ Live: https://toolproof-scan.vercel.app
 | `GET /api/v1/badge?target=` | SVG badge |
 | `GET /api/v1/pubkey` | Signing public key (PEM) |
 
+## CLI
+
+Scan from any terminal — zero dependencies, no install:
+
+```bash
+npx toolproof-scan mcp.context7.com/mcp --fail-under 70
+```
+
+Prints the signed verdict; exits `0` pass, `1` unverified or below
+`--fail-under`, `2` usage/network error. See
+[`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+
 ## Local development
 
 ```bash

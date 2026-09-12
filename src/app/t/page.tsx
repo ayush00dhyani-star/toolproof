@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import GradeRing from "@/components/GradeRing";
+import ShareRow from "@/components/ShareRow";
 import { TargetError } from "@/lib/net";
 import { scanTarget } from "@/lib/scan";
 import { SEV_COLOR } from "@/lib/score";
@@ -8,12 +9,37 @@ import type { ScanKind } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Trust card",
-};
-
 function hostOf(raw: string) {
   return raw.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ target?: string; kind?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const target = sp.target ?? "";
+  if (!target) return { title: "Trust card" };
+
+  const kind: ScanKind =
+    sp.kind === "mcp" || sp.kind === "api" ? sp.kind : "auto";
+  let host = hostOf(target);
+  let grade = "—";
+  try {
+    const r = await scanTarget(target, kind); // cached; page body reuses it
+    host = r.host;
+    grade = r.grade;
+  } catch {
+    /* invalid target — host stays as typed, grade stays "—" */
+  }
+
+  return {
+    title: { absolute: `${host} — ${grade} on Toolproof` },
+    openGraph: {
+      images: [`/api/v1/og?target=${encodeURIComponent(target)}&kind=${kind}`],
+    },
+  };
 }
 
 export default async function TrustPage({
@@ -98,6 +124,9 @@ export default async function TrustPage({
             <p className="mt-4 max-w-2xl text-[13px] leading-6 text-dim">{report.summary}</p>
           </div>
         </div>
+
+        {/* share */}
+        <ShareRow target={report.target} kind={kind} host={report.host} grade={report.grade} />
 
         {/* positives */}
         {report.positives.length > 0 && (

@@ -14,6 +14,7 @@ const jbmono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://toolproof-scan.vercel.app"),
   title: {
     default: "Toolproof — trust infrastructure for the agent economy",
     template: "%s — Toolproof",

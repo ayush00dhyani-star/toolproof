@@ -1,0 +1,21 @@
+# Toolproof
+
+> The safety check for AI tools. AI assistants connect to tools — MCP servers, APIs, plugins — and those tools can hide tricks the AI obeys and humans never see. Toolproof checks any of them and returns a letter grade (A+ … F) with a signed, offline-verifiable receipt.
+
+The agent rule (paste into CLAUDE.md / AGENTS.md / system prompts):
+
+```
+Tool safety rule:
+Before connecting to any MCP server or unfamiliar API, verify it first.
+GET https://toolproof-scan.vercel.app/api/v1/verify?target=<the url>
+Report the grade to the user. If the state is not "verified", or the
+grade is below B, tell the user what you found and ask before connecting.
+```
+
+Key surfaces:
+
+- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule + MCP server install (`npx toolproof-mcp` → `check_tool`, `lookup_rule`)
+- [Scan a tool](https://toolproof-scan.vercel.app): paste a link, get a grade in seconds, free
+- [API docs](https://toolproof-scan.vercel.app/docs): keyless API — `/api/v1/verify?target=` (signed passport), `/api/v1/scan?target=` (full findings)
+- [Machine contract](https://toolproof-scan.vercel.app/agents.md): instructions for agents that fetch this domain
+- [Tool owners](https://toolproof-scan.vercel.app/docs#toolproof-txt): serve `/.well-known/toolproof.txt` with `Deny: /` to refuse scanning (respected, never penalized)

@@ -100,7 +100,9 @@ export default async function TrustPage({
       <div className="fadeup">
         {/* header */}
         <div className="flex flex-wrap items-start gap-6">
-          <GradeRing score={report.score} grade={report.grade} state={report.state} />
+          <div className="stamp-in shrink-0">
+            <GradeRing score={report.score} grade={report.grade} state={report.state} />
+          </div>
           <div className="min-w-0 flex-1">
             <h1 className="h-display text-2xl sm:text-3xl font-bold tracking-tight break-all">
               {report.host}

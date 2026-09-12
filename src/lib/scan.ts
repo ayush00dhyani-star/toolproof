@@ -1,8 +1,10 @@
 import { assertPublicHost, fetchX, normalizeTarget } from "./net";
 import { probeMcp } from "./mcp";
+import type { McpResourceInfo } from "./mcp";
 import { huntOpenApi } from "./openapi";
 import { SEVS, SEV_WEIGHT, gradeScore } from "./score";
 import { scanSchema, scanText } from "./rules";
+import { fetchToolproofTxt, matchesPath } from "./toolproof-txt";
 import type { Finding, ScanKind, ScanReport, Sev } from "./types";
 
 interface CacheEntry {
@@ -41,6 +43,31 @@ function summarize(
   return "Clean scan — no agent-hijack patterns found.";
 }
 
+/**
+ * TP-206 — resources advertised over schemes other than https:, file:
+ * or mcp-* (http, ftp, database drivers, custom handlers). Flagged in
+ * scan.ts rather than scanText: it needs the resource uri itself.
+ */
+export function scanResourceSchemes(resources: McpResourceInfo[]): Finding[] {
+  const out: Finding[] = [];
+  for (const r of resources) {
+    const m = r.uri.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+    if (!m) continue;
+    const scheme = m[1].toLowerCase();
+    if (scheme === "https" || scheme === "file" || scheme.startsWith("mcp-"))
+      continue;
+    out.push({
+      rule: "TP-206",
+      sev: "medium",
+      title: "Unusual resource scheme",
+      where: `resources/${r.name}`,
+      evidence: r.uri,
+      why: "Resources served over http, ftp or unexpected schemes can point agents at untrusted or non-standard sources. Verify the transport is intentional.",
+    });
+  }
+  return out;
+}
+
 export async function scanTarget(
   raw: string,
   kind: ScanKind = "auto",
@@ -51,6 +78,32 @@ export async function scanTarget(
   const t0 = Date.now();
   const u = normalizeTarget(raw);
   await assertPublicHost(u);
+
+  // toolproof.txt opt-out: honored before any probing of the target.
+  const toolproof = await fetchToolproofTxt(u.origin);
+  const denied = (toolproof?.deny ?? []).filter((p) =>
+    matchesPath(p, u.pathname),
+  );
+  if (denied.length > 0) {
+    const report: ScanReport = {
+      v: 1,
+      target: u.toString(),
+      host: u.host,
+      kind: "unknown",
+      state: "opted-out",
+      scannedAt: new Date().toISOString(),
+      durationMs: Date.now() - t0,
+      score: 100,
+      grade: "—",
+      summary: "Owner requested no scanning via toolproof.txt — respected.",
+      findings: [],
+      findingCounts: { critical: 0, high: 0, medium: 0, low: 0, info: 0 },
+      positives: ["toolproof.txt honored"],
+      meta: { toolproofTxt: { deny: denied } },
+    };
+    CACHE.set(cacheKey(raw, kind), { report, at: Date.now() });
+    return report;
+  }
 
   const findings: Finding[] = [];
   const positives: string[] = [];
@@ -99,6 +152,15 @@ export async function scanTarget(
         findings.push(...scanText(`tools/${tool.name}`, tool.description ?? ""));
         findings.push(...scanSchema(`tools/${tool.name}`, tool.schema));
       }
+      const prompts = mcp.prompts ?? [];
+      for (const p of prompts)
+        findings.push(...scanText(`prompts/${p.name}`, p.description ?? ""));
+      const resources = mcp.resources ?? [];
+      for (const r of resources)
+        findings.push(...scanText(`resources/${r.name}`, r.description ?? ""));
+      findings.push(...scanResourceSchemes(resources));
+      mcpMeta.promptCount = prompts.length;
+      mcpMeta.resourceCount = resources.length;
       if (mcp.instructions) {
         findings.push(...scanText("server instructions", mcp.instructions));
         positives.push("Server instructions captured and reviewed");

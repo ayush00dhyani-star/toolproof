@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
       if (r.state === "verified") {
         label = "VERIFIED";
         color = gradeColor(r.grade);
+      } else if (r.state === "opted-out") {
+        label = "OPTED OUT";
       }
     } catch {
       /* keep unverified defaults */

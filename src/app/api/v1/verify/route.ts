@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { passportOf } from "@/lib/passport";
 import { TargetError } from "@/lib/net";
 import { scanTarget } from "@/lib/scan";
 import { signPassport } from "@/lib/sign";
-import type { ScanKind, ScanReport } from "@/lib/types";
+import type { ScanKind } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,24 +17,6 @@ const CORS = {
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
-}
-
-function passportOf(r: ScanReport): Record<string, unknown> {
-  return {
-    v: r.v,
-    kind: r.kind,
-    target: r.target,
-    host: r.host,
-    state: r.state,
-    scannedAt: r.scannedAt,
-    score: r.score,
-    grade: r.grade,
-    summary: r.summary,
-    findingCounts: r.findingCounts,
-    ruleIds: [...new Set(r.findings.map((f) => f.rule))].sort(),
-    positives: r.positives,
-    scanner: { name: "toolproof", version: "0.1.0" },
-  };
 }
 
 export async function GET(req: NextRequest) {

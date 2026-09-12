@@ -6,6 +6,18 @@ export interface McpToolInfo {
   schema: unknown;
 }
 
+export interface McpPromptInfo {
+  name: string;
+  title?: string;
+  description?: string;
+}
+
+export interface McpResourceInfo {
+  name: string;
+  uri: string;
+  description?: string;
+}
+
 export interface McpProbeResult {
   ok: boolean;
   authRequired?: boolean;
@@ -14,6 +26,8 @@ export interface McpProbeResult {
   instructions?: string;
   tools?: McpToolInfo[];
   toolCount?: number;
+  prompts?: McpPromptInfo[];
+  resources?: McpResourceInfo[];
 }
 
 const PROTO = "2025-06-18";
@@ -142,12 +156,56 @@ export async function probeMcp(endpoint: URL): Promise<McpProbeResult> {
         typeof t?.description === "string" ? t.description : undefined,
       schema: t?.inputSchema,
     }));
+
+    // prompts/list and resources/list are best-effort depth probes: same
+    // session, short timeout, failures never fail the scan.
+    let prompts: McpPromptInfo[] | undefined;
+    let resources: McpResourceInfo[] | undefined;
+    try {
+      const pr = await postRpc(
+        endpoint,
+        { jsonrpc: "2.0", id: 3, method: "prompts/list", params: {} },
+        session,
+        4000,
+      );
+      const raw = pr.json?.result?.prompts;
+      if (Array.isArray(raw))
+        prompts = raw.slice(0, 200).map((p: any) => ({
+          name: String(p?.name ?? "?"),
+          title: typeof p?.title === "string" ? p.title : undefined,
+          description:
+            typeof p?.description === "string" ? p.description : undefined,
+        }));
+    } catch {
+      /* prompts are best-effort */
+    }
+    try {
+      const rr = await postRpc(
+        endpoint,
+        { jsonrpc: "2.0", id: 4, method: "resources/list", params: {} },
+        session,
+        4000,
+      );
+      const raw = rr.json?.result?.resources;
+      if (Array.isArray(raw))
+        resources = raw.slice(0, 200).map((r: any) => ({
+          name: String(r?.name ?? "?"),
+          uri: String(r?.uri ?? ""),
+          description:
+            typeof r?.description === "string" ? r.description : undefined,
+        }));
+    } catch {
+      /* resources are best-effort */
+    }
+
     return {
       ok: true,
       serverInfo,
       instructions,
       tools,
       toolCount: toolsRaw.length,
+      prompts,
+      resources,
     };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

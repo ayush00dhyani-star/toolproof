@@ -1,4 +1,5 @@
 import { gradeColor } from "@/lib/score";
+import type { ScanState } from "@/lib/types";
 
 export default function GradeRing({
   score,
@@ -8,7 +9,7 @@ export default function GradeRing({
 }: {
   score: number;
   grade: string;
-  state: "verified" | "unverified";
+  state: ScanState;
   size?: number;
 }) {
   const r = 52;
@@ -45,7 +46,7 @@ export default function GradeRing({
         fill="#9ba0a6"
         style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}
       >
-        {state === "verified" ? `${score}/100` : "unverified"}
+        {state === "verified" ? `${score}/100` : state}
       </text>
     </svg>
   );

@@ -46,6 +46,20 @@ export const RULES: RuleMeta[] = [
     why: "Tool text reaching into files, env vars, wallets or shell — beyond what the tool name implies. How read tools become exfil tools.",
   },
   {
+    id: "TP-108",
+    name: "Destructive verbs",
+    sev: "high",
+    group: "description",
+    why: "Delete-all-scale verbs in tool text can turn a narrow tool into a data destroyer. One matched argument, and an agent wipes things it was never meant to touch.",
+  },
+  {
+    id: "TP-205",
+    name: "Safety-bypass phrasing",
+    sev: "high",
+    group: "description",
+    why: "Text that skips user confirmation removes the human from consequential actions — the classic setup for a hijacked tool to do real damage.",
+  },
+  {
     id: "TP-107",
     name: "Destructive default",
     sev: "high",
@@ -93,6 +107,13 @@ export const RULES: RuleMeta[] = [
     sev: "critical",
     group: "spec",
     why: "Agents may route traffic to the plaintext server advertised in the spec.",
+  },
+  {
+    id: "TP-206",
+    name: "Unusual resource scheme",
+    sev: "medium",
+    group: "spec",
+    why: "Resources advertised over http, ftp or exotic schemes can steer agents toward untrusted or non-standard sources outside normal transport checks.",
   },
 ];
 
@@ -179,7 +200,48 @@ const TEXT_PATTERNS: {
       /\b(?:environment variables?|env vars?|file ?system|execute shell|arbitrary code|wallet|seed phrase|private key)\b/i,
     why: "The text claims reach beyond the tool's apparent purpose. Confirm the scope is intentional.",
   },
+  {
+    rule: "TP-108",
+    sev: "high",
+    title: "Destructive verbs",
+    re:
+      /\b(?:delete all|drop (?:all )?tables?|truncate|rm -rf|wipe (?:the )?(?:disk|drive|database)|factory reset)\b/i,
+    why: "Delete-all-scale verbs in tool text can turn a narrow tool into a data destroyer. Confirm the blast radius is intended.",
+  },
+  {
+    rule: "TP-205",
+    sev: "high",
+    title: "Safety-bypass phrasing",
+    re:
+      /\b(?:skip|bypass|without)\s+(?:the\s+)?(?:user\s+)?(?:confirmation|approval|consent|asking)\b/i,
+    why: "Skipping user confirmation removes the human from consequential actions. Verify this is intentional and narrowly scoped.",
+  },
+  {
+    rule: "TP-205",
+    sev: "high",
+    title: "Safety-bypass phrasing",
+    re: /\bdon'?t ask (?:the user|for (?:confirmation|permission))\b/i,
+    why: "Skipping user confirmation removes the human from consequential actions. Verify this is intentional and narrowly scoped.",
+  },
 ];
+
+/**
+ * Benign input-validation boilerplate that superficially resembles hijack
+ * phrasing. Stripped before the TP-102/TP-105/TP-108/TP-205 patterns run;
+ * TP-101, TP-103 and TP-104 still scan the original text.
+ */
+const BENIGN_PHRASES: RegExp[] = [
+  /\bignore (?:invalid|unknown|malformed|empty|duplicate|missing|optional|the (?:leading|trailing|whitespace))[^.\n]{0,30}/gi,
+  /\b(?:disregard|forget) (?:invalid|unknown|malformed|empty|duplicate|missing|optional)[^.\n]{0,30}/gi,
+];
+
+const BENIGN_GUARDED_RULES = new Set(["TP-102", "TP-105", "TP-108", "TP-205"]);
+
+function stripBenignPhrases(text: string): string {
+  let out = text;
+  for (const re of BENIGN_PHRASES) out = out.replace(re, " ");
+  return out;
+}
 
 const CONTROL_RE =
   /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g;
@@ -197,6 +259,8 @@ export function scanText(where: string, text: string): Finding[] {
   const out: Finding[] = [];
   if (!text || !text.trim()) return out;
 
+  const benignStripped = stripBenignPhrases(text);
+
   for (const { re, label } of UNICODE_CHECKS) {
     if (re.test(text)) {
       out.push({
@@ -212,7 +276,8 @@ export function scanText(where: string, text: string): Finding[] {
   }
 
   for (const p of TEXT_PATTERNS) {
-    const m = text.match(p.re);
+    const hay = BENIGN_GUARDED_RULES.has(p.rule) ? benignStripped : text;
+    const m = hay.match(p.re);
     if (m) {
       out.push({
         rule: p.rule,

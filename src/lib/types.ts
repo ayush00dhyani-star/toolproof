@@ -10,7 +10,7 @@ export interface Finding {
 }
 
 export type ScanKind = "auto" | "mcp" | "api";
-export type ScanState = "verified" | "unverified";
+export type ScanState = "verified" | "unverified" | "opted-out";
 
 export interface ScanReport {
   v: 1;

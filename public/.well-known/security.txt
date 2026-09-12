@@ -1,0 +1,8 @@
+Contact: mailto:security@toolproof-scan.vercel.app
+Expires: 2027-09-12T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://toolproof-scan.vercel.app/.well-known/security.txt
+Policy: https://toolproof-scan.vercel.app/docs
+
+# Toolproof v0 — report scanner bypasses and false-negative vectors.
+# We treat scanner evasion as a vulnerability class worth paying attention to.

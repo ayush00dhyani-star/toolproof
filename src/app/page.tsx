@@ -29,6 +29,7 @@ function Nav() {
           <a href="#why" className="hover:text-ink">Why</a>
           <a href="#checks" className="hover:text-ink">Checks</a>
           <a href="#grades" className="hover:text-ink">Grades</a>
+          <a href="/for-agents" className="hover:text-ink">For AI</a>
           <a href="/docs" className="hover:text-ink">Docs</a>
         </div>
         <span className="rounded border border-line px-2 py-0.5 text-[10px] text-faint">free</span>
@@ -92,6 +93,42 @@ export default function Home() {
             <span>every result signed</span>
           </div>
           <HeroStat />
+        </div>
+      </section>
+
+      {/* for the lazy (almost everyone) */}
+      <section id="for-ai" className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-14">
+          <div className="card relative overflow-hidden p-10">
+            <div className="tape absolute top-0 inset-x-0 h-1.5" />
+            <div className="lbl mb-4">for the lazy — which is everyone</div>
+            <h2 className="h-display text-3xl font-bold tracking-tight max-w-2xl leading-tight">
+              Nobody scans things by hand.
+              <br />
+              <span className="text-amber">So don&apos;t — make your AI do it.</span>
+            </h2>
+            <p className="mt-5 max-w-2xl text-[13.5px] leading-7 text-dim">
+              Your AI is the one connecting to tools, so your AI is the one
+              who should check them first. Set it up once — paste a single
+              rule into your agent&apos;s instructions, or install the
+              Toolproof MCP server — and every tool gets verified
+              automatically, forever. You never need to visit this site again.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="/for-agents"
+                className="rounded-lg bg-amber px-5 py-2.5 text-[11px] font-bold tracking-[0.2em] uppercase text-bg hover:opacity-90 transition-opacity"
+              >
+                Give your AI the rule →
+              </a>
+              <a
+                href="/for-agents#option-b"
+                className="rounded-lg border border-line px-5 py-2.5 text-[11px] font-bold tracking-[0.2em] uppercase text-dim hover:text-ink hover:border-dim transition-colors"
+              >
+                Install as an MCP tool
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 

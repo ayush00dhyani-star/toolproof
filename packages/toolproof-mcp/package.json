@@ -1,0 +1,24 @@
+{
+  "name": "toolproof-mcp",
+  "version": "0.1.0",
+  "description": "Trust grades for MCP servers and APIs, as an MCP tool — let any AI check a tool before it connects to it.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "toolproof-mcp": "./server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "server.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "security",
+    "trust",
+    "agents",
+    "toolproof"
+  ]
+}

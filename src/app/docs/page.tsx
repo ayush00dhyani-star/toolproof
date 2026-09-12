@@ -31,6 +31,15 @@ export default function DocsPage() {
             cache-friendly (s-maxage), rate-limited to 30 scans/min per IP,
             and every scan result is signed so you can verify it offline.
           </p>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            Building an agent? Skip the docs — grab the{" "}
+            <a href="/for-agents" className="text-amber underline-offset-4 hover:underline">
+              one-line agent rule
+            </a>{" "}
+            or the <code className="text-ink">toolproof-mcp</code> server. Machines
+            that fetch this domain read{" "}
+            <a href="/agents.md" className="text-amber underline-offset-4 hover:underline">/agents.md</a>.
+          </p>
           <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`curl "https://<host>/api/v1/verify?target=https://mcp.context7.com/mcp"`}</pre>
         </section>
 

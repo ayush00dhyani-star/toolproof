@@ -1,11 +1,16 @@
 # Toolproof
 
-**Trust infrastructure for the agent economy.** Toolproof probes MCP servers
-and public APIs for agent-hijack vectors — hidden instructions in tool text,
-silent auth gaps, scope creep — then issues ed25519-signed trust passports
-anyone can verify offline.
+**The safety check for AI tools.** AI assistants connect to tools — servers,
+APIs, plugins — and those tools can hide tricks the AI obeys and humans never
+see. Toolproof checks any of them and issues a letter grade with an
+ed25519-signed receipt anyone can verify offline.
 
 Live: https://toolproof-scan.vercel.app
+
+**Nobody scans things by hand — so the AI does it.** Paste the one-line rule
+into your agent's instructions (`/for-agents`), or install the
+`toolproof-mcp` server so any MCP client gets `check_tool` natively.
+Machines that fetch this domain read [`/agents.md`](public/agents.md).
 
 ## What it checks
 
@@ -44,6 +49,18 @@ Exit `0` verified — or a respected opt-out — and the score meets
 `--fail-under`; `1` unverified, or verified with score below
 `--fail-under`; `2` usage/network error.
 See [`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+
+## MCP server
+
+`packages/toolproof-mcp` — the scanner as an MCP tool. Add it to Claude
+Desktop / Cursor / Claude Code once and the AI checks every tool before
+connecting:
+
+```json
+{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
+```
+
+Zero dependencies; smoke-tested over stdio (`node scripts/mcp-smoke.mjs`).
 
 ## toolproof.txt
 

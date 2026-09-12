@@ -103,7 +103,13 @@ export default function ScanBox() {
     async (overrideTarget?: string, overrideKind?: ScanKind) => {
       const t = (overrideTarget ?? target).trim();
       const k = overrideKind ?? kind;
-      if (!t || busyRef.current) return; // guard: no double-click races
+      if (busyRef.current) return; // guard: no double-click races
+      if (!t) {
+        // A click with nothing pasted should teach, not dead-end.
+        setError("Paste a tool link first — or tap an example below.");
+        setPhase("error");
+        return;
+      }
       busyRef.current = true;
       const id = ++runIdRef.current;
       abortRef.current?.abort();
@@ -178,7 +184,7 @@ export default function ScanBox() {
         />
         <button
           onClick={() => run()}
-          disabled={phase === "scanning" || !target.trim()}
+          disabled={phase === "scanning"}
           className="rounded-lg bg-amber px-6 py-3 text-[12px] font-bold tracking-[0.2em] uppercase text-bg transition-opacity hover:opacity-90 disabled:opacity-40 shrink-0"
         >
           {phase === "scanning" ? "Scanning…" : "Run scan"}

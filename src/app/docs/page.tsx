@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RULES } from "@/lib/rules";
 
+// CSP nonce is per-request — dynamic rendering so Next stamps the nonce
+// onto its bootstrap scripts (see middleware.ts).
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "API docs",
 };

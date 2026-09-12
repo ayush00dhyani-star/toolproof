@@ -7,6 +7,11 @@ import SeedsGrid from "@/components/SeedsGrid";
 import { RULES } from "@/lib/rules";
 import { SEV_COLOR } from "@/lib/score";
 
+// CSP nonce is per-request — this page must render dynamically so Next can
+// stamp the nonce onto its bootstrap scripts (see middleware.ts). Static
+// HTML would carry a stale nonce and every script would be blocked.
+export const dynamic = "force-dynamic";
+
 function Seal({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>

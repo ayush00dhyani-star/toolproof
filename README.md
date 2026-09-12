@@ -25,7 +25,9 @@ Live: https://toolproof-scan.vercel.app
 | `GET /api/v1/scan?target=` | Full report with findings + evidence |
 | `GET /api/v1/verify?target=` | Signed passport (ed25519, canonical JSON) |
 | `GET /api/v1/registry` | Starter registry, scanned live |
-| `GET /api/v1/badge?target=` | SVG badge |
+| `GET /api/v1/feed` | Live verdict feed on this node (in-memory, resets on cold start) |
+| `GET /api/v1/badge?target=&style=grade\|flat` | SVG badge |
+| `GET /api/v1/og?target=` | 1200×630 social share card |
 | `GET /api/v1/pubkey` | Signing public key (PEM) |
 
 ## CLI
@@ -36,9 +38,20 @@ Scan from any terminal — zero dependencies, no install:
 npx toolproof-scan mcp.context7.com/mcp --fail-under 70
 ```
 
-Prints the signed verdict; exits `0` pass, `1` unverified or below
-`--fail-under`, `2` usage/network error. See
-[`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+Flags: `--json` (raw signed passport), `--kind=auto|mcp|api`,
+`--fail-under=<0-100>`, `--api=<url>`, `--timeout=<ms>`, `-h`.
+Exit `0` pass, `1` unverified or below `--fail-under`, `2` usage/network
+error. See [`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+
+## toolproof.txt
+
+Tool owners control scanning. Toolproof fetches
+`/.well-known/toolproof.txt` from the target's origin before any probe:
+a path-prefix `Deny:` line matching the requested path ends the scan
+immediately with state `opted-out` — respected, never penalized.
+`/` or `*` matches the whole site; `Allow:` and `Canary:` lines are
+reserved for v1. Details and a worked example:
+[docs](https://toolproof-scan.vercel.app/docs#toolproof-txt).
 
 ## Local development
 

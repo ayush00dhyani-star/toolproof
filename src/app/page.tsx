@@ -1,4 +1,6 @@
 import ScanBox from "@/components/ScanBox";
+import CopyNpx from "@/components/CopyNpx";
+import HeroStat from "@/components/HeroStat";
 import HijackDemo from "@/components/HijackDemo";
 import Ledger from "@/components/Ledger";
 import SeedsGrid from "@/components/SeedsGrid";
@@ -26,6 +28,7 @@ function Nav() {
           <a href="#anatomy" className="hover:text-ink">Anatomy</a>
           <a href="#rules" className="hover:text-ink">Rules</a>
           <a href="#passport" className="hover:text-ink">Passport</a>
+          <a href="#neutral" className="hover:text-ink">Neutral</a>
           <a href="/docs" className="hover:text-ink">Docs</a>
         </div>
         <span className="rounded border border-line px-2 py-0.5 text-[10px] text-faint">v0.1</span>
@@ -60,6 +63,9 @@ export default function Home() {
           <div className="mt-10 max-w-3xl">
             <ScanBox />
           </div>
+          <div className="mt-8 max-w-3xl">
+            <CopyNpx />
+          </div>
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 text-[11px] tracking-[0.18em] uppercase text-faint">
             <span>{RULES.length}+ detection rules</span>
             <span>·</span>
@@ -69,6 +75,7 @@ export default function Home() {
             <span>·</span>
             <span>ed25519-signed passports</span>
           </div>
+          <HeroStat />
         </div>
       </section>
 
@@ -182,10 +189,39 @@ export default function Home() {
         </div>
       </section>
 
+      {/* neutral by construction */}
+      <section id="neutral" className="py-20 border-t border-line">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="lbl mb-4">04 · Neutral by construction</div>
+          <h2 className="h-display text-4xl font-bold tracking-tight leading-tight max-w-2xl">
+            The referee can&apos;t
+            <br />
+            also play.
+          </h2>
+          <p className="mt-6 max-w-2xl text-[13px] leading-7 text-dim">
+            Toolproof operates no agents, sells no models, and runs no tools.
+            We cannot favor a vendor, a platform, or ourselves — accuracy is
+            the only asset we have. The giants can grade their own homework;
+            we can&apos;t afford to.
+          </p>
+          <p className="mt-4 max-w-2xl text-[13px] leading-7 text-dim">
+            The rule catalog is public, the passports are verifiable offline,
+            and{" "}
+            <a
+              href="/docs#toolproof-txt"
+              className="text-amber underline-offset-4 hover:underline"
+            >
+              toolproof.txt
+            </a>{" "}
+            gives tool owners the right to refuse scanning.
+          </p>
+        </div>
+      </section>
+
       {/* field notes */}
       <section className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">04 · Field notes</div>
+          <div className="lbl mb-4">05 · Field notes</div>
           <h2 className="h-display text-4xl font-bold tracking-tight mb-10">
             The starter registry, scanned live.
           </h2>
@@ -198,7 +234,7 @@ export default function Home() {
       {/* the ledger */}
       <section id="ledger" className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">05 · The Ledger</div>
+          <div className="lbl mb-4">06 · The Ledger</div>
           <h2 className="h-display text-4xl font-bold tracking-tight mb-4">
             Every verdict, as it lands.
           </h2>
@@ -219,7 +255,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="card relative overflow-hidden p-10">
             <div className="tape absolute top-0 inset-x-0 h-1.5" />
-            <div className="lbl mb-4">06 · Shipping in v1 — canaries</div>
+            <div className="lbl mb-4">07 · Shipping in v1 — canaries</div>
             <h2 className="h-display text-3xl font-bold tracking-tight max-w-2xl leading-tight">
               Plant canaries inside the tools you operate.
               <br />

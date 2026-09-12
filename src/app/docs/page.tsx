@@ -55,8 +55,18 @@ export default function DocsPage() {
               },
               {
                 m: "GET",
-                p: "/api/v1/badge?target=",
-                d: "SVG badge for READMEs and dashboards. Cached 10 min.",
+                p: "/api/v1/badge?target=&kind=&style=grade|flat",
+                d: "SVG badge for READMEs and dashboards. style=grade (default) or style=flat. Cached 10 min.",
+              },
+              {
+                m: "GET",
+                p: "/api/v1/feed",
+                d: "Live verdict feed: the newest scans on this node plus a running total. In-memory — resets on cold start, never persisted.",
+              },
+              {
+                m: "GET",
+                p: "/api/v1/og?target=&kind=",
+                d: "1200×630 social share card with the verdict stamp, used for trust-card link previews.",
               },
               {
                 m: "GET",
@@ -144,6 +154,112 @@ const ok = verify(
               </div>
             ))}
           </div>
+        </section>
+
+        <section id="toolproof-txt" className="scroll-mt-16">
+          <div className="lbl mb-4">the toolproof.txt standard</div>
+          <p className="text-[13px] leading-7 text-dim max-w-2xl">
+            Owners control scanning. Before any probe is sent, Toolproof
+            fetches{" "}
+            <code className="text-ink">/.well-known/toolproof.txt</code> from
+            the target&apos;s own origin. If the requested path matches a{" "}
+            <code className="text-ink">Deny</code> line, the scan ends right
+            there with state{" "}
+            <code className="text-ink">opted-out</code> — no probes are sent;
+            that single fetch is the only request Toolproof makes, and the
+            opt-out is recorded as a respected refusal, never a penalty.
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`# /.well-known/toolproof.txt — lines and keys are case-insensitive
+# Never scan the admin panel or internal tools:
+Deny: /admin
+Deny: /internal
+# Everything else is fine:
+Allow: /
+# Reserved for v1 canary attestations:
+Canary: 9f2e4d1c7b`}</pre>
+          <p className="mt-4 text-[13px] leading-7 text-dim max-w-2xl">
+            Matching is plain path prefix:{" "}
+            <code className="text-ink">/admin</code> covers{" "}
+            <code className="text-ink">/admin</code> and everything under it,
+            and <code className="text-ink">/</code> or{" "}
+            <code className="text-ink">*</code> matches the whole site.{" "}
+            <code className="text-ink">#</code> starts a comment.{" "}
+            <code className="text-ink">Allow</code> and{" "}
+            <code className="text-ink">Canary</code> are part of the format
+            today and reserved for opt-in semantics in v1 — only{" "}
+            <code className="text-ink">Deny</code> affects scanning.
+          </p>
+        </section>
+
+        <section id="cli" className="scroll-mt-16">
+          <div className="lbl mb-4">CLI</div>
+          <p className="text-[13px] leading-7 text-dim max-w-2xl">
+            The same signed verdicts, from any terminal or CI job —{" "}
+            <code className="text-ink">toolproof-scan</code> is a
+            zero-dependency CLI, no install required:
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx toolproof-scan mcp.context7.com/mcp --fail-under 70`}</pre>
+          <div className="mt-6 card divide-y divide-line">
+            {[
+              { f: "--json", d: "Print the raw signed passport JSON instead of the formatted verdict." },
+              { f: "--kind=auto|mcp|api", d: "Target kind (default auto)." },
+              { f: "--fail-under=<0-100>", d: "Exit 1 when verified with a score below N, or when unverified." },
+              { f: "--api=<url>", d: "Verify API base URL (default https://toolproof-scan.vercel.app)." },
+              { f: "--timeout=<ms>", d: "Request timeout in milliseconds (default 30000)." },
+              { f: "-h, --help", d: "Show help." },
+            ].map((f) => (
+              <div key={f.f} className="px-5 py-3.5 flex gap-4 items-baseline">
+                <code className="text-[12px] text-amber shrink-0">{f.f}</code>
+                <p className="text-[12px] leading-6 text-dim">{f.d}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-[13px] leading-7 text-dim max-w-2xl">
+            Exit codes: <code className="text-ink">0</code> verified and the
+            score meets <code className="text-dim">--fail-under</code>;{" "}
+            <code className="text-ink">1</code> unverified, or below{" "}
+            <code className="text-dim">--fail-under</code>;{" "}
+            <code className="text-ink">2</code> usage or network error.
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`# .github/workflows/trust.yml
+- name: Trust-check our MCP server
+  run: npx toolproof-scan https://our-mcp.example.com/mcp --fail-under 70`}</pre>
+          <p className="mt-4 text-[12px] leading-6 text-faint max-w-2xl">
+            A non-passing grade fails the step via exit code 1; usage or
+            network problems fail with exit code 2. See{" "}
+            <a
+              href="https://www.npmjs.com/package/toolproof-scan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink underline underline-offset-4"
+            >
+              npmjs.com/package/toolproof-scan
+            </a>
+            .
+          </p>
+        </section>
+
+        <section id="badge-embed" className="scroll-mt-16">
+          <div className="lbl mb-4">badge &amp; embed</div>
+          <p className="text-[13px] leading-7 text-dim max-w-2xl">
+            Pin a live verdict anywhere. The badge is an SVG that re-scans
+            its target on every cache refresh (~10 min); the embed is a
+            320×220 card that does the same — a grade that tracks the target
+            over time, not a screenshot.
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`[![toolproof](https://toolproof-scan.vercel.app/api/v1/badge?target=mcp.context7.com%2Fmcp&style=flat)](https://toolproof-scan.vercel.app/t?target=mcp.context7.com%2Fmcp)`}</pre>
+          <pre className="mt-3 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`<iframe
+  src="https://toolproof-scan.vercel.app/embed?target=mcp.context7.com%2Fmcp"
+  width="340" height="240" loading="lazy"
+  title="Toolproof trust card">
+</iframe>`}</pre>
+          <p className="mt-4 text-[12px] leading-6 text-faint max-w-2xl">
+            <code className="text-dim">style=grade</code> renders the
+            verdict stamp, <code className="text-dim">style=flat</code> a
+            one-line badge. Add <code className="text-dim">&amp;kind=mcp</code>{" "}
+            or <code className="text-dim">&amp;kind=api</code> to skip
+            auto-detection.
+          </p>
         </section>
 
         <section>

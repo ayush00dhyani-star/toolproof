@@ -41,7 +41,10 @@ export function matchesPath(pattern: string, pathname: string): boolean {
 
 /**
  * Fetch `${origin}/.well-known/toolproof.txt`. Returns null on any
- * error, non-200 status, or non-text body.
+ * error, non-200 status, or unparseable body. The body is parsed
+ * regardless of content-type — a site serving the file as
+ * `application/octet-stream` still gets its Deny lines honored; only a
+ * fetch failure, non-200, or unparseable body means "no policy".
  */
 export async function fetchToolproofTxt(
   origin: string,
@@ -51,8 +54,6 @@ export async function fetchToolproofTxt(
       timeoutMs: 4000,
     });
     if (res.status !== 200) return null;
-    const ct = res.headers.get("content-type") ?? "";
-    if (ct && !ct.includes("text/")) return null;
     return parseToolproofTxt(await res.text());
   } catch {
     return null;

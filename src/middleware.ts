@@ -1,31 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const WINDOW = 60_000;
-const LIMIT = 30;
+
+// Every surface here triggers a server-side scan, so each gets a rate limit
+// tier. Scan-triggering paths share one 30/min/IP bucket; /embed gets its own
+// 120/min bucket (embed-heavy pages behind one NAT address must not trip the
+// scan limit). Keys are per-tier + per-IP — query strings are irrelevant.
+// Per-instance in-memory: best effort is accepted.
+const TIERS: { name: string; limit: number; match: (path: string) => boolean }[] =
+  [
+    {
+      name: "scan",
+      limit: 30,
+      match: (p) =>
+        p === "/api/v1/scan" ||
+        p === "/api/v1/verify" ||
+        p === "/api/v1/og" ||
+        p === "/t",
+    },
+    {
+      name: "embed",
+      limit: 120,
+      match: (p) => p === "/embed" || p.startsWith("/embed/"),
+    },
+  ];
+
 const HITS = new Map<string, number[]>();
 
-function limited(ip: string): boolean {
+function limited(key: string, limit: number): boolean {
   const now = Date.now();
-  const arr = (HITS.get(ip) ?? []).filter((t) => now - t < WINDOW);
+  const arr = (HITS.get(key) ?? []).filter((t) => now - t < WINDOW);
   arr.push(now);
-  HITS.set(ip, arr);
+  HITS.set(key, arr);
   if (HITS.size > 5000) HITS.clear();
-  return arr.length > LIMIT;
+  return arr.length > limit;
 }
 
 export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  if (
-    (path === "/api/v1/scan" || path === "/api/v1/verify") &&
-    (req.method === "GET" || req.method === "POST")
-  ) {
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-    if (limited(ip))
-      return NextResponse.json(
-        { error: "rate limited (30/min) — responses are cache-friendly, retry shortly" },
-        { status: 429, headers: { "retry-after": "60" } },
-      );
+  if (req.method === "GET") {
+    const tier = TIERS.find((t) => t.match(path));
+    if (tier) {
+      const ip =
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+      if (limited(`${tier.name}:${ip}`, tier.limit)) {
+        if (path.startsWith("/api/"))
+          return NextResponse.json(
+            { error: "rate limited (30/min) — responses are cache-friendly, retry shortly" },
+            { status: 429, headers: { "retry-after": "60" } },
+          );
+        return new NextResponse("rate limited — retry in a minute\n", {
+          status: 429,
+          headers: { "retry-after": "60", "content-type": "text/plain" },
+        });
+      }
+    }
   }
 
   const nonce = btoa(crypto.randomUUID());

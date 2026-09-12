@@ -3,6 +3,7 @@ import Link from "next/link";
 import GradeRing from "@/components/GradeRing";
 import ShareRow from "@/components/ShareRow";
 import { TargetError } from "@/lib/net";
+import { passportOf } from "@/lib/passport";
 import { scanTarget } from "@/lib/scan";
 import { SEV_COLOR } from "@/lib/score";
 import type { ScanKind } from "@/lib/types";
@@ -187,25 +188,9 @@ export default async function TrustPage({
           <div className="card overflow-hidden">
             <div className="tape h-1.5" />
             <div className="px-5 py-4 lbl">passport · canonical JSON</div>
-            <pre className="px-5 pb-5 text-[11px] leading-6 overflow-x-auto text-dim">{JSON.stringify(
-              {
-                v: report.v,
-                kind: report.kind,
-                target: report.target,
-                host: report.host,
-                state: report.state,
-                scannedAt: report.scannedAt,
-                score: report.score,
-                grade: report.grade,
-                summary: report.summary,
-                findingCounts: report.findingCounts,
-                ruleIds: [...new Set(report.findings.map((f) => f.rule))].sort(),
-                positives: report.positives,
-                scanner: { name: "toolproof", version: "0.1.0" },
-              },
-              null,
-              2,
-            )}</pre>
+            <pre className="px-5 pb-5 text-[11px] leading-6 overflow-x-auto text-dim">
+              {JSON.stringify(passportOf(report), null, 2)}
+            </pre>
           </div>
           <div className="space-y-6">
             <div className="card p-5">

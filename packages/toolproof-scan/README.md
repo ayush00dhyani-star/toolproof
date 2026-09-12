@@ -42,7 +42,7 @@ Colors are disabled automatically when `NO_COLOR` is set or stdout is not a TTY.
 
 ## Exit codes
 
-- `0` — verified and score meets `--fail-under`
+- `0` — verified — or a respected opt-out — and the score meets `--fail-under`
 - `1` — unverified, or verified with score below `--fail-under`
 - `2` — usage or network error
 

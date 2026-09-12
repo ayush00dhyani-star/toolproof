@@ -179,10 +179,11 @@ Allow: /
 Canary: 9f2e4d1c7b`}</pre>
           <p className="mt-4 text-[13px] leading-7 text-dim max-w-2xl">
             Matching is plain path prefix:{" "}
-            <code className="text-ink">/admin</code> covers{" "}
-            <code className="text-ink">/admin</code> and everything under it,
-            and <code className="text-ink">/</code> or{" "}
-            <code className="text-ink">*</code> matches the whole site.{" "}
+            <code className="text-ink">Deny: /admin</code> also blocks{" "}
+            <code className="text-ink">/administrator</code> — any path that
+            starts with the pattern is denied — and{" "}
+            <code className="text-ink">/</code> or{" "}
+            <code className="text-ink">*</code> blocks the whole site.{" "}
             <code className="text-ink">#</code> starts a comment.{" "}
             <code className="text-ink">Allow</code> and{" "}
             <code className="text-ink">Canary</code> are part of the format
@@ -215,10 +216,11 @@ Canary: 9f2e4d1c7b`}</pre>
             ))}
           </div>
           <p className="mt-6 text-[13px] leading-7 text-dim max-w-2xl">
-            Exit codes: <code className="text-ink">0</code> verified and the
-            score meets <code className="text-dim">--fail-under</code>;{" "}
-            <code className="text-ink">1</code> unverified, or below{" "}
+            Exit codes: <code className="text-ink">0</code> verified — or a
+            respected opt-out — and the score meets{" "}
             <code className="text-dim">--fail-under</code>;{" "}
+            <code className="text-ink">1</code> unverified, or verified with
+            score below <code className="text-dim">--fail-under</code>;{" "}
             <code className="text-ink">2</code> usage or network error.
           </p>
           <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`# .github/workflows/trust.yml

@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { matchesPath, parseToolproofTxt } from "../src/lib/toolproof-txt";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  fetchToolproofTxt,
+  matchesPath,
+  parseToolproofTxt,
+} from "../src/lib/toolproof-txt";
 
 describe("parseToolproofTxt", () => {
   it("parses Deny/Allow/Canary lines, skipping comments and blanks", () => {
@@ -56,5 +60,25 @@ describe("matchesPath", () => {
   it("does not treat '/' as a substring of every path via prefix logic", () => {
     // '/' is special-cased to match everything; other patterns are plain prefixes
     expect(matchesPath("/a", "/b")).toBe(false);
+  });
+});
+
+describe("fetchToolproofTxt", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("parses the body regardless of content-type — a Deny served as octet-stream still opts out", async () => {
+    vi.stubGlobal(
+      "fetch",
+      async () =>
+        new Response("Deny: /admin\n", {
+          status: 200,
+          headers: { "content-type": "application/octet-stream" },
+        }),
+    );
+    const parsed = await fetchToolproofTxt("https://example.com");
+    expect(parsed?.deny).toEqual(["/admin"]);
+    expect(parsed?.allow).toEqual([]);
   });
 });

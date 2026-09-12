@@ -25,7 +25,7 @@ EXAMPLES
   npx toolproof-scan mcp.context7.com/mcp --json
 
 EXIT CODES
-  0  verified and score meets --fail-under
+  0  verified — or a respected opt-out — and the score meets --fail-under
   1  unverified, or verified with score below --fail-under
   2  usage or network error`;
 
@@ -172,6 +172,7 @@ async function fetchPassport(api, target, kind, timeoutMs) {
 
 const stateColor = (state) => (state === "verified" ? green(state) : dim(state));
 const gradeColor = (grade) => {
+  if (grade === "—") return dim(grade); // opted-out is never red
   if (grade.startsWith("A")) return green(grade);
   if (grade.startsWith("B")) return amber(grade);
   return red(grade);

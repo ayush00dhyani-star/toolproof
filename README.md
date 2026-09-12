@@ -40,8 +40,10 @@ npx toolproof-scan mcp.context7.com/mcp --fail-under 70
 
 Flags: `--json` (raw signed passport), `--kind=auto|mcp|api`,
 `--fail-under=<0-100>`, `--api=<url>`, `--timeout=<ms>`, `-h`.
-Exit `0` pass, `1` unverified or below `--fail-under`, `2` usage/network
-error. See [`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+Exit `0` verified — or a respected opt-out — and the score meets
+`--fail-under`; `1` unverified, or verified with score below
+`--fail-under`; `2` usage/network error.
+See [`packages/toolproof-scan`](packages/toolproof-scan/README.md).
 
 ## toolproof.txt
 

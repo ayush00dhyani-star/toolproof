@@ -50,7 +50,7 @@ describe("passportOf", () => {
   });
 
   it("carries scanner identity and passthrough fields", () => {
-    const p = passportOf(report()) as Record<string, any>;
+    const p = passportOf(report());
     expect(p.scanner).toEqual({ name: "toolproof", version: "0.1.0" });
     expect(p.v).toBe(1);
     expect(p.kind).toBe("mcp");
@@ -79,7 +79,7 @@ describe("passportOf", () => {
         findingCounts: { critical: 0, high: 0, medium: 0, low: 0, info: 0 },
         positives: ["toolproof.txt honored"],
       }),
-    ) as Record<string, any>;
+    );
     expect(p.state).toBe("opted-out");
     expect(p.ruleIds).toEqual([]);
     expect(p.positives).toEqual(["toolproof.txt honored"]);

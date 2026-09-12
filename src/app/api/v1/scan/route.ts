@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { record } from "@/lib/feed";
 import { TargetError } from "@/lib/net";
-import { scanTarget } from "@/lib/scan";
+import { scanTarget, getCached } from "@/lib/scan";
 import type { ScanKind } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -28,7 +29,20 @@ async function run(target: string | null, kind: string | null) {
       { status: 400, headers: CORS },
     );
   try {
-    const report = await scanTarget(target, kindParam(kind));
+    const k = kindParam(kind);
+    // Feed the Ledger only on fresh scans: if getCached hits, this
+    // response is a replay, not a new verdict.
+    const fresh = getCached(target, k) === null;
+    const report = await scanTarget(target, k);
+    if (fresh)
+      record({
+        host: report.host,
+        target: report.target,
+        kind: report.kind,
+        state: report.state,
+        score: report.score,
+        grade: report.grade,
+      });
     return NextResponse.json(
       { report },
       {

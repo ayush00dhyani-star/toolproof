@@ -228,6 +228,14 @@ export default async function TrustPage({
               </div>
               <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-bg px-4 py-3 text-[11.5px] leading-6 text-dim">{`<img src="${"{origin}"}/api/v1/badge?${q.replace(/&/g, "\\&")}">`}</pre>
             </div>
+            <div className="card p-5">
+              <div className="lbl mb-3">embed</div>
+              <pre className="overflow-x-auto rounded-lg border border-line bg-bg px-4 py-3 text-[11.5px] leading-6 text-dim">{`<iframe src="https://toolproof-scan.vercel.app/embed?${q}" style="border:0;width:340px;height:260px;border-radius:12px" loading="lazy"></iframe>`}</pre>
+              <p className="mt-3 text-[12px] leading-6 text-dim">
+                The live verdict card, framable on any site. It scans on load
+                and links back to this full card.
+              </p>
+            </div>
           </div>
         </div>
 

@@ -29,6 +29,11 @@ export function middleware(req: NextRequest) {
   }
 
   const nonce = btoa(crypto.randomUUID());
+  // Carve-out: /embed is the one surface allowed to be framed (it is the
+  // embeddable verdict widget), so its CSP omits frame-ancestors entirely.
+  // Every other path keeps frame-ancestors 'none'. Query strings are
+  // irrelevant — the decision is pathname-only.
+  const isEmbed = path === "/embed" || path.startsWith("/embed");
   const csp = [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
@@ -39,7 +44,7 @@ export function middleware(req: NextRequest) {
     `object-src 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,
-    `frame-ancestors 'none'`,
+    ...(isEmbed ? [] : [`frame-ancestors 'none'`]),
   ].join("; ");
 
   const requestHeaders = new Headers(req.headers);

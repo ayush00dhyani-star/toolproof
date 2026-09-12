@@ -1,5 +1,6 @@
 import ScanBox from "@/components/ScanBox";
 import HijackDemo from "@/components/HijackDemo";
+import Ledger from "@/components/Ledger";
 import SeedsGrid from "@/components/SeedsGrid";
 import { RULES } from "@/lib/rules";
 import { SEV_COLOR } from "@/lib/score";
@@ -194,12 +195,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* the ledger */}
+      <section id="ledger" className="py-20 border-t border-line">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="lbl mb-4">05 · The Ledger</div>
+          <h2 className="h-display text-4xl font-bold tracking-tight mb-4">
+            Every verdict, as it lands.
+          </h2>
+          <p className="max-w-2xl text-[13px] leading-7 text-dim mb-10">
+            A live feed of fresh scans — no cache hits, no replays. When
+            someone anywhere runs a scan on this node, it shows up here
+            within seconds. Most security products hide their traffic; this
+            is the moat, in public.
+          </p>
+          <div className="max-w-3xl">
+            <Ledger />
+          </div>
+        </div>
+      </section>
+
       {/* canary */}
       <section className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
           <div className="card relative overflow-hidden p-10">
             <div className="tape absolute top-0 inset-x-0 h-1.5" />
-            <div className="lbl mb-4">05 · Shipping in v1 — canaries</div>
+            <div className="lbl mb-4">06 · Shipping in v1 — canaries</div>
             <h2 className="h-display text-3xl font-bold tracking-tight max-w-2xl leading-tight">
               Plant canaries inside the tools you operate.
               <br />

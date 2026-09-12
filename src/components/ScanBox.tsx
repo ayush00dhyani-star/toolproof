@@ -191,7 +191,7 @@ export default function ScanBox() {
           </button>
         ))}
         <span className="text-[11px] text-faint">
-          — nothing is stored, scans are on-demand
+          — fresh scans land in the ledger below (in-memory, this node only)
         </span>
       </div>
 

@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
           {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
@@ -22,6 +21,13 @@ const nextConfig: NextConfig = {
           },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
+      },
+      {
+        // X-Frame-Options everywhere EXCEPT /embed — the embeddable widget
+        // must be iframeable; everything else stays unframable. (The CSP
+        // frame-ancestors carve-out lives in middleware.ts.)
+        source: "/((?!embed).*)",
+        headers: [{ key: "X-Frame-Options", value: "DENY" }],
       },
     ];
   },

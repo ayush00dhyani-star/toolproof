@@ -5,25 +5,32 @@ const WINDOW = 60_000;
 // Every surface here triggers a server-side scan, so each gets a rate limit
 // tier. Scan-triggering paths share one 30/min/IP bucket; /embed gets its own
 // 120/min bucket (embed-heavy pages behind one NAT address must not trip the
-// scan limit). Keys are per-tier + per-IP — query strings are irrelevant.
-// Per-instance in-memory: best effort is accepted.
-const TIERS: { name: string; limit: number; match: (path: string) => boolean }[] =
-  [
-    {
-      name: "scan",
-      limit: 30,
-      match: (p) =>
-        p === "/api/v1/scan" ||
-        p === "/api/v1/verify" ||
-        p === "/api/v1/og" ||
-        p === "/t",
-    },
-    {
-      name: "embed",
-      limit: 120,
-      match: (p) => p === "/embed" || p.startsWith("/embed/"),
-    },
-  ];
+// scan limit). POST /api/v1/scan (and /api/v1/verify, for symmetry — it has
+// no POST handler today) is an unauthenticated scan trigger too, so it lands
+// in the same 30/min bucket. Keys are per-tier + per-IP — query strings are
+// irrelevant. Per-instance in-memory: best effort is accepted.
+const TIERS: {
+  name: string;
+  limit: number;
+  match: (method: string, path: string) => boolean;
+}[] = [
+  {
+    name: "scan",
+    limit: 30,
+    match: (m, p) =>
+      m === "GET"
+        ? p === "/api/v1/scan" ||
+          p === "/api/v1/verify" ||
+          p === "/api/v1/og" ||
+          p === "/t"
+        : m === "POST" && (p === "/api/v1/scan" || p === "/api/v1/verify"),
+  },
+  {
+    name: "embed",
+    limit: 120,
+    match: (m, p) => m === "GET" && (p === "/embed" || p.startsWith("/embed/")),
+  },
+];
 
 const HITS = new Map<string, number[]>();
 
@@ -38,22 +45,20 @@ function limited(key: string, limit: number): boolean {
 
 export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  if (req.method === "GET") {
-    const tier = TIERS.find((t) => t.match(path));
-    if (tier) {
-      const ip =
-        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-      if (limited(`${tier.name}:${ip}`, tier.limit)) {
-        if (path.startsWith("/api/"))
-          return NextResponse.json(
-            { error: "rate limited (30/min) — responses are cache-friendly, retry shortly" },
-            { status: 429, headers: { "retry-after": "60" } },
-          );
-        return new NextResponse("rate limited — retry in a minute\n", {
-          status: 429,
-          headers: { "retry-after": "60", "content-type": "text/plain" },
-        });
-      }
+  const tier = TIERS.find((t) => t.match(req.method, path));
+  if (tier) {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+    if (limited(`${tier.name}:${ip}`, tier.limit)) {
+      if (path.startsWith("/api/"))
+        return NextResponse.json(
+          { error: "rate limited (30/min) — responses are cache-friendly, retry shortly" },
+          { status: 429, headers: { "retry-after": "60" } },
+        );
+      return new NextResponse("rate limited — retry in a minute\n", {
+        status: 429,
+        headers: { "retry-after": "60", "content-type": "text/plain" },
+      });
     }
   }
 

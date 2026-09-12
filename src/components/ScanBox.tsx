@@ -203,8 +203,7 @@ export default function ScanBox() {
           </button>
         ))}
         <span className="text-[11px] text-faint">
-          — every verdict you pull is receipted in the ledger below (kept in
-          this browser)
+          — free · no account · nothing you paste is stored
         </span>
       </div>
 

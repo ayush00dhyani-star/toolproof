@@ -44,14 +44,13 @@ export default function HijackDemo() {
             <div className="text-sm leading-7 text-ink">{CLEAN}</div>
             <div className="mt-3 rounded-lg border border-bad/50 bg-bad/5 p-4">
               <div className="lbl mb-2" style={{ color: "#ff5d5d" }}>
-                hidden layer · U+200B zero-width characters
+                hidden layer · invisible characters
               </div>
               <div className="text-[13px] leading-6 text-bad">{HIDDEN}</div>
             </div>
             <div className="mt-4 text-[11px] text-faint">
-              Invisible in every editor and terminal. Byte-for-byte present in
-              what the model receives. This is TP-101 + TP-102 — the exact
-              pattern the scanner hunts.
+              Invisible in every editor. Present in every word the AI reads.
+              This is exactly what the scanner hunts.
             </div>
           </div>
         )}

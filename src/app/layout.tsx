@@ -16,11 +16,11 @@ const jbmono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolproof-scan.vercel.app"),
   title: {
-    default: "Toolproof — trust infrastructure for the agent economy",
+    default: "Toolproof — is this AI tool safe? Paste a link. Know in seconds.",
     template: "%s — Toolproof",
   },
   description:
-    "Toolproof probes MCP servers and public APIs for agent-hijack vectors — hidden instructions in tool descriptions, silent auth gaps, scope creep — then issues a signed trust passport anyone can verify offline.",
+    "Paste a link. Get a safety grade for any AI tool, MCP server or API in seconds — free. Hidden instructions, exposed secrets, unsafe defaults: caught before your AI connects.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

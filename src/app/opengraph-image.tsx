@@ -29,7 +29,7 @@ export default function OgImage() {
             color: "#9ba0a6",
           }}
         >
-          TRUST INFRASTRUCTURE FOR THE AGENT ECONOMY
+          THE SAFETY CHECK FOR AI TOOLS
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
           <div
@@ -55,7 +55,7 @@ export default function OgImage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "flex", height: 14, width: "100%", background: "repeating-linear-gradient(-45deg, #ffb224 0 18px, #0b0c0e 18px 36px)" }} />
           <div style={{ display: "flex", fontSize: 30, color: "#9ba0a6" }}>
-            Machines call machines now. Somebody has to check IDs.
+            Is this AI tool safe? Paste a link. Know in seconds.
           </div>
         </div>
       </div>

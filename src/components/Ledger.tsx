@@ -85,7 +85,7 @@ function VerdictTable({ rows }: { rows: Row[] }) {
   );
 }
 
-export default function Ledger() {
+export default function Ledger({ mineOnly = false }: { mineOnly?: boolean }) {
   const [mine, setMine] = useState<MyVerdict[] | null>(null);
   const [items, setItems] = useState<FeedEntry[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -106,8 +106,9 @@ export default function Ledger() {
 
   // Panel b — the node feed. Polls /api/v1/feed every 10s, skipped while
   // the tab is hidden or the reader is hovering a row; the feed resumes
-  // on the next interval tick.
+  // on the next interval tick. Skipped entirely in mineOnly mode.
   useEffect(() => {
+    if (mineOnly) return;
     let alive = true;
 
     async function tick() {
@@ -176,6 +177,7 @@ export default function Ledger() {
       </div>
 
       {/* b) this node · live */}
+      {!mineOnly && (
       <div>
         <div className="flex items-center justify-between px-5 py-3">
           <span className="lbl flex items-center gap-2">
@@ -210,6 +212,7 @@ export default function Ledger() {
           Vercel. fresh scans only; cache hits don&apos;t count.
         </div>
       </div>
+      )}
     </div>
   );
 }

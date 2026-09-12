@@ -25,17 +25,35 @@ function Nav() {
           <span className="text-[13px] font-bold tracking-[0.3em]">TOOLPROOF</span>
         </a>
         <div className="ml-auto hidden sm:flex items-center gap-6 text-[11px] tracking-[0.18em] uppercase text-dim">
-          <a href="#anatomy" className="hover:text-ink">Anatomy</a>
-          <a href="#rules" className="hover:text-ink">Rules</a>
-          <a href="#passport" className="hover:text-ink">Passport</a>
-          <a href="#neutral" className="hover:text-ink">Neutral</a>
+          <a href="#how" className="hover:text-ink">How</a>
+          <a href="#why" className="hover:text-ink">Why</a>
+          <a href="#checks" className="hover:text-ink">Checks</a>
+          <a href="#grades" className="hover:text-ink">Grades</a>
           <a href="/docs" className="hover:text-ink">Docs</a>
         </div>
-        <span className="rounded border border-line px-2 py-0.5 text-[10px] text-faint">v0.1</span>
+        <span className="rounded border border-line px-2 py-0.5 text-[10px] text-faint">free</span>
       </div>
     </nav>
   );
 }
+
+const STEPS = [
+  {
+    n: "1",
+    title: "Paste a link",
+    body: "Any AI tool, server or API you're about to connect to. Copy the link from wherever you found it.",
+  },
+  {
+    n: "2",
+    title: "We run the checks",
+    body: `${RULES.length} safety checks — for hidden instructions, exposed secrets, unsafe defaults and more. About five seconds.`,
+  },
+  {
+    n: "3",
+    title: "You get a grade",
+    body: "A+ means clean. Anything less tells you exactly what's wrong — with the evidence attached.",
+  },
+];
 
 export default function Home() {
   return (
@@ -45,72 +63,89 @@ export default function Home() {
       {/* hero */}
       <section className="glow pt-36 pb-20">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-6">Trust infrastructure for the agent economy</div>
-          <h1 className="h-display text-[clamp(2.6rem,7vw,5.2rem)] font-extrabold leading-[0.98] tracking-tight">
-            Machines call
+          <div className="lbl mb-6">The safety check for AI tools · no signup</div>
+          <h1 className="h-display text-[clamp(2.8rem,7.5vw,5.6rem)] font-extrabold leading-[0.98] tracking-tight">
+            Is this AI tool
             <br />
-            machines now.
+            safe to use?
             <br />
-            <span className="text-amber">Somebody has to check IDs.</span>
+            <span className="text-amber">Paste a link. Know in seconds.</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-[14px] leading-7 text-dim">
-            Agents are being pointed at MCP servers and APIs that were never
-            audited for one specific threat: the tool itself lying to the
-            model. Toolproof probes a target for agent-hijack vectors — hidden
-            instructions in tool text, silent auth gaps, scope creep — then
-            issues a signed passport anyone can verify offline.
+          <p className="mt-7 max-w-2xl text-[15px] leading-7 text-dim">
+            AI assistants connect to tools — servers, APIs, plugins. Those
+            tools can hide tricks your AI will obey and you&apos;ll never see.
+            Toolproof checks any of them first and gives you a grade.
           </p>
           <div className="mt-10 max-w-3xl">
             <ScanBox />
           </div>
-          <div className="mt-8 max-w-3xl">
+          <div className="mt-6 max-w-3xl">
             <CopyNpx />
           </div>
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 text-[11px] tracking-[0.18em] uppercase text-faint">
-            <span>{RULES.length}+ detection rules</span>
+            <span>{RULES.length} safety checks</span>
             <span>·</span>
-            <span>median scan ~4s</span>
+            <span>verdict in ~5s</span>
             <span>·</span>
-            <span>free while v0</span>
+            <span>free</span>
             <span>·</span>
-            <span>ed25519-signed passports</span>
+            <span>every result signed</span>
           </div>
           <HeroStat />
         </div>
       </section>
 
-      {/* anatomy of a hijack */}
-      <section id="anatomy" className="py-20 border-t border-line">
+      {/* how it works */}
+      <section id="how" className="py-20 border-t border-line">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="lbl mb-4">01 · How it works</div>
+          <h2 className="h-display text-4xl font-bold tracking-tight">
+            Three steps. No account.
+          </h2>
+          <div className="mt-10 grid sm:grid-cols-3 gap-4">
+            {STEPS.map((s) => (
+              <div key={s.n} className="card card-hover p-6">
+                <div className="h-display text-3xl font-extrabold text-amber">{s.n}</div>
+                <div className="mt-3 text-[14px] font-bold">{s.title}</div>
+                <p className="mt-2 text-[12.5px] leading-6 text-dim">{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* why this matters */}
+      <section id="why" className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5 grid lg:grid-cols-2 gap-12 items-start">
           <div>
-            <div className="lbl mb-4">01 · Anatomy of a hijack</div>
+            <div className="lbl mb-4">02 · Why this matters</div>
             <h2 className="h-display text-4xl font-bold tracking-tight leading-tight">
-              The tool description is
+              AI tools can lie
               <br />
-              the new attack surface.
+              to your AI.
             </h2>
-            <p className="mt-6 text-[13px] leading-7 text-dim">
-              When an agent connects to an MCP server, every tool description
-              is loaded into the model&apos;s context. Whatever is written
-              there becomes instruction. Zero-width unicode makes that text
-              invisible to the humans who approved the tool — while the model
-              reads it perfectly.
+            <p className="mt-6 text-[13.5px] leading-7 text-dim">
+              When your AI connects to a tool, everything that tool says goes
+              straight into the AI&apos;s head — and the AI obeys it.
+              Attackers hide secret instructions there, written so humans
+              can&apos;t see them but the AI reads them perfectly.
             </p>
-            <p className="mt-4 text-[13px] leading-7 text-dim">
-              Nobody audits for this. Code review can&apos;t see it. The fix
-              is verification, not vibes.
+            <p className="mt-4 text-[13.5px] leading-7 text-dim">
+              Toggle the view on this real pattern → the left side is what
+              passed code review. The right side is what the AI actually
+              receives.
             </p>
           </div>
           <HijackDemo />
         </div>
       </section>
 
-      {/* rules */}
-      <section id="rules" className="py-20 border-t border-line">
+      {/* checks */}
+      <section id="checks" className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">02 · The rule catalog</div>
+          <div className="lbl mb-4">03 · What we check</div>
           <h2 className="h-display text-4xl font-bold tracking-tight">
-            What we look for.
+            The full checklist. No asterisks.
           </h2>
           <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {RULES.map((r) => (
@@ -120,151 +155,109 @@ export default function Home() {
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ background: SEV_COLOR[r.sev] }}
                   />
-                  <span className="text-[11px] text-dim">{r.id}</span>
                   <span className="text-[13px] font-bold">{r.name}</span>
                 </div>
-                <p className="mt-3 text-[12px] leading-6 text-dim">{r.why}</p>
-                <div className="mt-3 text-[10px] tracking-[0.18em] uppercase text-faint">
-                  {r.group} · {r.sev}
-                </div>
+                <p className="mt-3 text-[12.5px] leading-6 text-dim">{r.why}</p>
               </div>
             ))}
           </div>
           <div className="mt-6 text-[11px] text-faint">
-            Scoring: critical −45 · high −25 · medium −12 · low −5. Grade A+
-            starts at 95.
+            Each issue lowers the score: critical −45 · high −25 · medium −12 ·
+            low −5. An A+ grade means nothing was found.
           </div>
         </div>
       </section>
 
-      {/* passport */}
-      <section id="passport" className="py-20 border-t border-line">
+      {/* proof + independence */}
+      <section id="proof" className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5 grid lg:grid-cols-2 gap-12 items-start">
           <div>
-            <div className="lbl mb-4">03 · The passport</div>
+            <div className="lbl mb-4">04 · Proof, not promises</div>
             <h2 className="h-display text-4xl font-bold tracking-tight leading-tight">
-              Signed once.
+              Every grade comes
               <br />
-              Verifiable forever.
+              with a receipt.
             </h2>
-            <p className="mt-6 text-[13px] leading-7 text-dim">
-              Every verify response is a canonical-JSON passport signed with
-              ed25519. Take the signature, take the public key — served at{" "}
-              <a href="/api/v1/pubkey" className="text-amber underline-offset-4 hover:underline">/api/v1/pubkey</a>{" "}
-              — and verify offline with ten lines of code.
+            <p className="mt-6 text-[13.5px] leading-7 text-dim">
+              Every verdict is cryptographically signed. You can check it
+              yourself — offline, forever — even if this site disappears
+              tomorrow. Nobody can fake it, including us.
             </p>
-            <p className="mt-4 text-[13px] leading-7 text-dim">
-              If this service is ever compromised or disappears, passports
-              already issued still verify. Trust doesn&apos;t depend on us
-              staying alive. That&apos;s the point.
+            <p className="mt-4 text-[13.5px] leading-7 text-dim">
+              And we&apos;re paid by nobody we scan: no agents, no models, no
+              tools of our own. If we ever softened a grade, the whole site
+              would be worthless. Accuracy is our only product.
             </p>
             <a
               href="/docs"
               className="mt-6 inline-block rounded-lg border border-amber px-5 py-2.5 text-[11px] font-bold tracking-[0.2em] uppercase text-amber hover:bg-amber hover:text-bg transition-colors"
             >
-              Read the API docs →
+              Verify it yourself — the API docs →
             </a>
           </div>
           <div className="card overflow-hidden">
             <div className="tape h-1.5" />
-            <pre className="px-5 py-5 text-[11.5px] leading-6 overflow-x-auto text-dim">{`{
+            <div className="px-5 pt-4 text-[10px] tracking-[0.2em] uppercase text-faint">
+              the receipt, for humans who check
+            </div>
+            <pre className="px-5 pb-5 pt-2 text-[11.5px] leading-6 overflow-x-auto text-dim">{`{
   "passport": {
-    "v": 1,
-    "kind": "mcp",
     "target": "https://mcp.example.com/mcp",
-    "host": "mcp.example.com",
     "state": "verified",
     "score": 88,
     "grade": "A",
-    "findingCounts": { "critical": 0, "high": 1, … },
     "ruleIds": ["TP-103", "TP-202"],
-    "scannedAt": "2026-09-12T21:04:11.482Z",
-    "scanner": { "name": "toolproof", "version": "0.1.0" }
+    "scannedAt": "2026-09-12T21:04:11.482Z"
   },
   "signature": "dGVzdC4uLmV4YW1wbGUuYmFzZTY0",
-  "keyId": "tpk-1",
   "alg": "ed25519"
 }`}</pre>
           </div>
         </div>
       </section>
 
-      {/* neutral by construction */}
-      <section id="neutral" className="py-20 border-t border-line">
+      {/* real grades + your receipts */}
+      <section id="grades" className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">04 · Neutral by construction</div>
-          <h2 className="h-display text-4xl font-bold tracking-tight leading-tight max-w-2xl">
-            The referee can&apos;t
-            <br />
-            also play.
-          </h2>
-          <p className="mt-6 max-w-2xl text-[13px] leading-7 text-dim">
-            Toolproof operates no agents, sells no models, and runs no tools.
-            We cannot favor a vendor, a platform, or ourselves — accuracy is
-            the only asset we have. The giants can grade their own homework;
-            we can&apos;t afford to.
-          </p>
-          <p className="mt-4 max-w-2xl text-[13px] leading-7 text-dim">
-            The rule catalog is public, the passports are verifiable offline,
-            and{" "}
-            <a
-              href="/docs#toolproof-txt"
-              className="text-amber underline-offset-4 hover:underline"
-            >
-              toolproof.txt
-            </a>{" "}
-            gives tool owners the right to refuse scanning.
-          </p>
-        </div>
-      </section>
-
-      {/* field notes */}
-      <section className="py-20 border-t border-line">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">05 · Field notes</div>
+          <div className="lbl mb-4">05 · Grades in the wild</div>
           <h2 className="h-display text-4xl font-bold tracking-tight mb-10">
-            The starter registry, scanned live.
+            Real tools. Real grades. Right now.
           </h2>
-          <div className="max-w-3xl">
-            <SeedsGrid />
+          <div className="grid lg:grid-cols-2 gap-6 items-start">
+            <div>
+              <SeedsGrid />
+              <p className="mt-3 text-[11px] leading-5 text-faint">
+                Well-known tools, scanned live as you load this page. A grade
+                here is not an endorsement — it&apos;s today&apos;s scan.
+              </p>
+            </div>
+            <div>
+              <Ledger mineOnly />
+              <p className="mt-3 text-[11px] leading-5 text-faint">
+                Every verdict you pull is kept in this browser — your private
+                receipt book.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* the ledger */}
-      <section id="ledger" className="py-20 border-t border-line">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="lbl mb-4">06 · The Ledger</div>
-          <h2 className="h-display text-4xl font-bold tracking-tight mb-4">
-            The Ledger — every verdict, receipted.
-          </h2>
-          <p className="max-w-2xl text-[13px] leading-7 text-dim mb-10">
-            verdicts you pull are kept in your browser; a shared cross-user
-            ledger ships with v1.
-          </p>
-          <div className="max-w-3xl">
-            <Ledger />
-          </div>
-        </div>
-      </section>
-
-      {/* canary */}
+      {/* canary teaser */}
       <section className="py-20 border-t border-line">
         <div className="mx-auto max-w-6xl px-5">
           <div className="card relative overflow-hidden p-10">
             <div className="tape absolute top-0 inset-x-0 h-1.5" />
-            <div className="lbl mb-4">07 · Shipping in v1 — canaries</div>
+            <div className="lbl mb-4">06 · Coming in v1 — canaries</div>
             <h2 className="h-display text-3xl font-bold tracking-tight max-w-2xl leading-tight">
-              Plant canaries inside the tools you operate.
+              Running your own AI tools?
               <br />
-              <span className="text-amber">Get paged when something steals them.</span>
+              <span className="text-amber">We&apos;ll watch them for you.</span>
             </h2>
-            <p className="mt-5 max-w-2xl text-[13px] leading-7 text-dim">
-              Continuous monitoring wraps a target in honeypot credentials and
-              tripwire instructions. If anything — a hijacked agent, a rogue
-              tool, a compromised dependency — touches them, you get the stack
-              trace of the theft. The registry stays free; the canary is the
-              business.
+            <p className="mt-5 max-w-2xl text-[13.5px] leading-7 text-dim">
+              Continuous monitoring plants honeypot secrets inside the tools
+              you operate. If anything touches them — you get alerted, with
+              the exact path of the theft. Scanning stays free; this is the
+              paid tier.
             </p>
           </div>
         </div>
@@ -280,8 +273,7 @@ export default function Home() {
           <div className="text-[11px] leading-6 text-faint">
             Built by Ayush Dhyani — security researcher (Bugcrowd) · builder of
             API Findr &amp; OpenBridge.
-            <br />v0.1 — point-in-time scans. A passing grade is not a
-            guarantee, it is a receipt.
+            <br />v0.1 — a passing grade is not a guarantee, it is a receipt.
           </div>
           <div className="sm:ml-auto flex gap-5 text-[11px] tracking-[0.14em] uppercase text-dim">
             <a href="/docs" className="hover:text-ink">Docs</a>

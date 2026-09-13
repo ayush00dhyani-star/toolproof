@@ -157,15 +157,15 @@ export default function ScanBox() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="flex rounded-md border border-line overflow-hidden shrink-0">
+      <div className="elevated flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2">
+        <div className="flex rounded-lg bg-white/[0.04] border border-white/[0.06] overflow-hidden shrink-0">
           {kinds.map((k) => (
             <button
               key={k}
               onClick={() => setKind(k)}
-              className={`px-3 py-2.5 text-[11px] tracking-[0.14em] uppercase transition-colors ${
+              className={`px-3 py-2 text-[11px] tracking-[0.12em] uppercase transition-colors ${
                 kind === k
-                  ? "bg-panel2 text-amber"
+                  ? "bg-white/[0.08] text-amber"
                   : "bg-transparent text-faint hover:text-ink"
               }`}
             >
@@ -180,20 +180,20 @@ export default function ScanBox() {
           onKeyDown={(e) => e.key === "Enter" && run()}
           placeholder="mcp.context7.com/mcp  ·  api.yourcompany.com"
           spellCheck={false}
-          className="flex-1 rounded-md border border-line bg-panel px-3.5 py-2.5 text-[13px] text-ink placeholder:text-faint outline-none focus:border-amber"
+          className="flex-1 min-w-0 bg-transparent px-2.5 py-2 text-[13.5px] mono text-ink placeholder:text-faint outline-none"
         />
         <button
           onClick={() => run()}
           disabled={phase === "scanning"}
-          className="rounded-md bg-amber px-5 py-2.5 text-[12px] font-bold text-bg hover:opacity-90 disabled:opacity-40 shrink-0"
+          className="rounded-lg bg-amber px-4 py-2 text-[12.5px] font-semibold text-bg hover:bg-[#ffc24a] active:translate-y-px disabled:opacity-40 shrink-0 transition-all"
         >
           {phase === "scanning" ? "Scanning…" : "Run scan"}
         </button>
       </div>
 
       {/* example chips: fill + immediate run */}
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] text-faint">try:</span>
+      <div className="mt-2.5 flex flex-wrap items-center gap-2">
+        <span className="text-[12px] text-faint">try:</span>
         {EXAMPLES.map((ex) => (
           <button
             key={ex.label}
@@ -203,27 +203,27 @@ export default function ScanBox() {
               void run(ex.target, ex.kind);
             }}
             disabled={phase === "scanning"}
-            className="rounded border border-line px-2.5 py-1 text-[11px] text-dim transition-colors hover:border-dim hover:text-ink disabled:opacity-40"
+            className="rounded-md border border-white/[0.07] px-2.5 py-1 text-[12px] text-dim transition-colors hover:border-white/[0.16] hover:text-ink disabled:opacity-40"
           >
             {ex.label}
           </button>
         ))}
-        <span className="text-[11px] text-faint">
+        <span className="text-[12px] text-faint">
           — free · no account · nothing you paste is stored
         </span>
       </div>
 
       {phase === "scanning" && (
-        <div className="mt-6 card p-5 scanbar">
-          <div className="font-mono text-[12px] text-dim">
+        <div className="mt-5 card p-4 scanbar">
+          <div className="mono text-[12px] text-dim">
             » {STAGES[stageIdx]}… {elapsed}ms
           </div>
         </div>
       )}
 
       {phase === "error" && (
-        <div className="mt-6 card p-5 border-bad/40">
-          <div className="text-[12px] text-bad">{error}</div>
+        <div className="mt-5 card p-4 border-bad/40">
+          <div className="text-[12.5px] text-bad">{error}</div>
         </div>
       )}
 
@@ -232,15 +232,15 @@ export default function ScanBox() {
           <div className="flex flex-wrap items-start gap-4">
             {/* the verdict */}
             <div
-              className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md px-2.5"
+              className="flex h-10 min-w-10 shrink-0 items-center justify-center rounded-lg px-2.5"
               style={{
                 background:
                   report.state === "verified"
                     ? gradeColor(report.grade)
-                    : "#5c6167",
+                    : "#52525b",
               }}
             >
-              <span className="text-xl font-bold text-bg">{report.grade}</span>
+              <span className="mono text-[15px] font-semibold text-bg">{report.grade}</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13px] text-ink">{report.summary}</div>

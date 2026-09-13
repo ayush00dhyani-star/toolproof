@@ -29,7 +29,7 @@ const KEY = "toolproof.ledger.v1";
 const MAX = 20; // receipts kept, newest first — the oldest falls off beyond this
 const DEDUPE_MS = 60_000; // same target within this window refreshes, not adds
 
-/** Fired on window after every successful record; Ledger + HeroStat listen. */
+/** Fired on window after every successful record; Ledger listens. */
 export const LEDGER_CHANGED_EVENT = "toolproof:ledger-changed";
 
 export function loadMyVerdicts(): MyVerdict[] {

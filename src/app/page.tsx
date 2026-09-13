@@ -1,5 +1,4 @@
 import ScanBox from "@/components/ScanBox";
-import CopyNpx from "@/components/CopyNpx";
 import HijackDemo from "@/components/HijackDemo";
 import SeedsGrid from "@/components/SeedsGrid";
 import Ledger from "@/components/Ledger";
@@ -16,17 +15,17 @@ function Seal({ className = "" }: { className?: string }) {
 
 function Nav() {
   return (
-    <nav className="fixed top-0 inset-x-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
-      <div className="mx-auto max-w-4xl px-5 h-12 flex items-center gap-5">
+    <nav className="fixed top-0 inset-x-0 z-40 border-b border-white/[0.06] bg-bg/80 backdrop-blur-md">
+      <div className="mx-auto max-w-4xl px-5 h-14 flex items-center gap-6">
         <a href="/" className="flex items-center gap-2 text-amber">
           <Seal className="h-4 w-4" />
-          <span className="text-[12px] font-bold tracking-[0.18em]">toolproof</span>
+          <span className="font-semibold tracking-tight">Toolproof</span>
         </a>
-        <div className="ml-auto flex items-center gap-5 text-[12px] text-dim">
-          <a href="#checks" className="hover:text-ink">checks</a>
-          <a href="#grades" className="hover:text-ink">grades</a>
-          <a href="/for-agents" className="hover:text-ink">for agents</a>
-          <a href="/docs" className="hover:text-ink">docs</a>
+        <div className="ml-auto flex items-center gap-6 text-[13.5px] text-dim">
+          <a href="#checks" className="hover:text-ink transition-colors">Checks</a>
+          <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
+          <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
+          <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
         </div>
       </div>
     </nav>
@@ -47,58 +46,60 @@ export default function Home() {
       <Nav />
 
       {/* what it does */}
-      <section className="pt-24 pb-14">
+      <section className="spotlight pt-28 pb-16">
         <div className="mx-auto max-w-3xl px-5">
-          <h1 className="text-[22px] sm:text-2xl font-bold leading-snug">
-            Check an AI tool before you connect to it.
+          <div className="lbl mb-5 text-center">The safety check for AI tools · free · no account</div>
+          <h1 className="h-display text-center text-3xl sm:text-[40px] font-semibold leading-[1.15]">
+            Check an AI tool
+            <br />
+            before you connect to it.
           </h1>
-          <p className="mt-3 text-dim">
+          <p className="mt-4 text-center text-[15px] text-dim max-w-xl mx-auto">
             Paste an MCP server or API URL. In a few seconds you get a letter
-            grade, what was found, and the evidence. Free, no account.
+            grade, what was found, and the evidence.
           </p>
 
-          <div className="mt-6">
+          <div className="mt-8">
             <ScanBox />
           </div>
 
-          <div className="mt-4">
-            <CopyNpx />
-          </div>
+          <p className="mt-4 text-center text-[13px] text-faint">
+            or from a terminal:{" "}
+            <code className="mono text-[12px] text-dim">npx toolproof-scan &lt;url&gt;</code>
+          </p>
 
-          <div className="mt-8">
-            <div className="lbl mb-2">example output</div>
-            <pre className="card px-4 py-3 text-[12px] leading-6 overflow-x-auto text-dim">{EXAMPLE_OUTPUT}</pre>
+          <div className="mt-10 elevated overflow-hidden">
+            <div className="flex items-center gap-1.5 px-4 h-9 border-b border-white/[0.06]">
+              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+              <span className="lbl ml-2">output</span>
+            </div>
+            <pre className="px-5 py-4 text-[12.5px] leading-6 overflow-x-auto text-dim mono">{EXAMPLE_OUTPUT}</pre>
           </div>
         </div>
       </section>
 
       {/* how to do it */}
-      <section id="how" className="py-14 border-t border-line">
+      <section id="how" className="py-16 border-t border-white/[0.05]">
         <div className="mx-auto max-w-3xl px-5">
-          <div className="lbl mb-4">how it works</div>
-          <ol className="space-y-2.5">
-            <li className="flex gap-3">
-              <span className="text-faint shrink-0">1.</span>
-              <span>Paste a link to any MCP server or API.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-faint shrink-0">2.</span>
-              <span>
-                We run {RULES.length} checks — hidden instructions, exposed
-                secrets, unsafe defaults, missing auth, plaintext transport.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-faint shrink-0">3.</span>
-              <span>
-                You get a grade. A+ means clean; anything less shows exactly
-                why, with the evidence attached.
-              </span>
-            </li>
-          </ol>
-          <p className="mt-5 text-dim">
-            Prefer zero effort? Put one line in your agent&apos;s instructions
-            and it checks every tool itself —{" "}
+          <div className="lbl mb-5">How it works</div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { n: "1", t: "Paste a link", d: "Any MCP server or API you're about to connect to." },
+              { n: "2", t: "We run the checks", d: `${RULES.length} checks — hidden instructions, exposed secrets, unsafe defaults, missing auth.` },
+              { n: "3", t: "You get a grade", d: "A+ means clean. Anything less shows exactly why, with evidence." },
+            ].map((s) => (
+              <div key={s.n} className="card card-hover p-5">
+                <div className="mono text-[13px] text-amber">{s.n}</div>
+                <div className="mt-2 font-medium text-ink">{s.t}</div>
+                <p className="mt-1.5 text-[13px] leading-6 text-dim">{s.d}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-[13.5px] text-dim">
+            Prefer zero effort? Put one line in your agent&apos;s instructions and
+            it checks every tool itself —{" "}
             <a href="/for-agents" className="text-amber underline-offset-4 hover:underline">
               the agent rule
             </a>
@@ -108,58 +109,58 @@ export default function Home() {
       </section>
 
       {/* why it exists */}
-      <section className="py-14 border-t border-line">
+      <section className="py-16 border-t border-white/[0.05]">
         <div className="mx-auto max-w-3xl px-5">
-          <div className="lbl mb-4">why this exists</div>
-          <h2 className="text-xl font-bold">Tools can lie to your AI.</h2>
-          <p className="mt-3 text-dim">
+          <div className="lbl mb-5">Why this exists</div>
+          <h2 className="text-xl font-semibold">Tools can lie to your AI.</h2>
+          <p className="mt-3 text-[14px] text-dim max-w-2xl">
             When an AI connects to a tool, the tool&apos;s description goes
             straight into the model&apos;s context — and the model obeys it.
-            Attackers hide instructions there in invisible characters: the
-            human sees nothing, the model reads every word. Toggle the views:
+            Attackers hide instructions there in invisible characters: you see
+            nothing, the model reads every word. Toggle the views:
           </p>
-          <div className="mt-6">
+          <div className="mt-7">
             <HijackDemo />
           </div>
         </div>
       </section>
 
       {/* what we check */}
-      <section id="checks" className="py-14 border-t border-line">
+      <section id="checks" className="py-16 border-t border-white/[0.05]">
         <div className="mx-auto max-w-3xl px-5">
-          <div className="lbl mb-4">what we check</div>
-          <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5">
+          <div className="lbl mb-5">What we check</div>
+          <div className="card divide-y divide-white/[0.05] overflow-hidden">
             {RULES.map((r) => (
-              <div key={r.id} className="flex gap-3 text-[12.5px] leading-6">
-                <span className="text-faint w-14 shrink-0">{r.id}</span>
+              <div key={r.id} className="flex gap-4 px-5 py-3 text-[13px] leading-6">
+                <span className="mono text-[11px] text-faint w-14 shrink-0 pt-0.5">{r.id}</span>
                 <span>
-                  <span className="text-ink">{r.name}</span>{" "}
+                  <span className="text-ink font-medium">{r.name}</span>{" "}
                   <span className="text-dim">— {r.why}</span>
                 </span>
               </div>
             ))}
           </div>
-          <p className="mt-5 text-[12px] text-faint">
+          <p className="mt-4 text-[12.5px] text-faint">
             Each issue lowers the score: critical −45, high −25, medium −12,
-            low −5. The full methodology is in the{" "}
+            low −5. Full methodology in the{" "}
             <a href="/docs" className="underline-offset-4 hover:underline">API docs</a>.
           </p>
         </div>
       </section>
 
       {/* grades */}
-      <section id="grades" className="py-14 border-t border-line">
+      <section id="grades" className="py-16 border-t border-white/[0.05]">
         <div className="mx-auto max-w-3xl px-5">
-          <div className="lbl mb-4">grades in the wild</div>
-          <p className="text-dim mb-5">
+          <div className="lbl mb-5">Grades in the wild</div>
+          <p className="text-[13.5px] text-dim mb-5">
             Well-known tools, scanned live as this page loads. Today&apos;s
             scan, not an endorsement.
           </p>
           <SeedsGrid />
-          <div className="mt-8">
-            <div className="lbl mb-3">your receipts</div>
+          <div className="mt-10">
+            <div className="lbl mb-3">Your receipts</div>
             <Ledger mineOnly />
-            <p className="mt-2 text-[12px] text-faint">
+            <p className="mt-2.5 text-[12.5px] text-faint">
               Every verdict you pull is kept in this browser — your private
               receipt book.
             </p>
@@ -168,66 +169,74 @@ export default function Home() {
       </section>
 
       {/* what else you can do */}
-      <section className="py-14 border-t border-line">
+      <section className="py-16 border-t border-white/[0.05]">
         <div className="mx-auto max-w-3xl px-5">
-          <div className="lbl mb-4">more you can do</div>
-          <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
-            <div>
-              <div className="text-ink font-bold">Let your AI do the checking</div>
-              <p className="text-dim">
-                One rule in your agent&apos;s config, or the{" "}
-                <code>toolproof-mcp</code> server.{" "}
-                <a href="/for-agents" className="text-amber underline-offset-4 hover:underline">Setup →</a>
-              </p>
-            </div>
-            <div>
-              <div className="text-ink font-bold">Show a tool&apos;s grade</div>
-              <p className="text-dim">
-                Every trust card has a share link, a badge and an embeddable
-                widget (the card page shows the snippets).
-              </p>
-            </div>
-            <div>
-              <div className="text-ink font-bold">Run a tool? Opt out</div>
-              <p className="text-dim">
-                Serve <code>/.well-known/toolproof.txt</code> with{" "}
-                <code>Deny: /</code> and we won&apos;t scan you —{" "}
-                <a href="/docs#toolproof-txt" className="text-amber underline-offset-4 hover:underline">how it works →</a>
-              </p>
-            </div>
-            <div>
-              <div className="text-ink font-bold">Build on it</div>
-              <p className="text-dim">
-                Keyless API: <code>GET /api/v1/verify</code> for signed
-                verdicts, <code>/api/v1/scan</code> for full findings —{" "}
-                <a href="/docs" className="text-amber underline-offset-4 hover:underline">docs →</a>
-              </p>
-            </div>
+          <div className="lbl mb-5">More you can do</div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[
+              {
+                t: "Let your AI do the checking",
+                d: "One rule in your agent's config, or the toolproof-mcp server for any MCP client.",
+                href: "/for-agents",
+                cta: "Setup",
+              },
+              {
+                t: "Show a tool's grade",
+                d: "Every trust card has a share link, a badge, and an embeddable widget.",
+                href: "/t?target=https%3A%2F%2Fmcp.context7.com%2Fmcp",
+                cta: "See a card",
+              },
+              {
+                t: "Run a tool? Opt out",
+                d: "Serve /.well-known/toolproof.txt with Deny: / — respected, never penalized.",
+                href: "/docs#toolproof-txt",
+                cta: "The standard",
+              },
+              {
+                t: "Build on it",
+                d: "Keyless API: signed verdicts and full findings, one GET each.",
+                href: "/docs",
+                cta: "API docs",
+              },
+            ].map((c) => (
+              <a
+                key={c.t}
+                href={c.href}
+                className="card card-hover p-5 group block"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="font-medium text-ink">{c.t}</div>
+                  <span className="text-faint group-hover:text-amber group-hover:translate-x-0.5 transition-all">→</span>
+                </div>
+                <p className="mt-1.5 text-[13px] leading-6 text-dim">{c.d}</p>
+                <div className="mt-3 text-[12px] text-amber">{c.cta}</div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-line py-10">
-        <div className="mx-auto max-w-3xl px-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <footer className="border-t border-white/[0.05] py-10">
+        <div className="mx-auto max-w-4xl px-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="flex items-center gap-2 text-amber">
             <Seal className="h-3.5 w-3.5" />
-            <span className="text-[11px] font-bold tracking-[0.18em]">toolproof</span>
+            <span className="font-semibold text-[13px] tracking-tight">Toolproof</span>
           </div>
-          <div className="text-[11.5px] text-faint">
+          <div className="text-[12.5px] text-faint">
             Built by Ayush Dhyani — security researcher (Bugcrowd). A grade is
             a receipt, not a guarantee.
           </div>
-          <div className="sm:ml-auto flex gap-4 text-[11.5px] text-dim">
-            <a href="/docs" className="hover:text-ink">docs</a>
-            <a href="/.well-known/security.txt" className="hover:text-ink">security.txt</a>
-            <a href="/api/v1/pubkey" className="hover:text-ink">pubkey</a>
+          <div className="sm:ml-auto flex gap-5 text-[12.5px] text-dim">
+            <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
+            <a href="/.well-known/security.txt" className="hover:text-ink transition-colors">security.txt</a>
+            <a href="/api/v1/pubkey" className="hover:text-ink transition-colors">pubkey</a>
             <a
               href="https://www.linkedin.com/in/ayush-dhyanii/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-ink"
+              className="hover:text-ink transition-colors"
             >
-              linkedin
+              LinkedIn
             </a>
           </div>
         </div>

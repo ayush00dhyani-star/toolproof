@@ -12,17 +12,19 @@ export default function HijackDemo() {
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center justify-between border-b border-line px-5 py-3">
-        <div className="text-[12px] text-dim">
-          tool card · <span className="text-ink">mcp/issues-server</span>
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+        <div className="text-[13px] text-dim">
+          tool card · <span className="mono text-ink">mcp/issues-server</span>
         </div>
-        <div className="flex rounded-md border border-line overflow-hidden">
+        <div className="flex rounded-lg bg-white/[0.04] border border-white/[0.06] overflow-hidden">
           {(["human", "agent"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-3 py-1.5 text-[10px] tracking-[0.18em] uppercase ${
-                view === v ? "bg-amber text-bg font-bold" : "text-dim hover:text-ink"
+              className={`px-3 py-1.5 text-[11px] transition-colors ${
+                view === v
+                  ? "bg-white/[0.08] text-amber"
+                  : "text-faint hover:text-ink"
               }`}
             >
               {v === "human" ? "What you see" : "What the model reads"}
@@ -34,21 +36,21 @@ export default function HijackDemo() {
       <div className="px-5 py-6 min-h-[150px]">
         {view === "human" ? (
           <div className="fadeup">
-            <div className="text-sm leading-7 text-ink">{CLEAN}</div>
-            <div className="mt-4 text-[11px] text-faint">
+            <div className="text-[13.5px] leading-7 text-ink">{CLEAN}</div>
+            <div className="mt-4 text-[12px] text-faint">
               Perfectly normal. Passed code review. Shipped to 4,000 agents.
             </div>
           </div>
         ) : (
           <div className="fadeup">
-            <div className="text-sm leading-7 text-ink">{CLEAN}</div>
-            <div className="mt-3 rounded-lg border border-bad/50 bg-bad/5 p-4">
+            <div className="text-[13.5px] leading-7 text-ink">{CLEAN}</div>
+            <div className="mt-3 rounded-lg border border-bad/30 bg-bad/[0.06] p-4">
               <div className="lbl mb-2" style={{ color: "#ff5d5d" }}>
                 hidden layer · invisible characters
               </div>
-              <div className="text-[13px] leading-6 text-bad">{HIDDEN}</div>
+              <div className="mono text-[12.5px] leading-6 text-bad">{HIDDEN}</div>
             </div>
-            <div className="mt-4 text-[11px] text-faint">
+            <div className="mt-4 text-[12px] text-faint">
               Invisible in every editor. Present in every word the AI reads.
               This is exactly what the scanner hunts.
             </div>

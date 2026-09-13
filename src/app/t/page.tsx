@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import GradeRing from "@/components/GradeRing";
 import Proofmark from "@/components/Proofmark";
+import WatchToggle from "@/components/WatchToggle";
 import RecordOnLoad from "@/components/RecordOnLoad";
 import ShareRow from "@/components/ShareRow";
 import { TargetError } from "@/lib/net";
@@ -143,6 +144,28 @@ export default async function TrustPage({
         {/* share */}
         <ShareRow target={report.target} kind={kind} host={report.host} grade={report.grade} />
 
+        {/* watch */}
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <WatchToggle
+            target={report.target}
+            host={report.host}
+            hash={report.toolTextHash}
+            grade={report.grade}
+            state={report.state}
+          />
+          {report.state !== "verified" && (
+            <span className="text-[11.5px] text-faint">
+              monitoring applies to verified MCP surfaces
+            </span>
+          )}
+          <Link
+            href="/leaderboard"
+            className="text-[12px] text-dim underline-offset-4 hover:text-ink hover:underline"
+          >
+            your watchlist lives on the leaderboard →
+          </Link>
+        </div>
+
         {/* positives */}
         {report.positives.length > 0 && (
           <div className="mt-8">
@@ -189,6 +212,12 @@ export default async function TrustPage({
                     </pre>
                   )}
                   <p className="mt-3 text-[12px] leading-6 text-dim">{f.why}</p>
+                  {f.fix && (
+                    <p className="mt-3 rounded-lg border border-amber/25 bg-amber/[0.06] px-3.5 py-2.5 text-[12px] leading-6">
+                      <span className="mono text-[10.5px] uppercase tracking-[0.14em] text-amber">fix </span>
+                      <span className="text-ink">{f.fix}</span>
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

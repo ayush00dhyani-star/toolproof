@@ -86,6 +86,11 @@ export default function DocsPage() {
                 p: "/api/v1/pubkey",
                 d: "The signing public key, PEM-encoded.",
               },
+              {
+                m: "GET",
+                p: "/api/v1/canary?tool=",
+                d: "Mint a tool-bound canary credential — plant it, detect exfiltration by lookup.",
+              },
             ].map((e) => (
               <div key={e.p} className="px-5 py-4">
                 <div className="flex flex-wrap items-baseline gap-3">
@@ -277,7 +282,58 @@ Canary: 9f2e4d1c7b`}</pre>
           </p>
         </section>
 
-        <section>
+                <section id="monitoring">
+          <div className="lbl mb-4">change monitoring</div>
+          <h2 className="text-xl font-bold">Watch the text your model reads.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            For verified MCP surfaces, every passport carries{" "}
+            <code className="text-ink">toolTextHash</code> — a SHA-256
+            fingerprint of every tool description, prompt, resource and
+            server instruction the model sees. Monitoring is diffing that
+            hash over time; alerts are whatever notifies you (CI email,
+            Slack webhook, a scheduled task).
+          </p>
+          <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`# GitHub Actions — fails (and emails) when the tool's text changes
+name: toolproof-watch
+on:
+  schedule: [{ cron: "0 */6 * * *" }]   # every 6 hours
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare fingerprint
+        run: |
+          H=\$(curl -s "\${{ secrets.TOOLPROOF_URL }}/api/v1/verify?target=\${{ secrets.TOOLPROOF_TARGET }}" | jq -r .passport.toolTextHash)
+          if [ "\$H" != "\${{ secrets.TOOLPROOF_LAST_HASH }}" ]; then
+            echo "::error::Tool text changed — fingerprint \$H (was \${{ secrets.TOOLPROOF_LAST_HASH }})"
+            exit 1
+          fi`}</pre>
+          <p className="mt-4 text-[12.5px] text-faint max-w-2xl">
+            Browser-side: pin a tool from its trust card — the watchlist on
+            the leaderboard re-checks your pins every visit.
+          </p>
+        </section>
+
+        <section id="canaries">
+          <div className="lbl mb-4">canaries</div>
+          <h2 className="text-xl font-bold">Trap credentials that identify the thief.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            <code className="text-ink">GET /api/v1/canary?tool=your.host</code> mints
+            a unique, tool-bound canary — a decoy secret shaped like a cloud
+            key. Plant it where the tool reads. If the string ever surfaces
+            in an agent transcript, a log, or a paste site, it identifies the
+            tool it was stolen from.
+          </p>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            Declare it in your{" "}
+            <code className="text-ink">toolproof.txt</code> with{" "}
+            <code className="text-ink">Canary: &lt;token&gt;</code> — scanners
+            then report “canary declared by owner” as a positive signal.
+            Real-time beacon alerting (a phone-home tripwire) ships in v1.1.
+          </p>
+        </section>
+
+<section>
           <div className="lbl mb-4">honest limits</div>
           <ul className="space-y-3 text-[13px] leading-7 text-dim max-w-2xl">
             <li>· Scans are point-in-time. A passport speaks for its scannedAt, not for the tool&apos;s next deploy.</li>

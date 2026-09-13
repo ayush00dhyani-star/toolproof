@@ -7,6 +7,7 @@ export interface Finding {
   where: string;
   evidence?: string;
   why: string;
+  fix?: string;
 }
 
 export type ScanKind = "auto" | "mcp" | "api";
@@ -26,5 +27,6 @@ export interface ScanReport {
   findings: Finding[];
   findingCounts: Record<Sev, number>;
   positives: string[];
+  toolTextHash?: string;
   meta: Record<string, unknown>;
 }

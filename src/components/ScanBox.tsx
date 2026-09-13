@@ -294,6 +294,11 @@ export default function ScanBox() {
                       <span className="text-dim">{f.rule}</span> {f.title}
                     </div>
                     <div className="text-[11px] text-faint truncate">{f.where}</div>
+                    {f.fix && (
+                      <div className="mt-1 text-[11.5px] leading-5 text-amber">
+                        <span className="opacity-70">fix:</span> {f.fix}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

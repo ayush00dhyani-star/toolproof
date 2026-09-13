@@ -1,9 +1,10 @@
+import { createHash } from "node:crypto";
 import { assertPublicHost, fetchX, normalizeTarget } from "./net";
 import { probeMcp } from "./mcp";
 import type { McpResourceInfo } from "./mcp";
 import { huntOpenApi } from "./openapi";
 import { SEVS, SEV_WEIGHT, gradeScore } from "./score";
-import { scanSchema, scanText } from "./rules";
+import { scanSchema, scanText, withFix } from "./rules";
 import { fetchToolproofTxt, matchesPath } from "./toolproof-txt";
 import type { Finding, ScanKind, ScanReport, Sev } from "./types";
 
@@ -56,14 +57,16 @@ export function scanResourceSchemes(resources: McpResourceInfo[]): Finding[] {
     const scheme = m[1].toLowerCase();
     if (scheme === "https" || scheme === "file" || scheme.startsWith("mcp-"))
       continue;
-    out.push({
-      rule: "TP-206",
-      sev: "medium",
-      title: "Unusual resource scheme",
-      where: `resources/${r.name}`,
-      evidence: r.uri,
-      why: "Resources served over http, ftp or unexpected schemes can point agents at untrusted or non-standard sources. Verify the transport is intentional.",
-    });
+    out.push(
+      withFix({
+        rule: "TP-206",
+        sev: "medium",
+        title: "Unusual resource scheme",
+        where: `resources/${r.name}`,
+        evidence: r.uri,
+        why: "Resources served over http, ftp or unexpected schemes can point agents at untrusted or non-standard sources. Verify the transport is intentional.",
+      }),
+    );
   }
   return out;
 }
@@ -111,18 +114,28 @@ export async function scanTarget(
   let resolved: ScanReport["kind"] = "unknown";
   let state: ScanReport["state"] = "unverified";
   let failReason = "no MCP or OpenAPI surface detected";
+  let toolTextHash: string | undefined;
 
   if (u.protocol === "http:") {
-    findings.push({
-      rule: "TP-201",
-      sev: "critical",
-      title: "Plaintext transport",
-      where: "scheme",
-      evidence: u.toString(),
-      why: "Agent traffic over http can be read and rewritten by anyone on the path — including the tool responses the agent will trust.",
-    });
+    findings.push(
+      withFix({
+        rule: "TP-201",
+        sev: "critical",
+        title: "Plaintext transport",
+        where: "scheme",
+        evidence: u.toString(),
+        why: "Agent traffic over http can be read and rewritten by anyone on the path — including the tool responses the agent will trust.",
+      }),
+    );
   } else {
     positives.push("HTTPS enforced");
+  }
+
+  if (toolproof?.canary) {
+    positives.push(
+      `Canary declared by owner (${toolproof.canary.slice(0, 12)}…) — handle with care`,
+    );
+    meta.toolproofTxt = { canary: toolproof.canary };
   }
 
   if (kind !== "api") {
@@ -139,14 +152,16 @@ export async function scanTarget(
         "Authentication enforced — anonymous handshake rejected (TP-203)",
       );
     } else if (mcp.ok) {
-      findings.push({
-        rule: "TP-202",
-        sev: "info",
-        title: "No authentication observed",
-        where: "initialize",
-        evidence: mcp.serverInfo?.name ?? "handshake accepted anonymously",
-        why: "The server completed an MCP handshake with no credentials. Fine for public data tools — dangerous for anything with write access.",
-      });
+      findings.push(
+        withFix({
+          rule: "TP-202",
+          sev: "info",
+          title: "No authentication observed",
+          where: "initialize",
+          evidence: mcp.serverInfo?.name ?? "handshake accepted anonymously",
+          why: "The server completed an MCP handshake with no credentials. Fine for public data tools — dangerous for anything with write access.",
+        }),
+      );
       const tools = mcp.tools ?? [];
       for (const tool of tools) {
         findings.push(...scanText(`tools/${tool.name}`, tool.description ?? ""));
@@ -168,6 +183,21 @@ export async function scanTarget(
       resolved = "mcp";
       state = "verified";
       mcpMeta.toolNames = tools.map((t) => t.name);
+      // Fingerprint of everything the model reads from this server — the
+      // primitive behind change monitoring: compare hashes over time.
+      toolTextHash = createHash("sha256")
+        .update(
+          JSON.stringify([
+            tools.map((t) => [t.name, t.description]),
+            prompts.map((p) => [p.name, p.description]),
+            resources.map((r) => [r.name, r.description, r.uri]),
+            mcp.instructions ?? "",
+          ]),
+        )
+        .digest("hex")
+        .slice(0, 32);
+      mcpMeta.textHash = toolTextHash;
+      void toolTextHash;
       positives.push(
         `MCP surface verified — ${mcp.toolCount ?? tools.length} tool(s) inspected`,
       );
@@ -190,23 +220,27 @@ export async function scanTarget(
         positives.push(`Machine-readable spec found (${api.specUrl})`);
         if (api.hasSecurity) positives.push("Auth declared in spec");
         else
-          findings.push({
-            rule: "TP-302",
-            sev: "medium",
-            title: "No security schemes declared",
-            where: "spec.security / components.securitySchemes",
-            why: "The spec declares no auth. If the API is genuinely open, document that choice; if not, endpoints are exposed.",
-          });
+          findings.push(
+            withFix({
+              rule: "TP-302",
+              sev: "medium",
+              title: "No security schemes declared",
+              where: "spec.security / components.securitySchemes",
+              why: "The spec declares no auth. If the API is genuinely open, document that choice; if not, endpoints are exposed.",
+            }),
+          );
         for (const s of api.servers ?? []) {
           if (String(s).startsWith("http:"))
-            findings.push({
-              rule: "TP-303",
-              sev: "critical",
-              title: "Plaintext server URL in spec",
-              where: "spec.servers",
-              evidence: String(s),
-              why: "Agents may route traffic to the plaintext server advertised in the spec.",
-            });
+            findings.push(
+              withFix({
+                rule: "TP-303",
+                sev: "critical",
+                title: "Plaintext server URL in spec",
+                where: "spec.servers",
+                evidence: String(s),
+                why: "Agents may route traffic to the plaintext server advertised in the spec.",
+              }),
+            );
         }
         findings.push(
           ...scanText("spec.info", JSON.stringify(api.info ?? "")),
@@ -214,14 +248,16 @@ export async function scanTarget(
         for (const d of api.descriptions ?? [])
           findings.push(...scanText("spec operations", d));
         for (const p of api.suspectParams ?? [])
-          findings.push({
-            rule: "TP-304",
-            sev: "medium",
-            title: "Credential-shaped parameter",
-            where: p.where,
-            evidence: p.name,
-            why: "Credentials in query/path parameters leak into logs, referrers and agent transcripts.",
-          });
+          findings.push(
+            withFix({
+              rule: "TP-304",
+              sev: "medium",
+              title: "Credential-shaped parameter",
+              where: p.where,
+              evidence: p.name,
+              why: "Credentials in query/path parameters leak into logs, referrers and agent transcripts.",
+            }),
+          );
       }
     } catch {
       /* fall through to reachability */
@@ -273,6 +309,7 @@ export async function scanTarget(
     findings: deduped,
     findingCounts,
     positives,
+    ...(toolTextHash ? { toolTextHash } : {}),
     meta,
   };
   CACHE.set(cacheKey(raw, kind), { report, at: Date.now() });

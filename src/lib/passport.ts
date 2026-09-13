@@ -2,7 +2,8 @@ import type { ScanReport } from "./types";
 
 /**
  * The signed passport — the exact key set consumers verify, in a fixed
- * order so the canonical bytes are stable.
+ * order so the canonical bytes are stable. toolTextHash is additive and
+ * only present for MCP surfaces (it is the change-monitoring primitive).
  */
 export function passportOf(r: ScanReport): Record<string, unknown> {
   return {
@@ -18,6 +19,7 @@ export function passportOf(r: ScanReport): Record<string, unknown> {
     findingCounts: r.findingCounts,
     ruleIds: [...new Set(r.findings.map((f) => f.rule))].sort(),
     positives: r.positives,
+    ...(r.toolTextHash ? { toolTextHash: r.toolTextHash } : {}),
     scanner: { name: "toolproof", version: "0.1.0" },
   };
 }

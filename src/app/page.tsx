@@ -19,6 +19,7 @@ function Nav() {
         <div className="ml-auto flex items-center gap-5 text-[13.5px] text-dim">
           <a href="#checks" className="hover:text-ink transition-colors">Checks</a>
           <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
+          <a href="/leaderboard" className="hover:text-ink transition-colors">Leaderboard</a>
           <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
           <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
           <PaletteTrigger />
@@ -180,16 +181,16 @@ export default function Home() {
                 cta: "Setup",
               },
               {
-                t: "Show a tool's grade",
-                d: "Every trust card has a share link, a badge, and an embeddable widget.",
-                href: "/t?target=https%3A%2F%2Fmcp.context7.com%2Fmcp",
-                cta: "See a card",
+                t: "Leaderboard — pressure in the open",
+                d: "The safest and most flagged tools, ranked from reproducible scans. Plus your watchlist.",
+                href: "/leaderboard",
+                cta: "See the rankings",
               },
               {
-                t: "Run a tool? Opt out",
-                d: "Serve /.well-known/toolproof.txt with Deny: / — respected, never penalized.",
-                href: "/docs#toolproof-txt",
-                cta: "The standard",
+                t: "Watch tools · plant canaries",
+                d: "Pin a tool and get flagged when its model-visible text changes. Mint canary credentials to trap leaks.",
+                href: "/docs#monitoring",
+                cta: "Monitoring & canaries",
               },
               {
                 t: "Build on it",

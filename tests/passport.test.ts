@@ -84,4 +84,11 @@ describe("passportOf", () => {
     expect(p.ruleIds).toEqual([]);
     expect(p.positives).toEqual(["toolproof.txt honored"]);
   });
+
+  it("carries toolTextHash additively when the report has one", () => {
+    const p = passportOf(report({ toolTextHash: "abc123" }));
+    expect(p.toolTextHash).toBe("abc123");
+    // absent when the report has none (e.g. non-MCP surfaces)
+    expect("toolTextHash" in passportOf(report())).toBe(false);
+  });
 });

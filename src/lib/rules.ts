@@ -6,9 +6,29 @@ export interface RuleMeta {
   sev: Sev;
   group: "description" | "schema" | "transport" | "spec";
   why: string;
+  fix: string;
 }
 
 /** The public rule catalog — also rendered on the landing page. */
+export const FIX: Record<string, string> = {
+  "TP-101": "Re-author the text without the invisible characters — paste it through a plain-text editor; the exact bytes are in the evidence.",
+  "TP-102": "Remove the instruction phrases entirely. A tool description describes inputs and outputs — it never addresses the model.",
+  "TP-103": "Remove the URLs, or document each one in your README. If the tool must call out, do it in code, not in text the model reads.",
+  "TP-104": "Delete the credential from the text and rotate the key now — it is already burned.",
+  "TP-105": "Narrow the tool to what its name promises; move anything else behind a separate, explicit tool.",
+  "TP-108": "Remove the destructive verbs, or gate the action behind a separate confirm step.",
+  "TP-205": "Delete it. Confirmation flows belong to the agent harness, not the tool text.",
+  "TP-107": "Set default: false and require an explicit value for destructive runs.",
+  "TP-304": "Take credentials out of parameters — use environment config or an auth header the harness controls.",
+  "TP-201": "Serve over HTTPS. There is no reason to ship plain http.",
+  "TP-202": "Add auth if the tool touches anything private; if it is public by design, say so in the description.",
+  "TP-302": "Declare securitySchemes in the spec — even none, with a justification, reads better than silence.",
+  "TP-303": "Update spec.servers to the https origin.",
+  "TP-206": "Serve resources over https or file schemes; document anything exotic."
+};
+
+export const withFix = (f: Finding): Finding => ({ ...f, fix: FIX[f.rule] });
+
 export const RULES: RuleMeta[] = [
   {
     id: "TP-101",
@@ -16,6 +36,7 @@ export const RULES: RuleMeta[] = [
     sev: "high",
     group: "description",
     why: "Invisible characters that smuggle secret instructions past human eyes — but the AI reads them fine.",
+    fix: "Re-author the text without the invisible characters — paste it through a plain-text editor; the exact bytes are in the evidence.",
   },
   {
     id: "TP-102",
@@ -23,6 +44,7 @@ export const RULES: RuleMeta[] = [
     sev: "critical",
     group: "description",
     why: "Text telling the AI to ignore its rules, change who it is, or hide things from you.",
+    fix: "Remove the instruction phrases entirely. A tool description describes inputs and outputs — it never addresses the model.",
   },
   {
     id: "TP-103",
@@ -30,6 +52,7 @@ export const RULES: RuleMeta[] = [
     sev: "medium",
     group: "description",
     why: "The tool mentions web addresses. Where do they lead, and who runs them?",
+    fix: "Remove the URLs, or document each one in your README. If the tool must call out, do it in code, not in text the model reads.",
   },
   {
     id: "TP-104",
@@ -37,6 +60,7 @@ export const RULES: RuleMeta[] = [
     sev: "high",
     group: "description",
     why: "A live password or API key sitting in plain text.",
+    fix: "Delete the credential from the text and rotate the key now — it is already burned.",
   },
   {
     id: "TP-105",
@@ -44,6 +68,7 @@ export const RULES: RuleMeta[] = [
     sev: "low",
     group: "description",
     why: "The tool can touch your files, system or wallet — more than its job needs.",
+    fix: "Narrow the tool to what its name promises; move anything else behind a separate, explicit tool.",
   },
   {
     id: "TP-108",
@@ -51,6 +76,7 @@ export const RULES: RuleMeta[] = [
     sev: "high",
     group: "description",
     why: "Talk of deleting everything, wiping disks, resetting things. One wrong call and data is gone.",
+    fix: "Remove the destructive verbs, or gate the action behind a separate confirm step.",
   },
   {
     id: "TP-205",
@@ -58,6 +84,7 @@ export const RULES: RuleMeta[] = [
     sev: "high",
     group: "description",
     why: "Text that tells the AI to act without asking you first.",
+    fix: "Delete it. Confirmation flows belong to the agent harness, not the tool text.",
   },
   {
     id: "TP-107",
@@ -65,6 +92,7 @@ export const RULES: RuleMeta[] = [
     sev: "high",
     group: "schema",
     why: "Risky actions happen unless you switch them off — and most people never do.",
+    fix: "Set default: false and require an explicit value for destructive runs.",
   },
   {
     id: "TP-304",
@@ -72,6 +100,7 @@ export const RULES: RuleMeta[] = [
     sev: "medium",
     group: "schema",
     why: "The tool wants your keys or passwords directly — which end up in logs.",
+    fix: "Take credentials out of parameters — use environment config or an auth header the harness controls.",
   },
   {
     id: "TP-201",
@@ -79,6 +108,7 @@ export const RULES: RuleMeta[] = [
     sev: "critical",
     group: "transport",
     why: "Data travels unencrypted. Anyone nearby can read and change it.",
+    fix: "Serve over HTTPS. There is no reason to ship plain http.",
   },
   {
     id: "TP-202",
@@ -86,6 +116,7 @@ export const RULES: RuleMeta[] = [
     sev: "info",
     group: "transport",
     why: "No login needed. Fine for public info — risky for anything private.",
+    fix: "Add auth if the tool touches anything private; if it is public by design, say so in the description.",
   },
   {
     id: "TP-203",
@@ -93,6 +124,7 @@ export const RULES: RuleMeta[] = [
     sev: "info",
     group: "transport",
     why: "A good sign: the tool refuses strangers.",
+    fix: "Nothing to do — this is a positive signal.",
   },
   {
     id: "TP-302",
@@ -100,6 +132,7 @@ export const RULES: RuleMeta[] = [
     sev: "medium",
     group: "spec",
     why: "The API's own manual describes no sign-in at all.",
+    fix: "Declare securitySchemes in the spec — even none, with a justification, reads better than silence.",
   },
   {
     id: "TP-303",
@@ -107,6 +140,7 @@ export const RULES: RuleMeta[] = [
     sev: "critical",
     group: "spec",
     why: "The API's documentation advertises an unencrypted server.",
+    fix: "Update spec.servers to the https origin.",
   },
   {
     id: "TP-206",
@@ -114,6 +148,7 @@ export const RULES: RuleMeta[] = [
     sev: "medium",
     group: "spec",
     why: "Lists files or feeds from unusual, non-standard sources.",
+    fix: "Serve resources over https or file schemes; document anything exotic.",
   },
 ];
 
@@ -302,7 +337,7 @@ export function scanText(where: string, text: string): Finding[] {
     });
   }
 
-  return out;
+  return out.map(withFix);
 }
 
 interface SchemaProp {
@@ -347,5 +382,5 @@ export function scanSchema(where: string, schema: unknown): Finding[] {
       });
     }
   }
-  return out;
+  return out.map(withFix);
 }

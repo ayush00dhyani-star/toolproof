@@ -174,7 +174,7 @@ export default async function TrustPage({
                 <div key={i} className="card p-5">
                   <div className="flex items-center gap-3">
                     <span
-                      className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bg"
+                      className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-chip"
                       style={{ background: SEV_COLOR[f.sev] }}
                     >
                       {f.sev}

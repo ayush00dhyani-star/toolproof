@@ -18,7 +18,7 @@ export default function GradeRing({
   const dash = state === "verified" ? (score / 100) * c : c * 0.05;
   return (
     <svg width={size} height={size} viewBox="0 0 132 132" aria-label={`grade ${grade} ${score}/100`}>
-      <circle cx="66" cy="66" r={r} fill="none" stroke="#23262b" strokeWidth="7" />
+      <circle cx="66" cy="66" r={r} fill="none" stroke="var(--line)" strokeWidth="7" />
       <circle
         cx="66"
         cy="66"
@@ -43,7 +43,7 @@ export default function GradeRing({
         x="66"
         y="88"
         textAnchor="middle"
-        fill="#9ba0a6"
+        fill="var(--dim)"
         style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}
       >
         {state === "verified" ? `${score}/100` : state}

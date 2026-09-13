@@ -12,18 +12,18 @@ export default function HijackDemo() {
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+      <div className="flex items-center justify-between border-b border-hair px-5 py-3">
         <div className="text-[13px] text-dim">
           tool card · <span className="mono text-ink">mcp/issues-server</span>
         </div>
-        <div className="flex rounded-lg bg-white/[0.04] border border-white/[0.06] overflow-hidden">
+        <div className="flex rounded-lg bg-hair2 border border-hair overflow-hidden">
           {(["human", "agent"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={`px-3 py-1.5 text-[11px] transition-colors ${
                 view === v
-                  ? "bg-white/[0.08] text-amber"
+                  ? "bg-hair3 text-amber"
                   : "text-faint hover:text-ink"
               }`}
             >

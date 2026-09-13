@@ -22,10 +22,17 @@ export const metadata: Metadata = {
     "Paste a link. Get a safety grade for any AI tool, MCP server or API in seconds — free. Hidden instructions, exposed secrets, unsafe defaults: caught before your AI connects.",
 };
 
+// Runs before first paint: applies the saved theme and marks that JS is on
+// (scroll-reveal only hides content under html.js, so no-JS users see everything).
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("toolproof.theme");document.documentElement.dataset.theme=t==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}document.documentElement.classList.add("js")})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${jbmono.variable}`}>
-      <body className="antialiased">{children}</body>
+    <html lang="en" className={`${geist.variable} ${jbmono.variable}`} suppressHydrationWarning>
+      <body className="antialiased">
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

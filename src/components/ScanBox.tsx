@@ -27,6 +27,28 @@ const EXAMPLES: { label: string; target: string; kind: ScanKind }[] = [
 
 const FINDINGS_SHOWN = 8;
 
+
+function ScoreVal({ score }: { score: number }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const t0 = performance.now();
+    const dur = 700;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / dur);
+      setV(Math.round(score * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [score]);
+  return (
+    <span>
+      {v}/{score}
+    </span>
+  );
+}
+
 export default function ScanBox() {
   const [target, setTarget] = useState("");
   const [kind, setKind] = useState<ScanKind>("auto");
@@ -158,14 +180,14 @@ export default function ScanBox() {
   return (
     <div className="w-full">
       <div className="elevated flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2">
-        <div className="flex rounded-lg bg-white/[0.04] border border-white/[0.06] overflow-hidden shrink-0">
+        <div className="flex rounded-lg bg-hair2 border border-hair overflow-hidden shrink-0">
           {kinds.map((k) => (
             <button
               key={k}
               onClick={() => setKind(k)}
               className={`px-3 py-2 text-[11px] tracking-[0.12em] uppercase transition-colors ${
                 kind === k
-                  ? "bg-white/[0.08] text-amber"
+                  ? "bg-hair3 text-amber"
                   : "bg-transparent text-faint hover:text-ink"
               }`}
             >
@@ -203,7 +225,7 @@ export default function ScanBox() {
               void run(ex.target, ex.kind);
             }}
             disabled={phase === "scanning"}
-            className="rounded-md border border-white/[0.07] px-2.5 py-1 text-[12px] text-dim transition-colors hover:border-white/[0.16] hover:text-ink disabled:opacity-40"
+            className="rounded-md border border-hair px-2.5 py-1 text-[12px] text-dim transition-colors hover:border-hair3 hover:text-ink disabled:opacity-40"
           >
             {ex.label}
           </button>
@@ -237,12 +259,12 @@ export default function ScanBox() {
                 background:
                   report.state === "verified"
                     ? gradeColor(report.grade)
-                    : "#3f3f46",
+                    : "var(--mutedchip)",
               }}
             >
               <span
                 className={`mono text-[15px] font-semibold ${
-                  report.state === "verified" ? "text-bg" : "text-zinc-100"
+                  report.state === "verified" ? "text-chip" : "text-ink"
                 }`}
               >
                 {report.grade}
@@ -251,7 +273,7 @@ export default function ScanBox() {
             <div className="min-w-0 flex-1">
               <div className="text-[13px] text-ink">{report.summary}</div>
               <div className="mt-1 text-[11px] text-faint">
-                {report.kind} · {report.durationMs}ms
+                {report.kind} · <ScoreVal score={report.score} /> · {report.durationMs}ms
               </div>
             </div>
           </div>

@@ -3,21 +3,26 @@ import ScanBox from "@/components/ScanBox";
 import HijackDemo from "@/components/HijackDemo";
 import SeedsGrid from "@/components/SeedsGrid";
 import Ledger from "@/components/Ledger";
+import CommandPalette, { PaletteTrigger } from "@/components/CommandPalette";
+import ThemeToggle from "@/components/ThemeToggle";
+import ScrollReveal from "@/components/ScrollReveal";
 import { RULES } from "@/lib/rules";
 
 function Nav() {
   return (
-    <nav className="fixed top-0 inset-x-0 z-40 border-b border-white/[0.06] bg-bg/80 backdrop-blur-md">
-      <div className="mx-auto max-w-4xl px-5 h-14 flex items-center gap-6">
+    <nav className="fixed top-0 inset-x-0 z-40 border-b border-hair bg-bg/80 backdrop-blur-md">
+      <div className="mx-auto max-w-4xl px-5 h-14 flex items-center gap-5">
         <a href="/" className="flex items-center gap-2 text-amber">
           <Proofmark className="h-5 w-5" />
           <span className="font-semibold tracking-tight">Toolproof</span>
         </a>
-        <div className="ml-auto flex items-center gap-6 text-[13.5px] text-dim">
+        <div className="ml-auto flex items-center gap-5 text-[13.5px] text-dim">
           <a href="#checks" className="hover:text-ink transition-colors">Checks</a>
           <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
           <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
           <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
+          <PaletteTrigger />
+          <ThemeToggle />
         </div>
       </div>
     </nav>
@@ -36,6 +41,8 @@ export default function Home() {
   return (
     <main>
       <Nav />
+      <CommandPalette />
+      <ScrollReveal />
 
       {/* what it does */}
       <section className="spotlight pt-28 pb-16">
@@ -60,11 +67,11 @@ export default function Home() {
             <code className="mono text-[12px] text-dim">npx toolproof-scan &lt;url&gt;</code>
           </p>
 
-          <div className="mt-10 elevated overflow-hidden">
-            <div className="flex items-center gap-1.5 px-4 h-9 border-b border-white/[0.06]">
-              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <div className="mt-10 elevated overflow-hidden" data-reveal>
+            <div className="flex items-center gap-1.5 px-4 h-9 border-b border-hair">
+              <span className="h-2.5 w-2.5 rounded-full bg-hair3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-hair3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-hair3" />
               <span className="lbl ml-2">output</span>
             </div>
             <pre className="px-5 py-4 text-[12.5px] leading-6 overflow-x-auto text-dim mono">{EXAMPLE_OUTPUT}</pre>
@@ -73,8 +80,8 @@ export default function Home() {
       </section>
 
       {/* how to do it */}
-      <section id="how" className="py-16 border-t border-white/[0.05]">
-        <div className="mx-auto max-w-3xl px-5">
+      <section id="how" className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
           <div className="lbl mb-5">How it works</div>
           <div className="grid sm:grid-cols-3 gap-4">
             {[
@@ -101,8 +108,8 @@ export default function Home() {
       </section>
 
       {/* why it exists */}
-      <section className="py-16 border-t border-white/[0.05]">
-        <div className="mx-auto max-w-3xl px-5">
+      <section id="why" className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
           <div className="lbl mb-5">Why this exists</div>
           <h2 className="text-xl font-semibold">Tools can lie to your AI.</h2>
           <p className="mt-3 text-[14px] text-dim max-w-2xl">
@@ -118,10 +125,10 @@ export default function Home() {
       </section>
 
       {/* what we check */}
-      <section id="checks" className="py-16 border-t border-white/[0.05]">
-        <div className="mx-auto max-w-3xl px-5">
+      <section id="checks" className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
           <div className="lbl mb-5">What we check</div>
-          <div className="card divide-y divide-white/[0.05] overflow-hidden">
+          <div className="card divide-y divide-hair overflow-hidden">
             {RULES.map((r) => (
               <div key={r.id} className="flex gap-4 px-5 py-3 text-[13px] leading-6">
                 <span className="mono text-[11px] text-faint w-14 shrink-0 pt-0.5">{r.id}</span>
@@ -141,8 +148,8 @@ export default function Home() {
       </section>
 
       {/* grades */}
-      <section id="grades" className="py-16 border-t border-white/[0.05]">
-        <div className="mx-auto max-w-3xl px-5">
+      <section id="grades" className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
           <div className="lbl mb-5">Grades in the wild</div>
           <p className="text-[13.5px] text-dim mb-5">
             Well-known tools, scanned live as this page loads. Today&apos;s
@@ -161,8 +168,8 @@ export default function Home() {
       </section>
 
       {/* what else you can do */}
-      <section className="py-16 border-t border-white/[0.05]">
-        <div className="mx-auto max-w-3xl px-5">
+      <section className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
           <div className="lbl mb-5">More you can do</div>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
@@ -208,7 +215,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.05] py-10">
+      <footer className="border-t border-hair py-10">
         <div className="mx-auto max-w-4xl px-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="flex items-center gap-2 text-amber">
             <Proofmark className="h-4 w-4" />

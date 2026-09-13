@@ -9,6 +9,8 @@
   --color-dim: var(--dim);
   --color-faint: var(--faint);
   --color-amber: var(--amber);
+  --color-btn: var(--btn);
+  --color-btnink: var(--btnink);
   --color-good: var(--good);
   --color-bad: var(--bad);
   --color-hair: var(--hair);
@@ -31,6 +33,8 @@
   --dim: #b0b3ba;
   --faint: #8b8f98;
   --amber: #ffb224;
+  --btn: #ffb224;
+  --btnink: #0b0b0d;
   --good: #34d399;
   --bad: #ff5d5d;
   --hair: rgba(255, 255, 255, 0.07);
@@ -59,7 +63,9 @@
   --ink: #18181b;
   --dim: #52525b;
   --faint: #71717a;
-  --amber: #c77c00;
+  --amber: #b45309;
+  --btn: #b45309;
+  --btnink: #ffffff;
   --good: #059669;
   --bad: #dc2626;
   --hair: rgba(0, 0, 0, 0.08);

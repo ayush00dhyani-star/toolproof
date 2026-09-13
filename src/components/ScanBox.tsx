@@ -207,7 +207,7 @@ export default function ScanBox() {
         <button
           onClick={() => run()}
           disabled={phase === "scanning"}
-          className="rounded-lg bg-amber px-4 py-2 text-[12.5px] font-semibold text-bg hover:bg-[#ffc24a] active:translate-y-px disabled:opacity-40 shrink-0 transition-all"
+          className="rounded-lg bg-btn px-4 py-2 text-[12.5px] font-semibold text-btnink hover:opacity-90 active:translate-y-px disabled:opacity-40 shrink-0 transition-all"
         >
           {phase === "scanning" ? "Scanning…" : "Run scan"}
         </button>

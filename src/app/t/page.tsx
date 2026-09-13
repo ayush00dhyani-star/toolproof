@@ -112,11 +112,11 @@ export default async function TrustPage({
       <div className="fadeup">
         {/* header */}
         <div className="flex flex-wrap items-start gap-6">
-          <div className="stamp-in shrink-0">
+          <div className="shrink-0">
             <GradeRing score={report.score} grade={report.grade} state={report.state} />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="h-display text-2xl sm:text-3xl font-bold tracking-tight break-all">
+            <h1 className="text-xl font-bold break-all">
               {report.host}
             </h1>
             <div className="mt-2 flex flex-wrap gap-2 text-[10px] tracking-[0.16em] uppercase">
@@ -197,7 +197,6 @@ export default async function TrustPage({
         {/* passport + consume */}
         <div className="mt-10 grid lg:grid-cols-2 gap-6">
           <div className="card overflow-hidden">
-            <div className="tape h-1.5" />
             <div className="px-5 py-4 lbl">passport · canonical JSON</div>
             <pre className="px-5 pb-5 text-[11px] leading-6 overflow-x-auto text-dim">
               {JSON.stringify(passportOf(report), null, 2)}

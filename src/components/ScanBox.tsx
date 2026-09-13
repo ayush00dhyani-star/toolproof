@@ -158,15 +158,15 @@ export default function ScanBox() {
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row gap-2">
-        <div className="flex rounded-lg border border-line overflow-hidden shrink-0">
+        <div className="flex rounded-md border border-line overflow-hidden shrink-0">
           {kinds.map((k) => (
             <button
               key={k}
               onClick={() => setKind(k)}
-              className={`px-4 py-3 text-[11px] tracking-[0.2em] uppercase transition-colors ${
+              className={`px-3 py-2.5 text-[11px] tracking-[0.14em] uppercase transition-colors ${
                 kind === k
-                  ? "bg-amber text-bg font-bold"
-                  : "bg-transparent text-dim hover:text-ink"
+                  ? "bg-panel2 text-amber"
+                  : "bg-transparent text-faint hover:text-ink"
               }`}
             >
               {k}
@@ -180,12 +180,12 @@ export default function ScanBox() {
           onKeyDown={(e) => e.key === "Enter" && run()}
           placeholder="mcp.context7.com/mcp  ·  api.yourcompany.com"
           spellCheck={false}
-          className="flex-1 rounded-lg border border-line bg-panel px-4 py-3 text-sm text-ink placeholder:text-faint outline-none focus:border-amber"
+          className="flex-1 rounded-md border border-line bg-panel px-3.5 py-2.5 text-[13px] text-ink placeholder:text-faint outline-none focus:border-amber"
         />
         <button
           onClick={() => run()}
           disabled={phase === "scanning"}
-          className="rounded-lg bg-amber px-6 py-3 text-[12px] font-bold tracking-[0.2em] uppercase text-bg transition-opacity hover:opacity-90 disabled:opacity-40 shrink-0"
+          className="rounded-md bg-amber px-5 py-2.5 text-[12px] font-bold text-bg hover:opacity-90 disabled:opacity-40 shrink-0"
         >
           {phase === "scanning" ? "Scanning…" : "Run scan"}
         </button>
@@ -203,7 +203,7 @@ export default function ScanBox() {
               void run(ex.target, ex.kind);
             }}
             disabled={phase === "scanning"}
-            className="rounded-full border border-line px-3 py-1 text-[11px] text-dim transition-colors hover:border-dim hover:text-ink disabled:opacity-40"
+            className="rounded border border-line px-2.5 py-1 text-[11px] text-dim transition-colors hover:border-dim hover:text-ink disabled:opacity-40"
           >
             {ex.label}
           </button>
@@ -228,11 +228,11 @@ export default function ScanBox() {
       )}
 
       {phase === "done" && report && (
-        <div className="mt-6 card p-5 fadeup">
+        <div className="mt-6 card p-4">
           <div className="flex flex-wrap items-start gap-4">
-            {/* the verdict, stamped onto the page */}
+            {/* the verdict */}
             <div
-              className="stamp-in flex h-16 min-w-16 shrink-0 items-center justify-center rounded-lg px-3"
+              className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md px-2.5"
               style={{
                 background:
                   report.state === "verified"
@@ -240,12 +240,10 @@ export default function ScanBox() {
                     : "#5c6167",
               }}
             >
-              <span className="h-display text-3xl font-extrabold tracking-tight text-bg">
-                {report.grade}
-              </span>
+              <span className="text-xl font-bold text-bg">{report.grade}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm text-ink">{report.summary}</div>
+              <div className="text-[13px] text-ink">{report.summary}</div>
               <div className="mt-1 text-[11px] text-faint">
                 {report.kind} · {report.durationMs}ms
               </div>
@@ -253,17 +251,14 @@ export default function ScanBox() {
           </div>
 
           {report.findings.length > 0 && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-1.5">
               {report.findings.slice(0, FINDINGS_SHOWN).map((f, i) => (
                 <div
                   key={i}
-                  className="fadeup flex items-start gap-3 rounded-lg border border-line bg-panel px-3 py-2"
-                  style={{
-                    animationDelay: `${Math.min(i, FINDINGS_SHOWN - 1) * 60}ms`,
-                  }}
+                  className="flex items-start gap-3 rounded border border-line bg-panel2 px-3 py-2"
                 >
                   <span
-                    className="mt-1 h-2 w-2 rounded-full shrink-0"
+                    className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
                     style={{ background: SEV_COLOR[f.sev] }}
                   />
                   <div className="min-w-0">

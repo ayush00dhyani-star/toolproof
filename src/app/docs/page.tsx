@@ -27,7 +27,7 @@ export default function DocsPage() {
       <div className="mx-auto max-w-4xl px-5 py-12 space-y-14">
         <section>
           <div className="lbl mb-3">quickstart</div>
-          <h1 className="h-display text-3xl font-bold tracking-tight">
+          <h1 className="text-xl font-bold">
             Ask before you trust.
           </h1>
           <p className="mt-4 text-[13px] leading-7 text-dim max-w-2xl">

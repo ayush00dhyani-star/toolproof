@@ -38,7 +38,7 @@ export default function ForAgentsPage() {
       <div className="mx-auto max-w-4xl px-5 py-14 space-y-12">
         <section>
           <div className="lbl mb-3">you&apos;re right — nobody scans anything</div>
-          <h1 className="h-display text-4xl font-bold tracking-tight leading-tight">
+          <h1 className="text-2xl font-bold leading-snug">
             Don&apos;t come here at all.
             <br />
             <span className="text-amber">Make your AI do the checking.</span>
@@ -52,7 +52,7 @@ export default function ForAgentsPage() {
 
         <section id="option-a">
           <div className="lbl mb-3">option a · one rule, nothing to install</div>
-          <h2 className="h-display text-2xl font-bold tracking-tight">
+          <h2 className="text-lg font-bold">
             Paste this into your AI&apos;s instructions.
           </h2>
           <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">
@@ -69,7 +69,7 @@ export default function ForAgentsPage() {
 
         <section id="option-b">
           <div className="lbl mb-3">option b · install it as a tool</div>
-          <h2 className="h-display text-2xl font-bold tracking-tight">
+          <h2 className="text-lg font-bold">
             The Toolproof MCP server.
           </h2>
           <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">
@@ -90,7 +90,7 @@ export default function ForAgentsPage() {
 
         <section>
           <div className="lbl mb-3">for agent developers</div>
-          <h2 className="h-display text-2xl font-bold tracking-tight">
+          <h2 className="text-lg font-bold">
             One GET per verdict.
           </h2>
           <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">

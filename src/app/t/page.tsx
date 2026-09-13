@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import GradeRing from "@/components/GradeRing";
+import Proofmark from "@/components/Proofmark";
 import RecordOnLoad from "@/components/RecordOnLoad";
 import ShareRow from "@/components/ShareRow";
 import { TargetError } from "@/lib/net";
@@ -253,12 +254,9 @@ function Shell({ children }: { children: React.ReactNode }) {
     <main className="min-h-screen">
       <div className="border-b border-line bg-bg/85 backdrop-blur sticky top-0 z-40">
         <div className="mx-auto max-w-5xl px-5 h-14 flex items-center">
-          <Link href="/" className="flex items-center gap-2.5 text-amber">
-            <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" />
-            </svg>
-            <span className="text-[13px] font-bold tracking-[0.3em]">TOOLPROOF</span>
+          <Link href="/" className="flex items-center gap-2 text-amber">
+            <Proofmark className="h-5 w-5" />
+            <span className="font-semibold tracking-tight">Toolproof</span>
           </Link>
           <Link
             href="/docs"

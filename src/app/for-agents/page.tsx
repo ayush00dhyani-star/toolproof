@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CopyBlock from "@/components/CopyBlock";
+import Proofmark from "@/components/Proofmark";
 
 // CSP nonce is per-request — dynamic rendering so Next stamps the nonce
 // onto its bootstrap scripts (see middleware.ts).
@@ -24,12 +25,9 @@ export default function ForAgentsPage() {
     <main className="min-h-screen">
       <div className="border-b border-line sticky top-0 z-40 bg-bg/85 backdrop-blur">
         <div className="mx-auto max-w-4xl px-5 h-14 flex items-center">
-          <a href="/" className="flex items-center gap-2.5 text-amber">
-            <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" />
-            </svg>
-            <span className="text-[13px] font-bold tracking-[0.3em]">TOOLPROOF</span>
+          <a href="/" className="flex items-center gap-2 text-amber">
+            <Proofmark className="h-5 w-5" />
+            <span className="font-semibold tracking-tight">Toolproof</span>
           </a>
           <span className="ml-4 lbl">for agents</span>
         </div>

@@ -3,11 +3,11 @@
 @theme inline {
   --color-bg: #09090b;
   --color-panel: #101013;
-  --color-panel2: #17171b;
-  --color-line: #232629;
+  --color-panel2: #191b1f;
+  --color-line: #26292e;
   --color-ink: #f4f4f5;
-  --color-dim: #a1a1aa;
-  --color-faint: #71717a;
+  --color-dim: #b0b3ba;
+  --color-faint: #8b8f98;
   --color-amber: #ffb224;
   --color-good: #34d399;
   --color-bad: #ff5d5d;

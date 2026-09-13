@@ -237,10 +237,16 @@ export default function ScanBox() {
                 background:
                   report.state === "verified"
                     ? gradeColor(report.grade)
-                    : "#52525b",
+                    : "#3f3f46",
               }}
             >
-              <span className="mono text-[15px] font-semibold text-bg">{report.grade}</span>
+              <span
+                className={`mono text-[15px] font-semibold ${
+                  report.state === "verified" ? "text-bg" : "text-zinc-100"
+                }`}
+              >
+                {report.grade}
+              </span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13px] text-ink">{report.summary}</div>

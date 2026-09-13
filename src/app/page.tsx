@@ -1,24 +1,16 @@
+import Proofmark from "@/components/Proofmark";
 import ScanBox from "@/components/ScanBox";
 import HijackDemo from "@/components/HijackDemo";
 import SeedsGrid from "@/components/SeedsGrid";
 import Ledger from "@/components/Ledger";
 import { RULES } from "@/lib/rules";
 
-function Seal({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden>
-      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      <circle cx="12" cy="12" r="3" fill="currentColor" />
-    </svg>
-  );
-}
-
 function Nav() {
   return (
     <nav className="fixed top-0 inset-x-0 z-40 border-b border-white/[0.06] bg-bg/80 backdrop-blur-md">
       <div className="mx-auto max-w-4xl px-5 h-14 flex items-center gap-6">
         <a href="/" className="flex items-center gap-2 text-amber">
-          <Seal className="h-4 w-4" />
+          <Proofmark className="h-5 w-5" />
           <span className="font-semibold tracking-tight">Toolproof</span>
         </a>
         <div className="ml-auto flex items-center gap-6 text-[13.5px] text-dim">
@@ -219,7 +211,7 @@ export default function Home() {
       <footer className="border-t border-white/[0.05] py-10">
         <div className="mx-auto max-w-4xl px-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="flex items-center gap-2 text-amber">
-            <Seal className="h-3.5 w-3.5" />
+            <Proofmark className="h-4 w-4" />
             <span className="font-semibold text-[13px] tracking-tight">Toolproof</span>
           </div>
           <div className="text-[12.5px] text-faint">

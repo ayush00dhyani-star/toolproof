@@ -34,22 +34,47 @@ export default function OgImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
           <div
             style={{
-              width: 90,
-              height: 90,
-              borderRadius: 45,
-              border: "10px solid #ffb224",
+              width: 96,
+              height: 96,
+              borderRadius: 48,
+              border: "5px dashed #ffb224",
               display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          >
+            <div
+              style={{
+                width: 66,
+                height: 66,
+                borderRadius: 33,
+                border: "4px solid #ffb224",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24">
+                <path
+                  d="M8.7 12.3 11 14.6 15.4 9.8"
+                  stroke="#ffb224"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </div>
+          </div>
           <div
             style={{
               display: "flex",
-              fontSize: 130,
-              fontWeight: 700,
+              fontSize: 118,
+              fontWeight: 650,
               letterSpacing: -4,
             }}
           >
-            TOOLPROOF
+            Toolproof
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>

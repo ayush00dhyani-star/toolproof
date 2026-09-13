@@ -8,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "For agents",
+  description:
+    "Let your AI check every tool itself — one rule in your agent's config, or install the toolproof-mcp server (npx toolproof-mcp) for Claude Desktop, Cursor and any MCP client.",
+  alternates: { canonical: "/for-agents" },
 };
 
 const RULE = `Tool safety rule:

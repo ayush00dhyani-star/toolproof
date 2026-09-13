@@ -24,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const target = sp.target ?? "";
-  if (!target) return { title: "Trust card" };
+  if (!target) return { title: "Trust card", robots: { index: false, follow: true } };
 
   const kind: ScanKind =
     sp.kind === "mcp" || sp.kind === "api" ? sp.kind : "auto";
@@ -40,6 +40,8 @@ export async function generateMetadata({
 
   return {
     title: { absolute: `${host} — ${grade} on Toolproof` },
+    // Open URL space (any ?target=) → keep out of the index, keep links alive.
+    robots: { index: false, follow: true },
     openGraph: {
       images: [`/api/v1/og?target=${encodeURIComponent(target)}&kind=${kind}`],
     },

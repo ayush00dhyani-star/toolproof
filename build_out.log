@@ -1,0 +1,51 @@
+
+> toolproof@0.1.0 build
+> next build
+
+▲ Next.js 16.3.5 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 45ms
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 1073ms
+  Running TypeScript ...
+  Finished TypeScript in 2.5s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/8) ...
+  Generating static pages using 11 workers (2/8) 
+  Generating static pages using 11 workers (4/8) 
+  Generating static pages using 11 workers (6/8) 
+✓ Generating static pages using 11 workers (8/8) in 615ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/v1/badge
+├ ƒ /api/v1/canary
+├ ƒ /api/v1/feed
+├ ƒ /api/v1/og
+├ ƒ /api/v1/pubkey
+├ ƒ /api/v1/registry
+├ ƒ /api/v1/scan
+├ ƒ /api/v1/verify
+├ ƒ /docs
+├ ƒ /embed
+├ ƒ /for-agents
+├ ○ /icon.svg
+├ ƒ /leaderboard
+├ ○ /opengraph-image
+└ ƒ /t
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

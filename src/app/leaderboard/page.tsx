@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Leaderboard",
   description:
     "The safest and most flagged MCP servers and APIs — public pressure, one scan at a time.",
+  alternates: { canonical: "/leaderboard" },
 };
 
 interface Row {

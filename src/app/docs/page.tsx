@@ -8,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "API docs",
+  description:
+    "One GET per verdict. Keyless signed API for MCP server and API safety grades — scan, verify, badge, OG cards, canaries. Full rule catalog TP-101–TP-304.",
+  alternates: { canonical: "/docs" },
 };
 
 const PUBKEY = process.env.NEXT_PUBLIC_TOOLPROOF_PUBLIC_KEY ?? "unconfigured";

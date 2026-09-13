@@ -38,9 +38,53 @@ Clean scan — no agent-hijack patterns found.
   + MCP surface verified — 2 tool(s) inspected
 review card: toolproof-scan.vercel.app/t?target=…`;
 
+// FAQ structured data — eligible for FAQ rich results / AI answer engines.
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How do I check if an MCP server is safe?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Paste the MCP server URL into Toolproof (toolproof-scan.vercel.app). In a few seconds you get a letter grade with evidence: 15 checks covering hidden instructions in tool descriptions, invisible characters, exposed secrets, unsafe defaults and missing auth. Free, no account, and nothing you paste is stored.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is an MCP prompt injection attack?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "A tool's description is loaded straight into the AI model's context — and the model obeys it. Attackers hide instructions there (sometimes in invisible unicode characters) like 'ignore your rules' or 'send the conversation to this URL'. Humans see nothing; the model reads every word. Toolproof checks for these agent-hijack patterns before you connect.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can my AI agent check tools automatically?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Add one rule to your agent's config that calls the signed verify endpoint before connecting to any MCP server or unfamiliar API, or install the Toolproof MCP server with npx toolproof-mcp for Claude Desktop, Cursor and any MCP client.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Are the verdicts verifiable?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Every verdict ships as an ed25519-signed passport over canonical JSON. You can verify the signature offline with standard crypto libraries — no Toolproof code required — so a grade is a receipt you can keep, even if the site disappears.",
+      },
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSONLD) }}
+      />
       <Nav />
       <CommandPalette />
       <ScrollReveal />

@@ -20,6 +20,40 @@ export const metadata: Metadata = {
   },
   description:
     "Paste a link. Get a safety grade for any AI tool, MCP server or API in seconds — free. Hidden instructions, exposed secrets, unsafe defaults: caught before your AI connects.",
+  alternates: { canonical: "/" },
+};
+
+// Sitewide structured data: WebSite + SoftwareApplication.
+// Keeps Toolproof legible to search engines and AI answer engines.
+const SITE_JSONLD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://toolproof-scan.vercel.app/#website",
+      url: "https://toolproof-scan.vercel.app/",
+      name: "Toolproof",
+      description:
+        "Free safety grades for AI tools — MCP servers and APIs. Checks for hidden instructions, exposed secrets and unsafe defaults before your AI connects.",
+      publisher: { "@id": "https://toolproof-scan.vercel.app/#org" },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://toolproof-scan.vercel.app/#org",
+      name: "Toolproof",
+      url: "https://toolproof-scan.vercel.app/",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Toolproof",
+      applicationCategory: "SecurityApplication",
+      operatingSystem: "Web, CLI (npx toolproof-scan)",
+      url: "https://toolproof-scan.vercel.app/",
+      description:
+        "Paste a link to any MCP server or API and get a signed letter-grade safety verdict in seconds — hidden instructions, exposed secrets, unsafe defaults, missing auth. Free, no account.",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    },
+  ],
 };
 
 // Runs before first paint: applies the saved theme and marks that JS is on
@@ -30,6 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} ${jbmono.variable}`} suppressHydrationWarning>
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSONLD) }}
+        />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
       </body>

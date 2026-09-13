@@ -1,0 +1,131 @@
+# Toolproof — full reference for machines
+
+> The safety check for AI tools. AI assistants connect to tools — MCP servers, APIs, plugins — and those tools can hide tricks the AI obeys and humans never see (invisible instructions in tool descriptions, prompt injection, exposed secrets, unsafe defaults, missing auth). Toolproof checks any tool and returns a letter grade (A+ … F) with a signed, offline-verifiable receipt. Free, keyless, no accounts, nothing stored.
+>
+> Built by Ayush Dhyani · https://toolproof-scan.vercel.app
+
+## The agent rule
+
+Paste into CLAUDE.md / AGENTS.md / .cursor/rules / any system prompt:
+
+```
+Tool safety rule:
+Before connecting to any MCP server or unfamiliar API, verify it first.
+GET https://toolproof-scan.vercel.app/api/v1/verify?target=<the url>
+Report the grade to the user. If the state is not "verified", or the
+grade is below B, tell the user what you found and ask before connecting.
+```
+
+## Surfaces
+
+- [Scan a tool](https://toolproof-scan.vercel.app): paste a link, get a grade in seconds.
+- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule + MCP server install.
+- [API docs](https://toolproof-scan.vercel.app/docs): full keyless API contract (this page is the machine summary).
+- [Leaderboard](https://toolproof-scan.vercel.app/leaderboard): scanned registry with grades and watchlist.
+- [Machine contract](https://toolproof-scan.vercel.app/agents.md): rules for agents that fetch this domain.
+- Short link for a scan result: `https://toolproof-scan.vercel.app/t?target=<url>` (open URL space, noindex).
+
+## MCP server
+
+Adds `check_tool` (grade + findings for any target) and `lookup_rule` (plain-words explanation of a flagged rule) to any MCP client. Zero dependencies.
+
+Claude Desktop / generic MCP config:
+
+```json
+{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
+```
+
+Claude Code: `claude mcp add toolproof -- npx -y toolproof-mcp`
+
+## CLI (continued)
+
+Flags:
+- `--json` — raw signed passport JSON instead of the formatted verdict.
+- `--kind=auto|mcp|api` — target kind (default auto).
+- `--fail-under=<0-100>` — exit 1 when verified with a score below N, or when unverified.
+- `--api=<url>` — verify API base URL (default https://toolproof-scan.vercel.app).
+- `--timeout=<ms>` — request timeout in milliseconds (default 30000).
+
+Exit codes: `0` verified (or a respected opt-out) and score meets `--fail-under`; `1` unverified, or verified with score below `--fail-under`; `2` usage or network error.
+
+CI example:
+
+```yaml
+- name: Trust-check our MCP server
+  run: npx toolproof-scan https://our-mcp.example.com/mcp --fail-under 70
+```
+
+## API
+
+Base: `https://toolproof-scan.vercel.app`. One GET per verdict. No keys, no accounts. Responses are cache-friendly (s-maxage), rate-limited to 30 scans/min per IP. Every scan result is signed.
+
+Endpoints:
+
+- `GET /api/v1/scan?target=&kind=auto|mcp|api` — full scan report: findings with evidence, positives, metadata.
+- `GET /api/v1/verify?target=&kind=` — signed passport: the verdict an agent should consult before calling a tool. ed25519 over canonical JSON.
+- `GET /api/v1/registry` — starter registry, scanned live. Cached 15 min.
+- `GET /api/v1/badge?target=&kind=&style=grade|flat` — SVG badge for READMEs and dashboards. Cached 10 min.
+- `GET /api/v1/feed` — per-node, in-memory view of the newest scans (shared cross-user ledger ships with v1).
+- `GET /api/v1/og?target=&kind=` — 1200×630 social share card with the verdict stamp.
+- `GET /api/v1/pubkey` — the signing public key, PEM-encoded.
+- `GET /api/v1/canary?tool=` — mint a tool-bound canary credential.
+
+### The passport
+
+`passport` is serialized with recursively sorted keys (canonical JSON) and signed with ed25519. Verify with any crypto library — no Toolproof code required:
+
+```js
+import { verify, createPublicKey } from "node:crypto";
+
+const res = await fetch(`https://toolproof-scan.vercel.app/api/v1/verify?target=${encodeURIComponent(target)}`);
+const { passport, signature, alg } = await res.json();
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") {
+    const out = {};
+    for (const k of Object.keys(value).sort()) out[k] = canonicalize(value[k]);
+    return out;
+  }
+  return value;
+}
+const canonical = JSON.stringify(canonicalize(passport));
+
+const ok = verify(null, Buffer.from(canonical), createPublicKey(pem), Buffer.from(signature, "base64"));
+// alg === "ed25519" && ok → the verdict is authentic and unmodified
+```
+
+## Badge & embed
+
+The badge is an SVG that re-scans its target on every cache refresh (~10 min); the embed is a 320×220 card that does the same — a grade that tracks the target over time, not a screenshot.
+
+```markdown
+[![toolproof](https://toolproof-scan.vercel.app/api/v1/badge?target=mcp.context7.com%2Fmcp&style=flat)](https://toolproof-scan.vercel.app/t?target=mcp.context7.com%2Fmcp)
+```
+
+```html
+<iframe src="https://toolproof-scan.vercel.app/embed?target=mcp.context7.com%2Fmcp"
+  width="340" height="240" loading="lazy" title="Toolproof trust card"></iframe>
+```
+
+`style=grade` renders the verdict stamp, `style=flat` a one-line badge. Add `&kind=mcp` or `&kind=api` to skip auto-detection.
+
+## Tool owners
+
+- Opt out: serve `https://your.host/.well-known/toolproof.txt` containing `Deny: /` — scanning of that host is refused and never penalized.
+- Declare a canary in `toolproof.txt` with `Canary: <token>` — scanners report "canary declared by owner" as a positive signal.
+
+## Change monitoring
+
+For verified MCP surfaces, every passport carries `toolTextHash` — a SHA-256 fingerprint of every tool description, prompt, resource and server instruction the model sees. Monitoring is diffing that hash over time; alerts are whatever notifies you (CI email, Slack webhook, scheduled task). Browser-side: pin a tool from its trust card — the leaderboard watchlist re-checks pins on every visit.
+
+## Canaries
+
+`GET /api/v1/canary?tool=your.host` mints a unique, tool-bound canary — a decoy secret shaped like a cloud key. Plant it where the tool reads. If the string ever surfaces in an agent transcript, a log, or a paste site, it identifies the tool it was stolen from. Real-time beacon alerting ships in v1.1.
+
+## Honest limits
+
+- Scans are point-in-time. A passport speaks for its scannedAt, not for the tool's next deploy.
+- Static analysis of tool text — not a sandbox. Behavioral canaries ship in v1.
+- Rate limit 30 scans/min/IP. Please cache; responses carry s-maxage.
+- v0 is best-effort: no SLA, no warranty. A passing grade is a receipt, not a guarantee.

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "For agents",
   description:
-    "Let your AI check every tool itself — one rule in your agent's config, or install the toolproof-mcp server (npx toolproof-mcp) for Claude Desktop, Cursor and any MCP client.",
+    "Let your AI check every unfamiliar MCP server or API before it connects. Paste one Toolproof rule into AGENTS.md, CLAUDE.md, Cursor rules or custom instructions.",
   alternates: { canonical: "/for-agents" },
 };
 
@@ -19,9 +19,14 @@ GET https://toolproof-scan.vercel.app/api/v1/verify?target=<the url>
 Report the grade to the user. If the state is not "verified", or the
 grade is below B, tell the user what you found and ask before connecting.`;
 
-const MCP_CONFIG = `{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }`;
-
-const CLAUDE_CODE = `claude mcp add toolproof -- npx -y toolproof-mcp`;
+const MCP_CONFIG = `{
+  "mcpServers": {
+    "toolproof": {
+      "command": "npx",
+      "args": ["-y", "toolproof-mcp"]
+    }
+  }
+}`;
 
 export default function ForAgentsPage() {
   return (
@@ -46,13 +51,13 @@ export default function ForAgentsPage() {
           </h1>
           <p className="mt-5 max-w-2xl text-[13.5px] leading-7 text-dim">
             Your AI is the one connecting to tools, so your AI is the one who
-            should check them. Two ways to set that up — both take about a
-            minute, and after this you never need to visit this site again.
+            should check them. Add this one rule, and it can verify unfamiliar
+            MCP servers or APIs before it connects.
           </p>
         </section>
 
-        <section id="option-a">
-          <div className="lbl mb-3">option a · one rule, nothing to install</div>
+        <section id="agent-rule">
+          <div className="lbl mb-3">one rule, nothing to install</div>
           <h2 className="text-lg font-bold">
             Paste this into your AI&apos;s instructions.
           </h2>
@@ -68,27 +73,6 @@ export default function ForAgentsPage() {
           </div>
         </section>
 
-        <section id="option-b">
-          <div className="lbl mb-3">option b · install it as a tool</div>
-          <h2 className="text-lg font-bold">
-            The Toolproof MCP server.
-          </h2>
-          <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">
-            Adds two tools to any MCP client:{" "}
-            <span className="text-ink">check_tool</span> (grade + findings for
-            any target) and <span className="text-ink">lookup_rule</span>{" "}
-            (plain-words explanation of a flagged rule). Zero dependencies.
-          </p>
-          <div className="mt-5 space-y-4">
-            <CopyBlock label="claude desktop / generic mcp config" code={MCP_CONFIG} />
-            <CopyBlock label="claude code" code={CLAUDE_CODE} />
-          </div>
-          <p className="mt-3 text-[11px] text-faint">
-            npm packages publish at launch — until then, clone the repo and
-            run <code>node packages/toolproof-mcp/server.mjs</code>.
-          </p>
-        </section>
-
         <section>
           <div className="lbl mb-3">for agent developers</div>
           <h2 className="text-lg font-bold">
@@ -102,6 +86,23 @@ export default function ForAgentsPage() {
             same rules at <a href="/agents.md" className="text-amber underline-offset-4 hover:underline">/agents.md</a>.
             Full contract in the <a href="/docs" className="text-amber underline-offset-4 hover:underline">API docs</a>.
           </p>
+        </section>
+
+        <section id="mcp-server">
+          <div className="lbl mb-3">native MCP tool</div>
+          <h2 className="text-lg font-bold">
+            Give every MCP client a preflight check.
+          </h2>
+          <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">
+            <a href="https://www.npmjs.com/package/toolproof-mcp" target="_blank" rel="noopener noreferrer" className="text-amber underline-offset-4 hover:underline">toolproof-mcp</a>{" "}
+            exposes <code className="text-ink">check_tool</code> and{" "}
+            <code className="text-ink">lookup_rule</code> over stdio. Add this
+            configuration to Claude Desktop, Claude Code, Cursor, or another
+            MCP client; the scanner then checks a tool before an agent connects.
+          </p>
+          <div className="mt-5">
+            <CopyBlock label="MCP configuration" code={MCP_CONFIG} />
+          </div>
         </section>
       </div>
     </main>

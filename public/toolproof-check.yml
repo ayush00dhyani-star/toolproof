@@ -1,0 +1,46 @@
+# Toolproof security gate for GitHub Actions.
+#
+# Save as .github/workflows/toolproof.yml, then set the repository variable
+# TOOLPROOF_TARGET to the MCP endpoint or API base URL you want to approve.
+# Change MIN_SCORE to fit your policy. The gate rejects an unverified target
+# and any verified target that scores below the threshold.
+name: Toolproof security gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  verify-tool:
+    runs-on: ubuntu-latest
+    env:
+      TARGET: ${{ vars.TOOLPROOF_TARGET }}
+      MIN_SCORE: "70"
+    steps:
+      - name: Verify the configured MCP server or API
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$TARGET" ]; then
+            echo "::error::Set the TOOLPROOF_TARGET repository variable to the endpoint this repository uses."
+            exit 1
+          fi
+
+          response="$(curl --fail --silent --show-error --get \
+            'https://toolproof-scan.vercel.app/api/v1/verify' \
+            --data-urlencode "target=$TARGET")"
+          state="$(jq -r '.passport.state // empty' <<<"$response")"
+          score="$(jq -r '.passport.score // 0' <<<"$response")"
+          grade="$(jq -r '.passport.grade // "—"' <<<"$response")"
+
+          if [ "$state" != "verified" ]; then
+            echo "::error::Toolproof could not verify $TARGET (state: ${state:-unknown})."
+            exit 1
+          fi
+          if ! [[ "$score" =~ ^[0-9]+$ ]] || [ "$score" -lt "$MIN_SCORE" ]; then
+            echo "::error::Toolproof grade $grade ($score/100) is below the required $MIN_SCORE/100."
+            exit 1
+          fi
+          echo "Toolproof passed: $grade ($score/100) for $TARGET"

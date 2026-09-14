@@ -15,12 +15,21 @@ const jbmono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://toolproof-scan.vercel.app"),
   title: {
-    default: "Toolproof — is this AI tool safe? Paste a link. Know in seconds.",
+    default: "MCP Security Scanner & AI Tool Safety Checker | Toolproof",
     template: "%s — Toolproof",
   },
   description:
-    "Paste a link. Get a safety grade for any AI tool, MCP server or API in seconds — free. Hidden instructions, exposed secrets, unsafe defaults: caught before your AI connects.",
+    "Free MCP security scanner for AI tools and APIs. Find prompt injection, hidden instructions, exposed secrets and unsafe defaults before your agent connects.",
+  keywords: [
+    "MCP security scanner",
+    "MCP prompt injection",
+    "AI tool security",
+    "MCP server security",
+    "AI agent security",
+    "tool safety checker",
+  ],
   alternates: { canonical: "/" },
+  category: "security",
 };
 
 // Sitewide structured data: WebSite + SoftwareApplication.
@@ -33,6 +42,7 @@ const SITE_JSONLD = {
       "@id": "https://toolproof-scan.vercel.app/#website",
       url: "https://toolproof-scan.vercel.app/",
       name: "Toolproof",
+      alternateName: "Toolproof MCP Scanner",
       description:
         "Free safety grades for AI tools — MCP servers and APIs. Checks for hidden instructions, exposed secrets and unsafe defaults before your AI connects.",
       publisher: { "@id": "https://toolproof-scan.vercel.app/#org" },
@@ -41,13 +51,14 @@ const SITE_JSONLD = {
       "@type": "Organization",
       "@id": "https://toolproof-scan.vercel.app/#org",
       name: "Toolproof",
+      alternateName: "Toolproof MCP Scanner",
       url: "https://toolproof-scan.vercel.app/",
     },
     {
       "@type": "SoftwareApplication",
       name: "Toolproof",
       applicationCategory: "SecurityApplication",
-      operatingSystem: "Web, CLI (npx toolproof-scan)",
+      operatingSystem: "Web and HTTP API",
       url: "https://toolproof-scan.vercel.app/",
       description:
         "Paste a link to any MCP server or API and get a signed letter-grade safety verdict in seconds — hidden instructions, exposed secrets, unsafe defaults, missing auth. Free, no account.",

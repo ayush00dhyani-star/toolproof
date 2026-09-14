@@ -140,7 +140,7 @@ async function handle(msg) {
       result(id, {
         protocolVersion: PROTOCOL,
         capabilities: { tools: {} },
-        serverInfo: { name: "toolproof", version: "0.1.0" },
+      serverInfo: { name: "toolproof", version: "0.1.1" },
       });
       return;
     case "ping":
@@ -160,7 +160,7 @@ async function handle(msg) {
   }
 }
 
-log(`toolproof-mcp 0.1.0 — api: ${API} — tools: check_tool, lookup_rule`);
+log(`toolproof-mcp 0.1.1 — api: ${API} — tools: check_tool, lookup_rule`);
 const rl = createInterface({ input: process.stdin, terminal: false });
 rl.on("line", (line) => {
   const trimmed = line.trim();

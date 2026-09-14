@@ -1,10 +1,12 @@
 {
   "name": "toolproof-scan",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Trust grades for MCP servers and APIs — the verify step for the agent economy",
+  "homepage": "https://toolproof-scan.vercel.app",
+  "bugs": "https://toolproof-scan.vercel.app/security",
   "type": "module",
   "bin": {
-    "toolproof-scan": "./bin.mjs"
+    "toolproof-scan": "bin.mjs"
   },
   "files": [
     "bin.mjs",
@@ -13,5 +15,12 @@
   "engines": {
     "node": ">=18"
   },
+  "keywords": [
+    "mcp",
+    "mcp-security",
+    "ai-agents",
+    "security-scanner",
+    "toolproof"
+  ],
   "license": "MIT"
 }

@@ -19,41 +19,13 @@ grade is below B, tell the user what you found and ask before connecting.
 ## Surfaces
 
 - [Scan a tool](https://toolproof-scan.vercel.app): paste a link, get a grade in seconds.
-- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule + MCP server install.
+- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule for checking unfamiliar tools before an agent connects.
 - [API docs](https://toolproof-scan.vercel.app/docs): full keyless API contract (this page is the machine summary).
+- [MCP adapter](https://www.npmjs.com/package/toolproof-mcp): `npx -y toolproof-mcp` adds `check_tool` and `lookup_rule` to any stdio MCP client.
+- [CLI gate](https://www.npmjs.com/package/toolproof-scan): `npx -y toolproof-scan <target> --fail-under 70` for terminals and CI enforcement.
 - [Leaderboard](https://toolproof-scan.vercel.app/leaderboard): scanned registry with grades and watchlist.
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): rules for agents that fetch this domain.
 - Short link for a scan result: `https://toolproof-scan.vercel.app/t?target=<url>` (open URL space, noindex).
-
-## MCP server
-
-Adds `check_tool` (grade + findings for any target) and `lookup_rule` (plain-words explanation of a flagged rule) to any MCP client. Zero dependencies.
-
-Claude Desktop / generic MCP config:
-
-```json
-{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
-```
-
-Claude Code: `claude mcp add toolproof -- npx -y toolproof-mcp`
-
-## CLI (continued)
-
-Flags:
-- `--json` — raw signed passport JSON instead of the formatted verdict.
-- `--kind=auto|mcp|api` — target kind (default auto).
-- `--fail-under=<0-100>` — exit 1 when verified with a score below N, or when unverified.
-- `--api=<url>` — verify API base URL (default https://toolproof-scan.vercel.app).
-- `--timeout=<ms>` — request timeout in milliseconds (default 30000).
-
-Exit codes: `0` verified (or a respected opt-out) and score meets `--fail-under`; `1` unverified, or verified with score below `--fail-under`; `2` usage or network error.
-
-CI example:
-
-```yaml
-- name: Trust-check our MCP server
-  run: npx toolproof-scan https://our-mcp.example.com/mcp --fail-under 70
-```
 
 ## API
 

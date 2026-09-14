@@ -56,14 +56,10 @@ Colors are disabled automatically when `NO_COLOR` is set or stdout is not a TTY.
 A non-passing grade fails the step via exit code `1`; usage or network
 problems fail with exit code `2`.
 
-## Publishing
+## Published package
 
-This package is published to npm as `toolproof-scan` so `npx toolproof-scan`
-works with no install:
+`toolproof-scan` is public on npm. Run it without a global install:
 
 ```bash
-cd packages/toolproof-scan
-npm publish
+npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70
 ```
-
-Do NOT run this yet — publishing happens only at launch sign-off.

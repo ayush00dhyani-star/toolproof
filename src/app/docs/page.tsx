@@ -39,12 +39,10 @@ export default function DocsPage() {
             and every scan result is signed so you can verify it offline.
           </p>
           <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
-            Building an agent? Skip the docs — grab the{" "}
+            Building an agent? Start with the{" "}
             <a href="/for-agents" className="text-amber underline-offset-4 hover:underline">
               one-line agent rule
-            </a>{" "}
-            or the <code className="text-ink">toolproof-mcp</code> server. Machines
-            that fetch this domain read{" "}
+            </a>. Machines that fetch this domain read{" "}
             <a href="/agents.md" className="text-amber underline-offset-4 hover:underline">/agents.md</a>.
           </p>
           <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`curl "https://<host>/api/v1/verify?target=https://mcp.context7.com/mcp"`}</pre>
@@ -213,53 +211,47 @@ Canary: 9f2e4d1c7b`}</pre>
           </p>
         </section>
 
-        <section id="cli" className="scroll-mt-16">
-          <div className="lbl mb-4">CLI</div>
+        <section id="automation" className="scroll-mt-16">
+          <div className="lbl mb-4">automation</div>
           <p className="text-[13px] leading-7 text-dim max-w-2xl">
-            The same signed verdicts, from any terminal or CI job —{" "}
-            <code className="text-ink">toolproof-scan</code> is a
-            zero-dependency CLI, no install required:
+            The signed verify endpoint works from any terminal or CI job — no
+            package, API key or account required:
           </p>
-          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx toolproof-scan mcp.context7.com/mcp --fail-under 70`}</pre>
-          <div className="mt-6 card divide-y divide-line">
-            {[
-              { f: "--json", d: "Print the raw signed passport JSON instead of the formatted verdict." },
-              { f: "--kind=auto|mcp|api", d: "Target kind (default auto)." },
-              { f: "--fail-under=<0-100>", d: "Exit 1 when verified with a score below N, or when unverified." },
-              { f: "--api=<url>", d: "Verify API base URL (default https://toolproof-scan.vercel.app)." },
-              { f: "--timeout=<ms>", d: "Request timeout in milliseconds (default 30000)." },
-              { f: "-h, --help", d: "Show help." },
-            ].map((f) => (
-              <div key={f.f} className="px-5 py-3.5 flex gap-4 items-baseline">
-                <code className="text-[12px] text-amber shrink-0">{f.f}</code>
-                <p className="text-[12px] leading-6 text-dim">{f.d}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 text-[13px] leading-7 text-dim max-w-2xl">
-            Exit codes: <code className="text-ink">0</code> verified — or a
-            respected opt-out — and the score meets{" "}
-            <code className="text-dim">--fail-under</code>;{" "}
-            <code className="text-ink">1</code> unverified, or verified with
-            score below <code className="text-dim">--fail-under</code>;{" "}
-            <code className="text-ink">2</code> usage or network error.
-          </p>
-          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`# .github/workflows/trust.yml
-- name: Trust-check our MCP server
-  run: npx toolproof-scan https://our-mcp.example.com/mcp --fail-under 70`}</pre>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`curl "https://toolproof-scan.vercel.app/api/v1/verify?target=https%3A%2F%2Fmcp.context7.com%2Fmcp"`}</pre>
           <p className="mt-4 text-[12px] leading-6 text-faint max-w-2xl">
-            A non-passing grade fails the step via exit code 1; usage or
-            network problems fail with exit code 2. See{" "}
-            <a
-              href="https://www.npmjs.com/package/toolproof-scan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-ink underline underline-offset-4"
-            >
-              npmjs.com/package/toolproof-scan
-            </a>
-            .
+            In CI, parse <code className="text-dim">passport.grade</code> or
+            <code className="text-dim"> passport.score</code> from the JSON and
+            fail your own policy check. The response also includes the signature
+            for offline verification.
           </p>
+          <h2 className="mt-8 text-xl font-bold">A pull-request gate in one file.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            Save this ready-to-run <Link href="/toolproof-check.yml" className="text-amber underline-offset-4 hover:underline">GitHub Actions workflow</Link>{" "}
+            as <code className="text-ink">.github/workflows/toolproof.yml</code>, then
+            set the repository variable <code className="text-ink">TOOLPROOF_TARGET</code>{" "}
+            to the MCP endpoint or API your project uses. It rejects an unverified
+            target or a score below 70; change <code className="text-ink">MIN_SCORE</code>{" "}
+            in the file if your policy needs a different threshold.
+          </p>
+          <h2 className="mt-8 text-xl font-bold">CLI enforcement.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            The zero-dependency CLI exits non-zero for an unverified target or a
+            score below your threshold. It is published as{" "}
+            <a href="https://www.npmjs.com/package/toolproof-scan" target="_blank" rel="noopener noreferrer" className="text-amber underline-offset-4 hover:underline">toolproof-scan</a>.
+          </p>
+          <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70`}</pre>
+          <h2 className="mt-8 text-xl font-bold">Baselines &amp; signed audit evidence.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            For teams: commit a baseline of every MCP server you depend on and
+            let CI re-verify it on every push — signature checked locally
+            (ed25519), grade gated by policy, and any change to a tool&apos;s
+            model-visible instructions blocks the merge. Every check appends a
+            JSONL audit line with the full signed passport, replayable by any
+            auditor. Details and plans on the{" "}
+            <Link href="/enterprise" className="text-amber underline-offset-4 hover:underline">enterprise page</Link>.
+          </p>
+          <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx -y toolproof-gate --init https://mcp.example.com/mcp --min-grade B
+npx -y toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
         </section>
 
         <section id="badge-embed" className="scroll-mt-16">
@@ -348,7 +340,9 @@ jobs:
 
         <footer className="border-t border-line pt-8 pb-4 text-[11px] text-faint">
           Toolproof — built by Ayush Dhyani ·{" "}
-          <a href="/.well-known/security.txt" className="hover:text-ink">security.txt</a>
+          <a href="/terms" className="hover:text-ink">terms</a> ·{" "}
+          <a href="/privacy" className="hover:text-ink">privacy</a> ·{" "}
+          <a href="/security" className="hover:text-ink">security</a>
         </footer>
       </div>
     </main>

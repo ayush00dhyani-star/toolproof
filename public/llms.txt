@@ -14,8 +14,10 @@ grade is below B, tell the user what you found and ask before connecting.
 
 Key surfaces:
 
-- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule + MCP server install (`npx toolproof-mcp` → `check_tool`, `lookup_rule`)
+- [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule for checking unfamiliar tools before an agent connects
 - [Scan a tool](https://toolproof-scan.vercel.app): paste a link, get a grade in seconds, free
 - [API docs](https://toolproof-scan.vercel.app/docs): keyless API — `/api/v1/verify?target=` (signed passport), `/api/v1/scan?target=` (full findings)
+- [MCP adapter](https://www.npmjs.com/package/toolproof-mcp): native `check_tool` and `lookup_rule` tools for Claude Desktop, Claude Code, Cursor and other MCP clients
+- [CLI gate](https://www.npmjs.com/package/toolproof-scan): `npx -y toolproof-scan <target> --fail-under 70` for terminals and CI
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): instructions for agents that fetch this domain
 - [Tool owners](https://toolproof-scan.vercel.app/docs#toolproof-txt): serve `/.well-known/toolproof.txt` with `Deny: /` to refuse scanning (respected, never penalized)

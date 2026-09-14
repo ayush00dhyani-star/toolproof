@@ -31,8 +31,8 @@ Claude Code:
 claude mcp add toolproof -- npx -y toolproof-mcp
 ```
 
-> The npm package publishes at launch — until then, run from this repo:
-> `node packages/toolproof-mcp/server.mjs`.
+The npm package is public. Add the configuration above, and your MCP client
+will run it through `npx` when needed.
 
 ## Example
 
@@ -52,8 +52,6 @@ review card: https://toolproof-scan.vercel.app/t?target=…
 No install and just want the rule? See
 [the one-line agent rule](https://toolproof-scan.vercel.app/for-agents).
 
-## Publish
+## Published package
 
-```bash
-cd packages/toolproof-mcp && npm publish
-```
+Install from npm with `npx -y toolproof-mcp`; no global install is required.

@@ -8,9 +8,9 @@ ed25519-signed receipt anyone can verify offline.
 Live: https://toolproof-scan.vercel.app
 
 **Nobody scans things by hand — so the AI does it.** Paste the one-line rule
-into your agent's instructions (`/for-agents`), or install the
-`toolproof-mcp` server so any MCP client gets `check_tool` natively.
-Machines that fetch this domain read [`/agents.md`](public/agents.md).
+into your agent's instructions (`/for-agents`) and call the signed API before
+connecting to an unfamiliar tool. Machines that fetch this domain read
+[`/agents.md`](public/agents.md).
 
 ## What it checks
 
@@ -35,32 +35,38 @@ Machines that fetch this domain read [`/agents.md`](public/agents.md).
 | `GET /api/v1/og?target=` | 1200×630 social share card |
 | `GET /api/v1/pubkey` | Signing public key (PEM) |
 
-## CLI
+## Automation
 
-Scan from any terminal — zero dependencies, no install:
+The hosted API is the supported public integration today — no API key,
+account or local package required:
 
 ```bash
-npx toolproof-scan mcp.context7.com/mcp --fail-under 70
+curl --get 'https://toolproof-scan.vercel.app/api/v1/verify' \
+  --data-urlencode 'target=https://mcp.context7.com/mcp'
 ```
 
-Flags: `--json` (raw signed passport), `--kind=auto|mcp|api`,
-`--fail-under=<0-100>`, `--api=<url>`, `--timeout=<ms>`, `-h`.
-Exit `0` verified — or a respected opt-out — and the score meets
-`--fail-under`; `1` unverified, or verified with score below
-`--fail-under`; `2` usage/network error.
-See [`packages/toolproof-scan`](packages/toolproof-scan/README.md).
+For pull requests, copy
+[`public/toolproof-check.yml`](public/toolproof-check.yml) to
+`.github/workflows/toolproof.yml` and set the `TOOLPROOF_TARGET` repository
+variable. It rejects targets that are unverified or score below its threshold.
 
-## MCP server
+## CLI & MCP adapter
 
-`packages/toolproof-mcp` — the scanner as an MCP tool. Add it to Claude
-Desktop / Cursor / Claude Code once and the AI checks every tool before
-connecting:
+Both zero-dependency packages are now public on npm:
+
+```bash
+# Fail CI if the target is unverified or scores below 70
+npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70
+```
 
 ```json
 { "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
 ```
 
-Zero dependencies; smoke-tested over stdio (`node scripts/mcp-smoke.mjs`).
+The adapter exposes `check_tool(target)` and `lookup_rule(rule_id)` to Claude
+Desktop, Claude Code, Cursor, and compatible MCP clients. See
+[toolproof-scan](https://www.npmjs.com/package/toolproof-scan) and
+[toolproof-mcp](https://www.npmjs.com/package/toolproof-mcp).
 
 ## toolproof.txt
 

@@ -44,3 +44,6 @@ next-env.d.ts
 
 build_out.log
 vercel_out.log
+
+build.log
+vitest.log

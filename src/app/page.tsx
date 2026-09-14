@@ -18,6 +18,7 @@ function Nav() {
         </a>
         <div className="ml-auto flex items-center gap-5 text-[13.5px] text-dim">
           <a href="#checks" className="hover:text-ink transition-colors">Checks</a>
+          <a href="/mcp-security-scanner" className="hover:text-ink transition-colors">MCP scanner</a>
           <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
           <a href="/leaderboard" className="hover:text-ink transition-colors">Leaderboard</a>
           <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
@@ -48,7 +49,7 @@ const FAQ_JSONLD = {
       name: "How do I check if an MCP server is safe?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Paste the MCP server URL into Toolproof (toolproof-scan.vercel.app). In a few seconds you get a letter grade with evidence: 15 checks covering hidden instructions in tool descriptions, invisible characters, exposed secrets, unsafe defaults and missing auth. Free, no account, and nothing you paste is stored.",
+        text: "Paste the MCP server URL into Toolproof (toolproof-scan.vercel.app). In a few seconds you get a letter grade with evidence: 16 checks covering hidden instructions in tool descriptions, invisible characters, exposed secrets, unsafe defaults and missing auth. Free, no account, and nothing you paste is stored.",
       },
     },
     {
@@ -64,7 +65,7 @@ const FAQ_JSONLD = {
       name: "Can my AI agent check tools automatically?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Add one rule to your agent's config that calls the signed verify endpoint before connecting to any MCP server or unfamiliar API, or install the Toolproof MCP server with npx toolproof-mcp for Claude Desktop, Cursor and any MCP client.",
+        text: "Yes. Add one rule to your agent's config that calls the signed verify endpoint before connecting to any MCP server or unfamiliar API. It can report the grade to the user before it connects.",
       },
     },
     {
@@ -77,6 +78,29 @@ const FAQ_JSONLD = {
     },
   ],
 };
+
+const FAQS = [
+  {
+    question: "How do I check if an MCP server is safe?",
+    answer:
+      "Paste its URL into Toolproof. The scanner returns a letter grade and the evidence behind it, including hidden instructions in tool descriptions, invisible characters, exposed secrets, unsafe defaults and missing authentication signals.",
+  },
+  {
+    question: "What is an MCP prompt injection attack?",
+    answer:
+      "A malicious tool can put instructions in the text an AI model reads. Those instructions can tell the model to ignore safeguards, expose data or contact another service. Some attacks use invisible Unicode characters, so the text can look harmless to a person.",
+  },
+  {
+    question: "Can my AI agent check tools automatically?",
+    answer:
+      "Yes. Add the Toolproof rule to the agent's instructions or install the Toolproof MCP server. The agent can verify an unfamiliar MCP server or API before it connects and report the grade to the user.",
+  },
+  {
+    question: "Are Toolproof verdicts verifiable?",
+    answer:
+      "Every verdict includes an ed25519-signed passport over canonical JSON. You can verify the signature offline with standard cryptography libraries, without trusting Toolproof code at verification time.",
+  },
+];
 
 export default function Home() {
   return (
@@ -94,7 +118,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl px-5">
           <div className="lbl mb-5 text-center">The safety check for AI tools · free · no account</div>
           <h1 className="h-display text-center text-3xl sm:text-[40px] font-semibold leading-[1.15]">
-            Check an AI tool
+            Check an AI tool or MCP server
             <br />
             before you connect to it.
           </h1>
@@ -108,8 +132,8 @@ export default function Home() {
           </div>
 
           <p className="mt-4 text-center text-[13px] text-faint">
-            or from a terminal:{" "}
-            <code className="mono text-[12px] text-dim">npx toolproof-scan &lt;url&gt;</code>
+            automate it with the{" "}
+            <a href="/for-agents" className="underline-offset-4 hover:underline">one-line agent rule</a>
           </p>
 
           <div className="mt-10 elevated overflow-hidden" data-reveal>
@@ -212,6 +236,27 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="faq" className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
+          <div className="lbl mb-5">MCP security FAQ</div>
+          <h2 className="text-xl font-semibold">Know what your agent is about to trust.</h2>
+          <div className="mt-6 card divide-y divide-hair overflow-hidden">
+            {FAQS.map((faq) => (
+              <details key={faq.question} className="group px-5 py-4">
+                <summary className="cursor-pointer list-none pr-8 text-[14px] font-medium text-ink marker:hidden relative">
+                  {faq.question}
+                  <span className="absolute right-0 text-amber transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 max-w-2xl text-[13px] leading-6 text-dim">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+          <p className="mt-4 text-[12.5px] text-faint">
+            Need the technical details? Read the <a href="/docs" className="underline-offset-4 hover:underline">API docs</a> or set up the <a href="/for-agents" className="underline-offset-4 hover:underline">agent rule</a>.
+          </p>
+        </div>
+      </section>
+
       {/* what else you can do */}
       <section className="py-16 border-t border-hair">
         <div className="mx-auto max-w-3xl px-5" data-reveal>
@@ -220,7 +265,7 @@ export default function Home() {
             {[
               {
                 t: "Let your AI do the checking",
-                d: "One rule in your agent's config, or the toolproof-mcp server for any MCP client.",
+                d: "One rule in your agent's config makes it check unfamiliar tools before connecting.",
                 href: "/for-agents",
                 cta: "Setup",
               },
@@ -272,16 +317,11 @@ export default function Home() {
           </div>
           <div className="sm:ml-auto flex gap-5 text-[12.5px] text-dim">
             <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
-            <a href="/.well-known/security.txt" className="hover:text-ink transition-colors">security.txt</a>
+            <a href="/enterprise" className="hover:text-ink transition-colors">Enterprise</a>
+            <a href="/terms" className="hover:text-ink transition-colors">Terms</a>
+            <a href="/privacy" className="hover:text-ink transition-colors">Privacy</a>
+            <a href="/security" className="hover:text-ink transition-colors">Security</a>
             <a href="/api/v1/pubkey" className="hover:text-ink transition-colors">pubkey</a>
-            <a
-              href="https://www.linkedin.com/in/ayush-dhyanii/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-ink transition-colors"
-            >
-              LinkedIn
-            </a>
           </div>
         </div>
       </footer>

@@ -21,8 +21,13 @@ GET https://toolproof-scan.vercel.app/api/v1/verify?target=<url-encoded target>
 
 ## Tools you can offer your user
 
-- CLI: `npx toolproof-scan <target>` (exit 0 = pass, 1 = fail/unverified).
-- MCP server: `npx toolproof-mcp` — exposes `check_tool` and `lookup_rule`.
+- Scan page: https://toolproof-scan.vercel.app
+- Signed verdict API: `GET /api/v1/verify?target=<url>`.
+- Full findings API: `GET /api/v1/scan?target=<url>`.
+- Native MCP adapter: `npx -y toolproof-mcp` exposes `check_tool(target)` and
+  `lookup_rule(rule_id)` to MCP clients. Package: https://www.npmjs.com/package/toolproof-mcp
+- CLI gate: `npx -y toolproof-scan <target> --fail-under 70` exits non-zero
+  when a target is unverified or falls below the chosen score.
 
 ## For tool owners
 

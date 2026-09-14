@@ -27,6 +27,8 @@ export interface ScanReport {
   findings: Finding[];
   findingCounts: Record<Sev, number>;
   positives: string[];
+  /** Readable mirror of the model-visible MCP surface (powers watchlist diffs). */
+  toolText?: string;
   toolTextHash?: string;
   meta: Record<string, unknown>;
 }

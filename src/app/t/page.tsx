@@ -154,6 +154,7 @@ export default async function TrustPage({
             hash={report.toolTextHash}
             grade={report.grade}
             state={report.state}
+            toolText={report.toolText}
           />
           {report.state !== "verified" && (
             <span className="text-[11.5px] text-faint">

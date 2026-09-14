@@ -15,6 +15,8 @@ export interface WatchEntry {
   grade: string;
   state: string;
   toolTextHash?: string;
+  /** Snapshot of the model-visible text at pin time — diffed on change. */
+  toolTextSnapshot?: string;
   at: number;
 }
 

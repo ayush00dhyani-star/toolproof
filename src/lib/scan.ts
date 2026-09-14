@@ -115,6 +115,7 @@ export async function scanTarget(
   let state: ScanReport["state"] = "unverified";
   let failReason = "no MCP or OpenAPI surface detected";
   let toolTextHash: string | undefined;
+  let toolText: string | undefined;
 
   if (u.protocol === "http:") {
     findings.push(
@@ -198,6 +199,17 @@ export async function scanTarget(
         .slice(0, 32);
       mcpMeta.textHash = toolTextHash;
       void toolTextHash;
+      const surfaceLines: string[] = [];
+      for (const t of tools)
+        surfaceLines.push(`tool ${t.name}: ${t.description ?? ""}`);
+      for (const p of prompts)
+        surfaceLines.push(`prompt ${p.name}: ${p.description ?? ""}`);
+      for (const r of resources)
+        surfaceLines.push(`resource ${r.name} <${r.uri}>: ${r.description ?? ""}`);
+      if (mcp.instructions)
+        surfaceLines.push(`instructions: ${mcp.instructions}`);
+      const joinedSurface = surfaceLines.join("\n");
+      toolText = joinedSurface.length > 0 ? joinedSurface.slice(0, 12000) : undefined;
       positives.push(
         `MCP surface verified — ${mcp.toolCount ?? tools.length} tool(s) inspected`,
       );
@@ -310,6 +322,7 @@ export async function scanTarget(
     findingCounts,
     positives,
     ...(toolTextHash ? { toolTextHash } : {}),
+    ...(toolText ? { toolText } : {}),
     meta,
   };
   CACHE.set(cacheKey(raw, kind), { report, at: Date.now() });

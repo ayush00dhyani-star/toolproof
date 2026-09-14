@@ -14,12 +14,15 @@ export default function WatchToggle({
   hash,
   grade,
   state,
+  toolText,
 }: {
   target: string;
   host: string;
   hash?: string;
   grade: string;
   state: string;
+  /** Readable model-visible surface at scan time — stored as the baseline. */
+  toolText?: string;
 }) {
   const [pinned, setPinned] = useState(false);
   const [drift, setDrift] = useState<"same" | "changed" | "unknown" | null>(null);
@@ -34,7 +37,18 @@ export default function WatchToggle({
           ? "same"
           : "changed");
     }
-  }, [target, hash]);
+    // Upgrade legacy pins (no stored baseline) so future changes diff.
+    if (existing && toolText && !existing.toolTextSnapshot) {
+      watchEntry({
+        target,
+        host,
+        grade: existing.grade,
+        state: existing.state,
+        toolTextHash: existing.toolTextHash,
+        toolTextSnapshot: toolText,
+      });
+    }
+  }, [target, hash, toolText]);
 
   function toggle() {
     if (pinned) {
@@ -42,7 +56,7 @@ export default function WatchToggle({
       setPinned(false);
       setDrift(null);
     } else {
-      watchEntry({ target, host, grade, state, toolTextHash: hash });
+      watchEntry({ target, host, grade, state, toolTextHash: hash, toolTextSnapshot: toolText });
       setPinned(true);
       setDrift(hash ? "same" : "unknown");
     }

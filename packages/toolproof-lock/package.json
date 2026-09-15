@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "toolproof": "./bin.mjs"
+    "toolproof": "bin.mjs"
   },
   "files": [
     "bin.mjs",

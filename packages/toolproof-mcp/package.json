@@ -1,6 +1,6 @@
 {
   "name": "toolproof-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Trust grades + policy gate for MCP servers and APIs — let any AI check a tool before it connects, and let CI fail when a tool turns hostile.",
   "homepage": "https://toolproof-scan.vercel.app",
   "bugs": "https://toolproof-scan.vercel.app/security",
@@ -12,6 +12,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
   },
   "files": [
     "server.mjs",

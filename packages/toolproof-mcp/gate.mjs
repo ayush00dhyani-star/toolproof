@@ -24,7 +24,7 @@ import { createPublicKey, verify as cryptoVerify } from "node:crypto";
 
 const API = (process.env.TOOLPROOF_API ?? "https://toolproof-scan.vercel.app").replace(/\/$/, "");
 const DEFAULT_BASELINE = ".toolproof-baseline.json";
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 
 const GRADES = ["F", "D-", "D", "D+", "C-", "C", "C+", "B-", "B", "B+", "A-", "A", "A+"];
 function gradeRank(g) {

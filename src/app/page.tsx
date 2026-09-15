@@ -21,6 +21,7 @@ function Nav() {
           <a href="/mcp-security-scanner" className="hover:text-ink transition-colors">MCP scanner</a>
           <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
           <a href="/leaderboard" className="hover:text-ink transition-colors">Leaderboard</a>
+          <a href="/pricing" className="hover:text-ink transition-colors">Pricing</a>
           <a href="/evidence" className="hover:text-ink transition-colors">Evidence</a>
           <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
           <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
@@ -345,6 +346,7 @@ export default function Home() {
           </div>
           <div className="sm:ml-auto flex gap-5 text-[12.5px] text-dim">
             <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
+            <a href="/pricing" className="hover:text-ink transition-colors">Pricing</a>
             <a href="/enterprise" className="hover:text-ink transition-colors">Enterprise</a>
             <a href="/terms" className="hover:text-ink transition-colors">Terms</a>
             <a href="/privacy" className="hover:text-ink transition-colors">Privacy</a>

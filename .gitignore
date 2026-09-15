@@ -47,11 +47,7 @@ vercel_out.log
 
 build.log
 vitest.log
-dev.log
-vitest*.log
-build2.log
-eslint.log
 
-# Local evidence stores created by running the lock CLI or its tests.
-.toolproof/
 
+# Local test/build output
+*.log

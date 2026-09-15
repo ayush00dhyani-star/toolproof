@@ -166,12 +166,8 @@ export async function verifyBundle(input: unknown): Promise<VerifyResult> {
 
 /** A receipt minus its derived fields — exactly what its hash covers. */
 function restOf(rec: EvidenceReceipt): Omit<EvidenceReceipt, "hash" | "signature"> {
-  const { hash: _h, signature: _s, ...rest } = rec;
+  const rest = { ...rec };
+  delete (rest as { hash?: unknown }).hash;
+  delete (rest as { signature?: unknown }).signature;
   return rest;
-}
-
-/** One line of the decision history, for the review UI. */
-export function describeReceipt(rec: EvidenceReceipt, index: number): string {
-  const when = rec.ts ? new Date(rec.ts).toLocaleString() : "?";
-  return `#${index} ${when} · ${rec.decision} (exit ${rec.exitCode}) · ${rec.actor ?? "unknown"}`;
 }

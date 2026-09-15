@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 };
 
-const UPDATED = "13 September 2026";
+const UPDATED = "15 September 2026";
 
 export default function PrivacyPage() {
   return (
@@ -75,7 +75,26 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-ink">6. Sharing and retention</h2>
+        <h2 className="text-lg font-semibold text-ink">6. Evidence and lock artifacts</h2>
+        <p className="mt-3">
+          Toolproof Lock writes its artifacts — the lockfile, the policy file, and the
+          evidence store under <code className="text-ink">.toolproof/</code> — into your
+          repository. Those files never leave your machine or your version control unless
+          you commit and push them yourself. The evidence store contains fingerprints,
+          decisions, policy references and actor names only. It never contains prompt
+          content, tool arguments, tool results, or credentials.
+        </p>
+        <p className="mt-3">
+          The evidence verifier at{" "}
+          <code className="text-ink">/evidence</code> is browser-side. A bundle you paste or
+          drop there is parsed and verified by the page itself with the Web Crypto API. It
+          is not uploaded to Toolproof, not logged, and not stored on any server. Closing
+          the page discards it.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-ink">7. Sharing and retention</h2>
         <p className="mt-3">
           Toolproof does not sell personal information. We share information only as
           needed to operate the Service: with hosting and delivery providers, with the
@@ -87,7 +106,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-ink">7. Your choices and contact</h2>
+        <h2 className="text-lg font-semibold text-ink">8. Your choices and contact</h2>
         <p className="mt-3">
           Because Toolproof has no accounts, there is no account profile to access or
           delete. You can clear local browser storage at any time. For a privacy question

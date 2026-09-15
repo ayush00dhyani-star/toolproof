@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { verifyBundle, describeReceipt } from "@/lib/evidence";
+import Link from "next/link";
+import { verifyBundle } from "@/lib/evidence";
 import type { EvidenceBundle } from "@/lib/evidence-types";
 import Proofmark from "@/components/Proofmark";
 
@@ -47,16 +48,16 @@ export default function EvidencePage() {
     <main className="min-h-screen">
       <header className="border-b border-hair bg-bg/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-3xl items-center px-5">
-          <a href="/" className="flex items-center gap-2 text-amber">
+          <Link href="/" className="flex items-center gap-2 text-amber">
             <Proofmark className="h-5 w-5" />
             <span className="font-semibold tracking-tight">Toolproof</span>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="ml-auto text-[13px] text-dim transition-colors hover:text-ink"
           >
             ← scan a tool
-          </a>
+          </Link>
         </div>
       </header>
 

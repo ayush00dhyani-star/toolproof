@@ -348,6 +348,7 @@ export default function Home() {
             <a href="/enterprise" className="hover:text-ink transition-colors">Enterprise</a>
             <a href="/terms" className="hover:text-ink transition-colors">Terms</a>
             <a href="/privacy" className="hover:text-ink transition-colors">Privacy</a>
+            <a href="/ownership" className="hover:text-ink transition-colors">Ownership</a>
             <a href="/security" className="hover:text-ink transition-colors">Security</a>
             <a href="/api/v1/pubkey" className="hover:text-ink transition-colors">pubkey</a>
           </div>

@@ -51,6 +51,22 @@ whether or not a gateway sits in front of the server.
 - Ready-to-run workflow: https://toolproof-scan.vercel.app/toolproof-lock.yml
 - Package: https://www.npmjs.com/package/toolproof-lock
 
+## Evidence — the signed decision history
+
+Every `toolproof-lock check` appends a receipt to `.toolproof/evidence.jsonl`:
+the observed fingerprint, the policy, the actor, the decision, the time —
+hash-chained to the previous receipt and signed with a project-local ed25519
+key. A team can later prove what was approved, when, and that the record was
+never rewritten. Receipts carry fingerprints and decisions only, never prompt
+content, tool arguments or results.
+
+- `npx -y toolproof-lock evidence verify` re-derives every hash and checks every
+  signature; a rewritten decision, a reordering, or a dropped receipt is detected.
+- `npx -y toolproof-lock evidence show` lists the decisions.
+- `npx -y toolproof-lock evidence export --from 0 --out audit.json` writes a
+  self-contained bundle that an auditor verifies offline with no key and no
+  network; the bundle carries its own issuer key and a signature over the range.
+
 ## For tool owners
 
 Serve `/.well-known/toolproof.txt` containing `Deny: /` to refuse

@@ -96,6 +96,11 @@ Desktop, Claude Code, Cursor, and compatible MCP clients. See
 [toolproof-lock](https://www.npmjs.com/package/toolproof-lock) (capability
 baselines and the `toolproof` CI check).
 
+`toolproof-lock` also keeps a signed, tamper-evident **evidence trail** of every
+check decision in `.toolproof/evidence.jsonl` — hash-chained and ed25519-signed,
+exportable as an offline-verifiable bundle for an auditor
+(`toolproof evidence verify | show | export`).
+
 ## toolproof.txt
 
 Tool owners control scanning. Toolproof fetches

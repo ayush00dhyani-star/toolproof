@@ -21,6 +21,7 @@ function Nav() {
           <a href="/mcp-security-scanner" className="hover:text-ink transition-colors">MCP scanner</a>
           <a href="#grades" className="hover:text-ink transition-colors">Grades</a>
           <a href="/leaderboard" className="hover:text-ink transition-colors">Leaderboard</a>
+          <a href="/evidence" className="hover:text-ink transition-colors">Evidence</a>
           <a href="/for-agents" className="hover:text-ink transition-colors">For agents</a>
           <a href="/docs" className="hover:text-ink transition-colors">Docs</a>
           <PaletteTrigger />

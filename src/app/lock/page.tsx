@@ -210,6 +210,40 @@ onHighSeverityFinding: block`}</pre>
           </p>
         </section>
 
+        {/* evidence */}
+        <section className="mt-16 border-t border-hair pt-12">
+          <div className="lbl mb-5">evidence</div>
+          <h2 className="text-xl font-semibold text-ink">
+            The audit trail writes itself.
+          </h2>
+          <p className="mt-3 max-w-2xl text-[13px] leading-7 text-dim">
+            Every <code className="mono text-ink">check</code> appends a signed
+            receipt to <code className="mono text-ink">.toolproof/evidence.jsonl</code>:
+            the fingerprints, the decision, the policy, who decided, and when.
+            Receipts are hash-chained to the one before, so history cannot be
+            rewritten without breaking the chain.
+          </p>
+          <pre className="mono mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`$ toolproof evidence verify
+evidence OK — 3 receipts, chain intact, signatures verified
+
+$ toolproof evidence export --from 0 --out audit.json
+evidence exported 3 receipts (0..2 of 3) to audit.json`}</pre>
+          <p className="mt-4 max-w-2xl text-[13px] leading-7 text-dim">
+            An export is a self-contained bundle an auditor verifies{" "}
+            <a href="/evidence" className="text-amber underline-offset-4 hover:underline">
+              in the browser
+            </a>{" "}
+            — no key, no network, nothing uploaded. It carries its own issuer key
+            and a signature over the range, so its contents cannot be swapped
+            after the fact.
+          </p>
+          <p className="mt-3 max-w-2xl text-[12px] leading-6 text-faint">
+            Receipts carry fingerprints and decisions only — never prompt
+            content, tool arguments, tool results or credentials. The store is
+            safe to keep, export and hand over by construction.
+          </p>
+        </section>
+
         {/* scope */}
         <section className="mt-16 border-t border-hair pt-12">
           <div className="lbl mb-5">scope and non-claims</div>

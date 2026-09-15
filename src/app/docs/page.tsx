@@ -315,6 +315,47 @@ npx -y --package toolproof-mcp toolproof-gate --audit audit.jsonl   # in CI: exi
           </p>
         </section>
 
+        <section id="evidence" className="scroll-mt-16">
+          <div className="lbl mb-4">evidence</div>
+          <h2 className="text-xl font-bold">Every decision, signed and replayable.</h2>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            A verdict that vanishes when the terminal closes is not an audit trail. Every{" "}
+            <code className="text-ink">check</code> appends a receipt to{" "}
+            <code className="text-ink">.toolproof/evidence.jsonl</code> — the observed
+            fingerprint, the policy, the actor, the decision, the time — hash-chained to the
+            receipt before it and signed with a project-local ed25519 key. A team can later
+            prove what was approved, when, and that the record was never rewritten.
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`$ toolproof evidence show
+2026-09-15T07:58:30.046Z  blocked  exit 2  actor dev@example.com
+  baseline sha256:cd65c5f9…  observed sha256:af719268…  policy toolproof.policy.json
+
+$ toolproof evidence verify
+evidence OK — 3 receipts, chain intact, signatures verified`}</pre>
+          <p className="mt-4 text-[13px] leading-7 text-dim max-w-2xl">
+            <code className="text-ink">toolproof evidence export --from 0 --out audit.json</code>{" "}
+            writes a self-contained bundle: it carries its own issuer key and a signature over
+            the whole range, so its contents cannot be swapped after the fact. Selective
+            disclosure by range — the rest of the history stays in your repository.
+          </p>
+          <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
+            An auditor verifies a bundle with nothing installed and nothing uploaded — the{" "}
+            <Link href="/evidence" className="text-amber underline-offset-4 hover:underline">
+              browser verifier
+            </Link>{" "}
+            checks the signature, the chain and every receipt in-page. Or keylessly in code:
+          </p>
+          <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`const bundle = JSON.parse(fs.readFileSync("audit.json", "utf8"));
+const r = verifyExport(bundle);          // from toolproof-lock/src/evidence.mjs
+if (!r.ok) console.log(r.problems);      // [] when the bundle is intact`}</pre>
+          <p className="mt-4 text-[12px] leading-6 text-faint max-w-2xl">
+            Privacy by construction: a receipt carries fingerprints, a decision, a policy
+            reference, the actor and a timestamp. It never carries prompt content, tool
+            arguments, tool results or credentials — so an evidence store is safe to keep,
+            export and hand over.
+          </p>
+        </section>
+
         <section id="lock-policy" className="scroll-mt-16">
           <div className="lbl mb-4">lock policy</div>
           <h2 className="text-xl font-bold">Three actions, six keys.</h2>

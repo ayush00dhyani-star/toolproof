@@ -52,3 +52,6 @@ vitest*.log
 build2.log
 eslint.log
 
+# Local evidence stores created by running the lock CLI or its tests.
+.toolproof/
+

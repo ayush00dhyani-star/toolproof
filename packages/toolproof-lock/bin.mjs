@@ -3,17 +3,25 @@
 //
 //   toolproof lock <target>   fetch the capability manifest, write a signed baseline
 //   toolproof check           diff the live surface against the baseline, apply policy
+//   toolproof evidence        verify or export the signed decision history
+//                             (subcommands: verify, export, show)
+//
+// Every check decision is appended to .toolproof/evidence.jsonl — a signed,
+// hash-chained record of what was decided, by whom, and when. Receipts carry
+// fingerprints and decisions only, never prompt content or tool arguments.
 //
 // Zero runtime dependencies. Node >= 18 (global fetch, AbortSignal.timeout).
 // The core logic lives in ./src/*.mjs (lockfile, policy, diff, decision); this file
 // is only the shell: argv, HTTP, rendering, exit codes.
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 import { resolve } from "node:path";
 
 const DEFAULT_API = "https://toolproof-scan.vercel.app";
 const DEFAULT_TIMEOUT = 30000;
 const DEFAULT_LOCK = "toolproof.lock";
+const DEFAULT_EVIDENCE_DIR = ".toolproof";
 const KINDS = ["auto", "mcp", "api"];
 
 function readVersion() {
@@ -36,12 +44,18 @@ SYNOPSIS
   toolproof lock <target> [--kind=auto|mcp|api] [--out=${DEFAULT_LOCK}]
                           [--policy=<path>] [--api=<url>] [--timeout=<ms>]
   toolproof check [--lock=${DEFAULT_LOCK}] [--policy=<path>] [--api=<url>]
-                          [--timeout=<ms>] [--json] [--quiet]
+                          [--timeout=<ms>] [--json] [--quiet] [--no-evidence]
+  toolproof evidence [verify|show|export] [--from <n>] [--to <n>] [--out <f>]
   toolproof --help | -h | --version | -v
 
 COMMANDS
   lock <target>   Fetch the capability manifest and write a baseline lockfile.
-  check           Fetch the manifest, diff it against the lockfile, apply policy.
+  check           Fetch the manifest, diff it against the lockfile, apply policy,
+                  and append a signed evidence receipt of the decision.
+  evidence        Inspect the signed decision history:
+                    verify   re-check the chain and every signature (default)
+                    show     list recorded decisions
+                    export   write a signed, offline-verifiable bundle
 
 FLAGS
   --kind=auto|mcp|api   Target kind for lock (default: auto)
@@ -52,6 +66,10 @@ FLAGS
   --timeout=<ms>        Request timeout in milliseconds (default: ${DEFAULT_TIMEOUT})
   --json                Print a machine-readable result object
   --quiet               Print a single verdict line
+  --no-evidence         Do not append an evidence receipt for this check
+  --evidence-dir <path> Evidence store (default: .toolproof)
+  --from <n>            First receipt to export (evidence export, default 0)
+  --to <n>              Last receipt to export (evidence export, default: all)
   -h, --help            Show this help
   -v, --version         Show the version
 
@@ -176,6 +194,8 @@ function parseArgs(argv) {
     timeout: DEFAULT_TIMEOUT,
     json: false,
     quiet: false,
+    noEvidence: false,
+    evidenceDir: DEFAULT_EVIDENCE_DIR,
     help: false,
     version: false,
   };
@@ -225,6 +245,19 @@ function parseArgs(argv) {
       case "--quiet":
         noValue();
         opts.quiet = true;
+        break;
+      case "--no-evidence":
+        noValue();
+        opts.noEvidence = true;
+        break;
+      case "--evidence-dir":
+        opts.evidenceDir = takeValue();
+        break;
+      case "--from":
+        opts.from = takeValue();
+        break;
+      case "--to":
+        opts.to = takeValue();
         break;
       case "--kind": {
         const value = takeValue();
@@ -577,6 +610,14 @@ async function runCheck(opts) {
 
   const code = resolveExitCode(exitCodeFor, decision);
 
+  // Record the decision as evidence. This must never change the exit code or
+  // the printed verdict — a failure to record is reported but never fatal.
+  if (!opts.noEvidence) {
+    recordEvidence({ opts, lock, manifest, decision, changes, code }).catch((err) => {
+      process.stderr.write(`toolproof: could not record evidence: ${err?.message ?? err}\n`);
+    });
+  }
+
   if (opts.json) {
     process.stdout.write(
       `${JSON.stringify(
@@ -614,6 +655,86 @@ async function runCheck(opts) {
 }
 
 // ---------------------------------------------------------------------------
+// evidence — the signed decision history
+// ---------------------------------------------------------------------------
+
+// The decision strings used inside a receipt, per the design's vocabulary.
+function receiptDecision(decision) {
+  const d = String(decision ?? "").toLowerCase();
+  if (d.includes("block")) return "blocked";
+  if (d.includes("review")) return "review-required";
+  return "in-sync";
+}
+
+function gitIdentityEmail() {
+  try {
+    return execSync("git config user.email", { stdio: ["ignore", "pipe", "ignore"], encoding: "utf8" }).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+async function recordEvidence({ opts, lock, manifest, decision, changes, code }) {
+  const evidenceMod = await loadCore("./src/evidence.mjs");
+  const appendReceipt = requireFn(evidenceMod, "appendReceipt", "./src/evidence.mjs");
+  appendReceipt({
+    dir: opts.evidenceDir,
+    decision: receiptDecision(decision),
+    exitCode: code,
+    target: lock.target,
+    baselineFingerprint: lock.fingerprint ?? null,
+    observedFingerprint: manifest.fingerprint ?? null,
+    changeSummary: countByAction(changes),
+    policy: opts.policy ?? "built-in default",
+    actor: evidenceMod.resolveActor(undefined, gitIdentityEmail()),
+  });
+}
+
+async function runEvidence(opts) {
+  const sub = opts.target; // `evidence <sub>` lands in the first positional
+  const evidenceMod = await loadCore("./src/evidence.mjs");
+  const dir = opts.evidenceDir;
+
+  if (sub === "verify" || sub === undefined) {
+    const res = requireFn(evidenceMod, "verifyEvidence", "./src/evidence.mjs")(dir);
+    if (res.ok) {
+      process.stdout.write(`evidence OK — ${res.count} receipt${res.count === 1 ? "" : "s"}, chain intact, signatures verified\n`);
+      return 0;
+    }
+    process.stderr.write(`evidence FAIL — ${res.problems.length} problem(s):\n`);
+    for (const p of res.problems) process.stderr.write(`  - ${p}\n`);
+    return 1;
+  }
+
+  if (sub === "show") {
+    const receipts = requireFn(evidenceMod, "readReceipts", "./src/evidence.mjs")(dir);
+    if (!receipts.length) {
+      process.stdout.write("no evidence recorded yet — run `toolproof check`\n");
+      return 0;
+    }
+    for (const r of receipts) {
+      process.stdout.write(
+        `${r.ts}  ${r.decision}  exit ${r.exitCode}  actor ${r.actor}  baseline ${shortHash(r.baselineFingerprint)}  observed ${shortHash(r.observedFingerprint)}  policy ${r.policy ?? "default"}\n`,
+      );
+    }
+    return 0;
+  }
+
+  if (sub === "export") {
+    const from = Number(opts.from ?? 0);
+    const to = opts.to === undefined ? undefined : Number(opts.to);
+    const out = opts.out;
+    const bundle = requireFn(evidenceMod, "exportEvidence", "./src/evidence.mjs")({ dir, from, to, out });
+    const msg = `exported ${bundle.receipts.length} receipt${bundle.receipts.length === 1 ? "" : "s"} (${bundle.range.from}..${bundle.range.to} of ${bundle.total})`;
+    if (out) process.stdout.write(`evidence ${msg} to ${out}\n`);
+    else process.stdout.write(`${JSON.stringify(bundle, null, 2)}\n`);
+    return 0;
+  }
+
+  throw new UsageError(`unknown evidence subcommand '${sub}' (try: verify, show, export)`);
+}
+
+// ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
 
@@ -638,6 +759,10 @@ async function main() {
     }
     if (opts.command === "check") {
       process.exitCode = await runCheck(opts);
+      return;
+    }
+    if (opts.command === "evidence") {
+      process.exitCode = await runEvidence(opts);
       return;
     }
     throw new UsageError(`unknown command '${opts.command}'`);

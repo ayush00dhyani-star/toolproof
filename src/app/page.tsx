@@ -305,6 +305,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* toolproof lock */}
+      <section className="py-16 border-t border-hair">
+        <div className="mx-auto max-w-3xl px-5" data-reveal>
+          <div className="lbl mb-5">New — Toolproof Lock</div>
+          <h2 className="text-xl font-semibold">A lockfile for the capabilities your agent can reach.</h2>
+          <p className="mt-3 text-[14px] text-dim max-w-2xl">
+            A scan tells you what a tool looks like right now; it does not tell
+            you what changed since you approved it.{" "}
+            <a href="/lock" className="text-amber underline-offset-4 hover:underline">Toolproof Lock</a>{" "}
+            writes a signed{" "}
+            <code className="mono text-[13px] text-ink">toolproof.lock</code>{" "}
+            baseline of an MCP server or API&apos;s capability surface — every
+            tool, schema, description, prompt, resource, instruction and outbound
+            host you reviewed — and you commit it next to your agent config. In
+            CI, <code className="mono text-[13px] text-ink">toolproof check</code>{" "}
+            diffs the live surface against that baseline and fails the build when
+            something drifts past your policy.
+          </p>
+          <p className="mt-4 text-[13px] text-faint">
+            Open and free —{" "}
+            <a href="/lock" className="underline-offset-4 hover:underline">how it works</a>{" "}
+            ·{" "}
+            <a href="/docs#lock" className="underline-offset-4 hover:underline">lockfile &amp; CLI reference</a>
+          </p>
+        </div>
+      </section>
+
       <footer className="border-t border-hair py-10">
         <div className="mx-auto max-w-4xl px-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="flex items-center gap-2 text-amber">

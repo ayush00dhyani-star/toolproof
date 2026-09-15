@@ -1,0 +1,32 @@
+{
+  "name": "toolproof-lock",
+  "version": "0.1.0",
+  "description": "Versioned, human-approved baselines for agent capabilities — fail CI when an MCP/API capability surface changes",
+  "homepage": "https://toolproof-scan.vercel.app/lock",
+  "bugs": "https://toolproof-scan.vercel.app/security",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "toolproof": "./bin.mjs"
+  },
+  "files": [
+    "bin.mjs",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "mcp",
+    "api",
+    "ai-agents",
+    "capability-drift",
+    "lockfile",
+    "ci",
+    "toolproof"
+  ]
+}

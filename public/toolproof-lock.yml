@@ -1,0 +1,73 @@
+# Toolproof Lock gate for GitHub Actions.
+#
+# Save as .github/workflows/toolproof-lock.yml.
+#
+# It needs a committed baseline: run `npx toolproof-lock lock <target>` once,
+# commit the resulting toolproof.lock, and (optionally) check in a policy file.
+# The job then re-fetches the live capability surface on every run and fails
+# when it drifts:
+#
+#   exit 0  in sync - informational changes only
+#   exit 1  review required - a human should approve the drift
+#   exit 2  blocked - the drift violates policy
+#   exit 3  usage, lockfile or network error
+#
+# Adjust LOCKFILE / POLICY if your files live somewhere else.
+name: Toolproof Lock
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lock-check:
+    runs-on: ubuntu-latest
+    env:
+      LOCKFILE: toolproof.lock
+      POLICY: toolproof.policy.yml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require a committed baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f "$LOCKFILE" ]; then
+            echo "::error::$LOCKFILE is missing. Run 'npx toolproof-lock lock <target>' and commit the result."
+            exit 1
+          fi
+
+      - name: Diff the live capability surface against the baseline
+        shell: bash
+        run: |
+          set +e
+          if [ -f "$POLICY" ]; then
+            npx -y --package toolproof-lock toolproof check --lock="$LOCKFILE" --policy="$POLICY"
+          else
+            npx -y --package toolproof-lock toolproof check --lock="$LOCKFILE"
+          fi
+          code=$?
+          set -e
+          case "$code" in
+            0)
+              echo "Toolproof Lock: in sync with the baseline."
+              ;;
+            1)
+              echo "::error::Toolproof Lock: capability drift needs review. Approve it deliberately, then re-run 'npx toolproof-lock lock <target>' and commit the updated $LOCKFILE."
+              exit 1
+              ;;
+            2)
+              echo "::error::Toolproof Lock: the observed surface violates your policy. Revert the change, or update the policy and the baseline deliberately."
+              exit 2
+              ;;
+            *)
+              echo "::error::Toolproof Lock: check could not run (exit $code). Confirm $LOCKFILE has a target and that the manifest API is reachable."
+              exit "$code"
+              ;;
+          esac

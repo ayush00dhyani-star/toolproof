@@ -19,6 +19,7 @@ const TIERS = [
       "Watchlist with diff-on-change alerts",
       "check_tool MCP server (Claude, Cursor, …)",
       "toolproof-gate CLI — MIT licensed",
+      "Toolproof Lock — committed lockfile + CI check (open, MIT)",
       "Signed passports (ed25519) on every verdict",
     ],
     cta: { href: "/", label: "start scanning →" },
@@ -31,6 +32,7 @@ const TIERS = [
       "Org-wide baselines, managed centrally",
       "Webhook alerts on drift (Slack, PagerDuty, SIEM)",
       "Private watchlists & team review workflow",
+      "Toolproof Control — shared Lock policy, named approvers, drift monitoring & evidence export",
       "Badge + gate enforcement across all repos",
       "Priority rules & signed key rotation",
     ],
@@ -92,18 +94,35 @@ export default function EnterprisePage() {
           <div className="card space-y-4 px-5 py-5">
             <div>
               <h2 className="text-[15px] font-semibold text-ink">
-                <code className="mono text-amber">toolproof-gate</code> — fail the build when a tool turns hostile
+                <code className="mono text-amber">toolproof-gate</code> — a passport-hash baseline that fails the build when a tool turns hostile
               </h2>
               <p className="mt-2 text-[13px] leading-6 text-dim">
                 A committed baseline of every MCP server you depend on. CI
                 re-verifies on every run: signature checked client-side
                 (ed25519), grade gated by policy, and any change to a
-                tool&apos;s model-visible instructions blocks the merge — the
+                tool&apos;s model-visible instructions fails the check — the
                 same discipline you already apply to dependencies, applied to
-                the instructions your agents read.
+                the instructions your agents read. Ships with the{" "}
+                <code className="mono">toolproof-mcp</code> package.
               </p>
-              <pre className="mono mt-3 overflow-auto rounded-md border border-hair bg-black/20 p-3 text-[11.5px] leading-5 text-dim">{`npx toolproof-gate --init https://mcp.example.com/mcp --min-grade B
-npx toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
+              <pre className="mono mt-3 overflow-auto rounded-md border border-hair bg-black/20 p-3 text-[11.5px] leading-5 text-dim">{`npx -y --package toolproof-mcp toolproof-gate --init https://mcp.example.com/mcp --min-grade B
+npx -y --package toolproof-mcp toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
+            </div>
+            <div>
+              <h2 className="text-[15px] font-semibold text-ink">
+                <code className="mono text-amber">toolproof lock</code> — the open baseline layer
+              </h2>
+              <p className="mt-2 text-[13px] leading-6 text-dim">
+                <code className="mono">toolproof lock &lt;target&gt;</code> writes a
+                signed <code className="mono">toolproof.lock</code>: the tool names,
+                schemas, descriptions, prompts, resources, instructions and outbound
+                hosts you approved. <code className="mono">toolproof check</code>{" "}
+                diffs the live surface against it and exits 1 (review required) or 2
+                (blocked) under a checked-in policy. The lockfile and the CI check
+                are free and open — no account, and no gateway, required.
+              </p>
+              <pre className="mono mt-3 overflow-auto rounded-md border border-hair bg-black/20 p-3 text-[11.5px] leading-5 text-dim">{`npx toolproof-lock lock https://mcp.example.com/mcp        # commit toolproof.lock
+npx toolproof-lock check --policy=toolproof.policy.yml   # CI: exit 1 review, 2 blocked`}</pre>
             </div>
             <div>
               <h2 className="text-[15px] font-semibold text-ink">Signed evidence, not screenshots</h2>

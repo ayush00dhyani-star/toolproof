@@ -39,6 +39,7 @@ export default function LegalShell({
           <Link href="/privacy" className="hover:text-ink">Privacy</Link>
           <Link href="/security" className="hover:text-ink">Security</Link>
           <Link href="/docs" className="hover:text-ink">Docs</Link>
+          <Link href="/lock" className="hover:text-ink">Lock</Link>
           <Link href="/enterprise" className="hover:text-ink">Enterprise</Link>
         </nav>
       </footer>

@@ -184,6 +184,44 @@ export async function scanTarget(
       resolved = "mcp";
       state = "verified";
       mcpMeta.toolNames = tools.map((t) => t.name);
+      // Canonical surface snapshot consumed by /api/v1/manifest. Normalized
+      // and sorted here so the manifest fingerprint is stable; the manifest
+      // builder re-normalizes defensively.
+      meta.surface = {
+        ...(mcp.serverInfo && (mcp.serverInfo.name || mcp.serverInfo.version)
+          ? { serverInfo: mcp.serverInfo }
+          : {}),
+        ...(mcp.instructions ? { instructions: mcp.instructions } : {}),
+        tools: tools
+          .map((t) => ({
+            name: t.name,
+            ...(t.description ? { description: t.description } : {}),
+            ...(t.schema !== undefined ? { inputSchema: t.schema } : {}),
+            ...(t.outputSchema !== undefined
+              ? { outputSchema: t.outputSchema }
+              : {}),
+          }))
+          .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)),
+        prompts: prompts
+          .map((p) => ({
+            name: p.name,
+            ...(p.description ? { description: p.description } : {}),
+          }))
+          .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)),
+        resources: resources
+          .map((r) => ({
+            name: r.name,
+            uri: r.uri,
+            ...(r.description ? { description: r.description } : {}),
+          }))
+          .sort((a, b) => (a.uri < b.uri ? -1 : a.uri > b.uri ? 1 : 0)),
+      };
+      // The scanner caps each list at 200 entries; when the server advertises
+      // more, the enumerated surface is incomplete and a drift check can never
+      // be exhaustive. Mark it so the differ fails closed instead of silent.
+      if ((mcp.toolCount ?? tools.length) > tools.length) {
+        (meta.surface as Record<string, unknown>).truncated = true;
+      }
       // Fingerprint of everything the model reads from this server — the
       // primitive behind change monitoring: compare hashes over time.
       toolTextHash = createHash("sha256")
@@ -228,6 +266,16 @@ export async function scanTarget(
           specUrl: api.specUrl,
           paths: api.pathCount,
           servers: api.servers,
+        };
+        // OpenAPI-side of the canonical surface. `paths` stays an empty list:
+        // huntOpenApi reports a path *count*, not path names (see manifest
+        // builder — the key is kept so consumers can read it unconditionally).
+        meta.surface = {
+          openapi: {
+            specUrl: api.specUrl,
+            servers: api.servers ?? [],
+            paths: [],
+          },
         };
         positives.push(`Machine-readable spec found (${api.specUrl})`);
         if (api.hasSecurity) positives.push("Auth declared in spec");

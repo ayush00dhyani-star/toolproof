@@ -45,6 +45,8 @@ function buildItems(): Item[] {
     { id: "go-grades", group: "Go", label: "Grades in the wild", run: () => location.assign("/#grades") },
     { id: "go-agents", group: "Go", label: "For agents — the rule", run: () => location.assign("/for-agents") },
     { id: "go-docs", group: "Go", label: "API docs", run: () => location.assign("/docs") },
+    { id: "go-lock", group: "Go", label: "Toolproof Lock — capability baselines", run: () => location.assign("/lock") },
+    { id: "go-lock-ref", group: "Go", label: "Lockfile & CLI reference", run: () => location.assign("/docs#lock") },
     {
       id: "act-theme",
       group: "Actions",

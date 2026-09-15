@@ -15,6 +15,7 @@
   },
   "files": [
     "server.mjs",
+    "gate.mjs",
     "README.md"
   ],
   "keywords": [

@@ -47,3 +47,8 @@ vercel_out.log
 
 build.log
 vitest.log
+dev.log
+vitest*.log
+build2.log
+eslint.log
+

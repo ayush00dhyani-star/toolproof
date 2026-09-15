@@ -16,8 +16,10 @@ Key surfaces:
 
 - [For agents](https://toolproof-scan.vercel.app/for-agents): the one-line rule for checking unfamiliar tools before an agent connects
 - [Scan a tool](https://toolproof-scan.vercel.app): paste a link, get a grade in seconds, free
-- [API docs](https://toolproof-scan.vercel.app/docs): keyless API — `/api/v1/verify?target=` (signed passport), `/api/v1/scan?target=` (full findings)
+- [API docs](https://toolproof-scan.vercel.app/docs): keyless API — `/api/v1/verify?target=` (signed passport), `/api/v1/scan?target=` (full findings), `/api/v1/manifest?target=` (canonical capability surface)
+- [Toolproof Lock](https://toolproof-scan.vercel.app/lock): `npx -y toolproof-lock lock <target>` writes a signed `toolproof.lock` baseline of an MCP server or API capability surface; `npx -y toolproof-lock check` fails CI when a tool, schema, description, outbound host or rule id drifts past policy (exit 1 review, 2 blocked)
 - [MCP adapter](https://www.npmjs.com/package/toolproof-mcp): native `check_tool` and `lookup_rule` tools for Claude Desktop, Claude Code, Cursor and other MCP clients
 - [CLI gate](https://www.npmjs.com/package/toolproof-scan): `npx -y toolproof-scan <target> --fail-under 70` for terminals and CI
+- [Lock gate workflow](https://toolproof-scan.vercel.app/toolproof-lock.yml): ready-to-run GitHub Actions job for `toolproof check`, for repositories that commit a baseline
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): instructions for agents that fetch this domain
 - [Tool owners](https://toolproof-scan.vercel.app/docs#toolproof-txt): serve `/.well-known/toolproof.txt` with `Deny: /` to refuse scanning (respected, never penalized)

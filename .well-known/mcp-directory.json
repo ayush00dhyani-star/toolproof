@@ -1,0 +1,47 @@
+{
+  "name": "Toolproof",
+  "description": "Trust grades for MCP servers and APIs. Scans the model-visible surface — tool names, descriptions, schemas, prompts, resources, instructions, outbound hosts — and returns a letter grade with 16 rules covering hidden instructions, invisible characters, exposed secrets, unsafe defaults and missing auth. Every verdict is an ed25519-signed passport, verifiable offline. No accounts, no keys.",
+  "url": "https://toolproof-scan.vercel.app",
+  "logo": "https://toolproof-scan.vercel.app/api/v1/og?target=https%3A%2F%2Ftoolproof-scan.vercel.app",
+  "categories": ["security", "ai-agents", "developer-tools", "mcp", "monitoring"],
+  "pricing": "free",
+  "license": "MIT",
+  "source_url": "https://github.com/ayush00dhyani-star/toolproof",
+  "npm": "toolproof-mcp",
+  "install": {
+    "command": "npx",
+    "args": ["-y", "toolproof-mcp"]
+  },
+  "mcp_config": {
+    "mcpServers": {
+      "toolproof": {
+        "command": "npx",
+        "args": ["-y", "toolproof-mcp"]
+      }
+    }
+  },
+  "tools": ["check_tool", "lookup_rule"],
+  "api": {
+    "verify": "GET /api/v1/verify?target=<url>",
+    "scan": "GET /api/v1/scan?target=<url>",
+    "manifest": "GET /api/v1/manifest?target=<url>",
+    "badge": "GET /api/v1/badge?target=<url>&style=grade",
+    "auth": "none",
+    "signature": "ed25519 over canonical JSON; public key at /api/v1/pubkey"
+  },
+  "contact": "security@toolproof-scan.vercel.app",
+  "author": {
+    "name": "Ayush Dhyani",
+    "role": "Security researcher (Bugcrowd)"
+  },
+  "keywords": [
+    "mcp security",
+    "prompt injection",
+    "agent security",
+    "tool safety",
+    "ai trust",
+    "supply chain",
+    "audit"
+  ],
+  "differentiator": "Paid by nobody it scans. A trust layer that takes money from the tools it grades is worthless, so neutrality is the business model, not a promise."
+}

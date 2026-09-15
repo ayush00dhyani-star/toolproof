@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   description:
     "What Toolproof found scanning the most-used MCP servers: grade distribution, hidden-instruction rates, exposed secrets and unsafe defaults, with the evidence to cite.",
   alternates: { canonical: "/report" },
+  openGraph: {
+    images: ["/api/v1/og?report=1"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/api/v1/og?report=1"],
+  },
 };
 
 interface Stat {

@@ -35,9 +35,12 @@ export async function OPTIONS() {
 
 export async function GET(req: NextRequest) {
   const target = req.nextUrl.searchParams.get("target") ?? "";
+  const report = req.nextUrl.searchParams.get("report") === "1";
   const kindRaw = req.nextUrl.searchParams.get("kind");
   const kind: ScanKind =
     kindRaw === "mcp" || kindRaw === "api" ? kindRaw : "auto";
+
+  if (report) return reportCard();
 
   let host = hostOf(target) || "no target";
   let label = "UNVERIFIED";
@@ -218,6 +221,78 @@ export async function GET(req: NextRequest) {
             }}
           >
             toolproof-scan.vercel.app · signed trust passport
+          </div>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: 14,
+            background: "#ffb224",
+            display: "flex",
+            flexShrink: 0,
+          }}
+        />
+      </div>
+    ),
+    {
+      width: SIZE.width,
+      height: SIZE.height,
+      headers: { ...CORS, ...CACHE_HEADERS },
+    },
+  );
+}
+
+/**
+ * The share card for the field report. Unlike a per-target card, this one has
+ * to make someone want to click without already knowing a server — so it
+ * leads with the finding, not the brand.
+ */
+function reportCard(): ImageResponse {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          background: "#0b0c0e",
+          color: "#e8e6df",
+          fontFamily: "monospace",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: 14,
+            background: "#ffb224",
+            display: "flex",
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            padding: 64,
+            justifyContent: "center",
+            gap: 24,
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 26, color: "#5c6167", letterSpacing: 3 }}>
+            STATE OF MCP TOOL SAFETY
+          </div>
+          <div style={{ display: "flex", fontSize: 58, fontWeight: 700, lineHeight: 1.15 }}>
+            We scanned the tools your agent already trusts.
+          </div>
+          <div style={{ display: "flex", fontSize: 30, color: "#9ba0a6", lineHeight: 1.4 }}>
+            Hidden instructions. Invisible characters. Exposed secrets.
+            <br />
+            Everything a model reads but a human never sees.
+          </div>
+          <div style={{ display: "flex", fontSize: 24, color: "#ffb224" }}>
+            toolproof-scan.vercel.app/report · open source, paid by nobody we scan
           </div>
         </div>
         <div

@@ -15,6 +15,9 @@ agent can reach did.
   OpenAPI paths).
 - `toolproof check` re-fetches the surface, computes a **semantic** diff against
   the baseline, applies a policy, and exits non-zero when drift needs a human.
+- Every `check` decision is appended to a signed, tamper-evident **evidence
+  trail**, so a team can later prove what was approved, when, and that the
+  record was never rewritten.
 - Policy decides what is allowed to change on its own: a new tool is a review,
   a new outbound host is a block, a schema that *gained* a field is a block.
 
@@ -65,13 +68,50 @@ npx toolproof-lock --help          # no install
 npm i -D toolproof-lock            # or pin it in devDependencies
 ```
 
+## Evidence: the signed decision history
+
+A verdict that disappears when the terminal closes is not an audit trail. Every
+`check` appends a receipt to `.toolproof/evidence.jsonl`:
+
+```
+$ toolproof evidence show
+2026-09-15T07:58:30.046Z  blocked  exit 2  actor dev@example.com
+  baseline sha256:cd65c5f9…  observed sha256:af719268…  policy toolproof.policy.json
+
+$ toolproof evidence verify
+evidence OK — 3 receipts, chain intact, signatures verified
+```
+
+Each receipt is hash-chained to the one before it and signed with a
+project-local ed25519 key (`.toolproof/evidence-key.pem`, with the public key
+published beside it). `verify` re-derives every hash and checks every signature,
+so a rewritten decision is detected; reordering or dropping receipts breaks the
+chain.
+
+**Privacy by construction.** A receipt carries fingerprints, the decision, a
+policy reference, the actor and a timestamp. It never carries prompt content,
+tool arguments, tool results or credentials — so an evidence store is safe to
+keep, export and hand over.
+
+**Selective disclosure.** Export a range as a self-contained bundle an auditor
+verifies offline, with no key and no network:
+
+```bash
+toolproof evidence export --from 0 --out audit.json
+```
+
+`audit.json` carries its own issuer key and a signature over the full range, so
+its contents cannot be swapped after the fact. The rest of the history stays in
+your repository.
+
 ## Commands
 
 ```
 toolproof lock <target> [--kind=auto|mcp|api] [--out=toolproof.lock]
                         [--policy=<path>] [--api=<url>] [--timeout=<ms>]
 toolproof check [--lock=toolproof.lock] [--policy=<path>] [--api=<url>]
-                        [--timeout=<ms>] [--json] [--quiet]
+                        [--timeout=<ms>] [--json] [--quiet] [--no-evidence]
+toolproof evidence [verify|show|export] [--from <n>] [--to <n>] [--out <f>]
 toolproof --help | -h | --version | -v
 ```
 
@@ -85,6 +125,9 @@ toolproof --help | -h | --version | -v
 | `--timeout=<ms>` | request timeout (default `30000`) |
 | `--json` | print `{ decision, exitCode, changes, manifest }` |
 | `--quiet` | print a single verdict line |
+| `--no-evidence` | do not append a receipt for this `check` |
+| `--evidence-dir <path>` | evidence store (default `.toolproof`) |
+| `--from <n>` / `--to <n>` | receipt range for `evidence export` |
 
 `NO_COLOR=1` disables color; color is auto-disabled when stdout is not a TTY.
 
@@ -205,7 +248,7 @@ jobs:
         with:
           node-version: 20
       - name: Lock the agent capability surface
-        run: npx -y toolproof-lock@0.1.0 check --policy=toolproof.policy.json
+        run: npx -y toolproof-lock check --policy=toolproof.policy.json
 ```
 
 Exit `1` fails the job as a review, `2` as a block, `3` as an error. Use
@@ -215,15 +258,12 @@ annotate rather than fail.
 ## Publishing
 
 The package is structured for npm (`"type": "module"`, `bin.toolproof`,
-`files: [bin.mjs, src, README.md]`, zero dependencies, `node >= 18`).
-
-**Do not publish.** This build is a local deliverable; nothing in this repository
-publishes to npm, deploys to Vercel, or pushes to git. When a release is
-explicitly approved, the maintainer runs it by hand from the repository root:
+`files: [bin.mjs, src, README.md]`, zero dependencies, `node >= 18`). Inspect
+exactly what ships before a release:
 
 ```bash
-npm pack ./packages/toolproof-lock --dry-run   # inspect exactly what ships
-npm publish ./packages/toolproof-lock          # only after explicit approval
+npm pack ./packages/toolproof-lock --dry-run
+npm publish ./packages/toolproof-lock
 ```
 
 ## License

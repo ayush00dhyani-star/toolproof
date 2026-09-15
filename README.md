@@ -50,32 +50,6 @@ For pull requests, copy
 `.github/workflows/toolproof.yml` and set the `TOOLPROOF_TARGET` repository
 variable. It rejects targets that are unverified or score below its threshold.
 
-## Toolproof Lock
-
-A committed baseline for the capability surface your agent can reach.
-`toolproof lock` writes a signed `toolproof.lock`; `toolproof check` diffs the
-live surface against it and fails CI when a tool, schema, description or
-outbound host drifts past your policy.
-
-```bash
-# 1. write the baseline, then commit toolproof.lock
-npx toolproof-lock lock https://mcp.example.com/mcp
-
-# 2. in CI (or before you connect): diff against the baseline, apply policy
-npx toolproof-lock check --policy=toolproof.policy.yml
-
-# 3. machine-readable, for your own tooling
-npx toolproof-lock check --json
-```
-
-Exit codes: `0` in sync (or informational only) · `1` review required ·
-`2` blocked by policy · `3` usage, lockfile or network error. The check is
-semantic, not a hash compare — tool order and JSON re-serialization do not
-trip it. Free and open (MIT), no account required, and the lockfile stays
-valid whether or not you run an MCP gateway. A ready-to-run GitHub Actions
-workflow ships as [`public/toolproof-lock.yml`](public/toolproof-lock.yml).
-Details: [toolproof-scan.vercel.app/lock](https://toolproof-scan.vercel.app/lock).
-
 ## CLI & MCP adapter
 
 Both zero-dependency packages are now public on npm:
@@ -91,15 +65,8 @@ npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70
 
 The adapter exposes `check_tool(target)` and `lookup_rule(rule_id)` to Claude
 Desktop, Claude Code, Cursor, and compatible MCP clients. See
-[toolproof-scan](https://www.npmjs.com/package/toolproof-scan),
-[toolproof-mcp](https://www.npmjs.com/package/toolproof-mcp) and
-[toolproof-lock](https://www.npmjs.com/package/toolproof-lock) (capability
-baselines and the `toolproof` CI check).
-
-`toolproof-lock` also keeps a signed, tamper-evident **evidence trail** of every
-check decision in `.toolproof/evidence.jsonl` — hash-chained and ed25519-signed,
-exportable as an offline-verifiable bundle for an auditor
-(`toolproof evidence verify | show | export`).
+[toolproof-scan](https://www.npmjs.com/package/toolproof-scan) and
+[toolproof-mcp](https://www.npmjs.com/package/toolproof-mcp).
 
 ## toolproof.txt
 

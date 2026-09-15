@@ -5,6 +5,8 @@ import Proofmark from "@/components/Proofmark";
 import WatchToggle from "@/components/WatchToggle";
 import RecordOnLoad from "@/components/RecordOnLoad";
 import ShareRow from "@/components/ShareRow";
+import InstallGuard from "@/components/InstallGuard";
+import EmbedBadge from "@/components/EmbedBadge";
 import { TargetError } from "@/lib/net";
 import { passportOf } from "@/lib/passport";
 import { scanTarget } from "@/lib/scan";
@@ -184,6 +186,19 @@ export default async function TrustPage({
           </div>
         )}
 
+        {/* the acquisition loop: the verdict is the moment intent peaks */}
+        <div className="mt-10">
+          <InstallGuard grade={report.grade} />
+        </div>
+
+        {/* tool owners: a verified A or B is a marketing asset */}
+        {report.state === "verified" &&
+          (report.grade.startsWith("A") || report.grade === "B") && (
+            <div className="mt-6">
+              <EmbedBadge target={report.target} host={report.host} />
+            </div>
+          )}
+
         {/* findings */}
         <div className="mt-10">
           <div className="lbl mb-3">
@@ -270,7 +285,7 @@ export default async function TrustPage({
         <div className="mt-10 flex gap-6 text-[12px]">
           <Link href="/" className="text-amber underline-offset-4 hover:underline">← scan something else</Link>
           <a
-            href={`/t?${q}&rescan=${Date.now()}`}
+            href={`/t?${q}&rescan=1`}
             className="text-dim underline-offset-4 hover:underline"
           >
             re-scan

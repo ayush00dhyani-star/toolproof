@@ -23,15 +23,13 @@ grade is below B, tell the user what you found and ask before connecting.
 - [API docs](https://toolproof-scan.vercel.app/docs): full keyless API contract (this page is the machine summary).
 - [MCP adapter](https://www.npmjs.com/package/toolproof-mcp): `npx -y toolproof-mcp` adds `check_tool` and `lookup_rule` to any stdio MCP client.
 - [CLI gate](https://www.npmjs.com/package/toolproof-scan): `npx -y toolproof-scan <target> --fail-under 70` for terminals and CI enforcement.
-- [Toolproof Lock](https://toolproof-scan.vercel.app/lock): `npx -y toolproof-lock lock <target>` writes a signed `toolproof.lock` baseline of the capability surface; `npx -y toolproof-lock check` re-fetches it, diffs semantically, applies policy and exits non-zero on drift (exit 1 review, 2 blocked, 3 error).
-- [Lock gate workflow](https://toolproof-scan.vercel.app/toolproof-lock.yml): ready-to-run GitHub Actions job for `toolproof check`, for repositories that commit a baseline.
 - [Leaderboard](https://toolproof-scan.vercel.app/leaderboard): scanned registry with grades and watchlist.
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): rules for agents that fetch this domain.
 - Short link for a scan result: `https://toolproof-scan.vercel.app/t?target=<url>` (open URL space, noindex).
 
 ## API
 
-Base: `https://toolproof-scan.vercel.app`. One GET per verdict. No keys, no accounts. Responses are cache-friendly (s-maxage); the routes that perform a live scan — `/api/v1/scan`, `/api/v1/verify`, `/api/v1/manifest`, `/api/v1/og` and `/t` — are rate-limited to 30/min per IP. Every scan result is signed.
+Base: `https://toolproof-scan.vercel.app`. One GET per verdict. No keys, no accounts. Responses are cache-friendly (s-maxage), rate-limited to 30 scans/min per IP. Every scan result is signed.
 
 Endpoints:
 
@@ -92,27 +90,6 @@ The badge is an SVG that re-scans its target on every cache refresh (~10 min); t
 ## Change monitoring
 
 For verified MCP surfaces, every passport carries `toolTextHash` — a SHA-256 fingerprint of every tool description, prompt, resource and server instruction the model sees. Monitoring is diffing that hash over time; alerts are whatever notifies you (CI email, Slack webhook, scheduled task). Browser-side: pin a tool from its trust card — the leaderboard watchlist re-checks pins on every visit.
-
-## Toolproof Lock — capability baselines
-
-A passport says what a tool looked like at one moment. Toolproof Lock makes that
-surface reviewable and durable: `npx -y toolproof-lock lock <target>` writes a
-signed `toolproof.lock` (tools, descriptions, input/output schemas, prompts,
-resources, instructions, outbound hosts, OpenAPI paths, the rule-set that graded
-it, and a `fingerprint`), which you commit beside the agent configuration. In CI,
-`npx -y toolproof-lock check [--policy=toolproof.policy.yml] [--json] [--quiet]`
-re-fetches the surface, computes a semantic diff against the baseline, applies the
-policy and exits `0` in sync, `1` review required, `2` blocked, `3` usage /
-lockfile / network error. The check is semantic, not a hash compare: tool order
-and JSON re-serialization do not trip it; a widened schema, a new tool, rewritten
-description, new outbound host or a new high-severity rule id does. Policy keys:
-`minimumGrade`, `requireVerified`, `onToolAdded`, `onToolRemoved`,
-`onDescriptionChanged`, `onSchemaExpanded`, `onNewOutboundHost`,
-`onHighSeverityFinding` — each action is `informational`, `review` or `block`.
-Zero dependencies, Node 18+, MIT, free and open; the lockfile stays valid with or
-without an MCP gateway. Ready-to-run GitHub Actions job:
-`https://toolproof-scan.vercel.app/toolproof-lock.yml`. Reference:
-`https://toolproof-scan.vercel.app/docs#lock`.
 
 ## Canaries
 

@@ -1,9 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { limited, tierFor } from "@/lib/rate-limit";
 
-// The tier table and the sliding-window counter live in src/lib/rate-limit.ts:
-// pure, import-free logic (no node: builtins, no Next imports) that the unit
-// suite exercises directly, since this file only runs inside the Edge runtime.
+const WINDOW = 60_000;
+const HITS = new Map<string, number[]>();
+
+// Tier table: GET on scan/verify/og and the /t page scan at 30/min;
+// GET /embed at 120/min (embed-heavy pages behind NAT). POST scan/verify
+// shares the scan tier. Query strings are irrelevant — buckets key on IP.
+const TIERS: { name: string; limit: number; methods: string[]; match: (p: string) => boolean }[] = [
+  {
+    name: "scan",
+    limit: 30,
+    methods: ["GET", "POST"],
+    match: (p) =>
+      p === "/api/v1/scan" ||
+      p === "/api/v1/verify" ||
+      p === "/api/v1/og" ||
+      p === "/t",
+  },
+  {
+    name: "embed",
+    limit: 120,
+    methods: ["GET"],
+    match: (p) => p === "/embed" || p.startsWith("/embed/"),
+  },
+];
+
+function limited(tierName: string, ip: string, limit: number): boolean {
+  const key = `${tierName}:${ip}`;
+  const now = Date.now();
+  const arr = (HITS.get(key) ?? []).filter((t) => now - t < WINDOW);
+  arr.push(now);
+  HITS.set(key, arr);
+  if (HITS.size > 5000) HITS.clear();
+  return arr.length > limit;
+}
 
 // The renderer stamps its bootstrap scripts with the nonce it parses from
 // the request CSP header (app-render.js reads headers["content-security-policy"]).
@@ -25,27 +55,28 @@ function nonceFor(req: NextRequest, path: string): string {
 export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const method = req.method.toUpperCase();
-
-  const tier = tierFor(method, path);
-  if (tier) {
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-    if (limited(tier.name, ip, tier.limit)) {
-      const body =
-        path.startsWith("/api/")
-          ? JSON.stringify({
-              error: "rate limited — responses are cache-friendly, retry shortly",
-            })
-          : "rate limited — retry in a minute\n";
-      return new NextResponse(body, {
-        status: 429,
-        headers: {
-          "retry-after": "60",
-          "content-type": path.startsWith("/api/")
-            ? "application/json"
-            : "text/plain",
-        },
-      });
+  if (method === "GET" || method === "POST") {
+    for (const tier of TIERS) {
+      if (!tier.methods.includes(method) || !tier.match(path)) continue;
+      const ip =
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+      if (limited(tier.name, ip, tier.limit)) {
+        const body =
+          path.startsWith("/api/")
+            ? JSON.stringify({
+                error: "rate limited — responses are cache-friendly, retry shortly",
+              })
+            : "rate limited — retry in a minute\n";
+        return new NextResponse(body, {
+          status: 429,
+          headers: {
+            "retry-after": "60",
+            "content-type": path.startsWith("/api/")
+              ? "application/json"
+              : "text/plain",
+          },
+        });
+      }
     }
   }
 

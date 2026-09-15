@@ -4,7 +4,6 @@ export interface McpToolInfo {
   name: string;
   description?: string;
   schema: unknown;
-  outputSchema?: unknown;
 }
 
 export interface McpPromptInfo {
@@ -156,7 +155,6 @@ export async function probeMcp(endpoint: URL): Promise<McpProbeResult> {
       description:
         typeof t?.description === "string" ? t.description : undefined,
       schema: t?.inputSchema,
-      outputSchema: t?.outputSchema,
     }));
 
     // prompts/list and resources/list are best-effort depth probes: same

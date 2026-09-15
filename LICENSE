@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Ayush Dhyani, Toolproof
+Copyright (c) 2026 ayush00dhyani-star
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Trademark notice
-
-"Toolproof", the Toolproof proofmark, the letter-grade scale, the rule
-identifiers (TP-101 through TP-304), the toolproof.txt standard, the
-Toolproof Lock file format, and the evidence receipt format are trademarks of
-Ayush Dhyani / Toolproof. The MIT License above covers the source code; it
-does not grant a trademark license. You may not use the Toolproof name or
-marks to imply endorsement, sponsorship, or that an unrelated product is part
-of Toolproof, without written permission. Verifying a Toolproof signature or
-importing the published format does not require a trademark license.

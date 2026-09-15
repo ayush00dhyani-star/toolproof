@@ -23,7 +23,6 @@ const EXAMPLES: { label: string; target: string; kind: ScanKind }[] = [
   { label: "GitHub MCP", target: "api.githubcopilot.com/mcp", kind: "auto" },
   { label: "Petstore", target: "petstore3.swagger.io/api/v3", kind: "auto" },
   { label: "DeepWiki", target: "mcp.deepwiki.com/mcp", kind: "auto" },
-  { label: "☠ Infected demo", target: "toolproof-scan.vercel.app/api/demo/infected", kind: "mcp" },
 ];
 
 const FINDINGS_SHOWN = 8;
@@ -196,9 +195,6 @@ export default function ScanBox() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 px-1 text-[11px] text-faint">
-          try: paste the link to any MCP server — or hit the demo above
-        </p>
         <input
           ref={inputRef}
           value={target}

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "publish:packages": "npm publish packages/toolproof-scan && npm publish packages/toolproof-mcp && npm publish packages/toolproof-lock"
+    "publish:packages": "npm publish packages/toolproof-scan && npm publish packages/toolproof-mcp"
   },
   "dependencies": {
     "next": "16.3.5",

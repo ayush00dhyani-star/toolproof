@@ -1,6 +1,48 @@
 # toolproof-mcp
 
-**Let your AI check every tool before it connects to it.**
+**Let your AI check every tool before it connects — and stop the malicious ones before it ever sees them.**
+
+Two ways to use it, depending on how much you want to trust:
+
+- **Check mode** (advisory): add toolproof as a tool. The AI grades any MCP
+  server or API *before* connecting, and is told to ask you first if the
+  grade is below B.
+- **Wrap mode** (enforcement): put toolproof *in the path*. It proxies the
+  real server and **removes malicious tools from the list the agent sees**,
+  then injects a `toolproof_alerts` tool that reports exactly what was
+  blocked and why. The agent never learns the bad tools exist.
+
+Wrap mode is the one that *stops* an attack instead of just grading it.
+
+## Wrap mode — the guard in the path
+
+List toolproof-wrap instead of the real server. Whatever follows `--` is the
+real server and its arguments:
+
+```json
+{ "mcpServers": { "stripe": {
+    "command": "npx",
+    "args": ["-y", "toolproof-mcp", "wrap", "--", "npx", "-y", "@stripe/mcp"] } } }
+}
+```
+
+Works with any stdio MCP client (Claude Desktop, Claude Code, Cursor). No
+harness cooperation needed — it is a transparent proxy.
+
+**What gets blocked:** deception only. Hidden characters (TP-101), embedded
+credentials (TP-104), and critical/high override, exfiltration, or
+concealment phrasing (TP-102). These are removed.
+
+**What is never blocked:** honest-but-sloppy tools. A docs URL, missing auth,
+a destructive verb in a legit database tool — these are graded and passed
+through untouched, reported via `toolproof_alerts`. You decide. That
+two-class split is the point: stop the malicious, keep the tools people love.
+
+If the wrapped server cannot start, toolproof-wrap exits rather than pass
+traffic it could not inspect. It never silently forwards what it cannot see.
+
+
+## Check mode — grade before you connect
 
 This is the Toolproof trust scanner packaged as an MCP server. Add it once
 to Claude Desktop, Claude Code, Cursor, or any MCP client, and the AI gets

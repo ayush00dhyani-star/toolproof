@@ -26,7 +26,12 @@ export default function ShareRow({
   const q = `target=${encodeURIComponent(target)}&kind=${kind}`;
   const cardUrl = `${ORIGIN}/t?${q}`;
   const badgeUrl = `${ORIGIN}/api/v1/badge?${q}`;
-  const shareText = `${host} scans ${grade} on Toolproof — signed trust passport for the agent economy`;
+  // Lead with the verdict: a bare link competes with nothing, a finding
+  // competes with the fear. A bad grade is the thing people share.
+  const shareText =
+    grade.startsWith("A") || grade === "B"
+      ? `${host} scans ${grade} on Toolproof — signed trust passport for the agent economy`
+      : `${host} scans ${grade} — this is what your agent connects to without you looking`;
   const badgeMarkdown = `[![toolproof](${badgeUrl})](${cardUrl})`;
 
   async function copy(text: string, which: CopyKind) {
@@ -66,6 +71,23 @@ export default function ShareRow({
         className={btn}
       >
         share on linkedin
+      </a>
+      {/* The two rooms where the audience actually lives. */}
+      <a
+        href={`https://news.ycombinator.com/submitlink?u=${encodeURIComponent(cardUrl)}&t=${encodeURIComponent(shareText)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={btn}
+      >
+        hacker news
+      </a>
+      <a
+        href={`https://www.reddit.com/submit?url=${encodeURIComponent(cardUrl)}&title=${encodeURIComponent(shareText)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={btn}
+      >
+        reddit
       </a>
       <button onClick={() => copy(badgeMarkdown, "badge")} className={btn}>
         {copied === "badge" ? <span className="text-good">copied ✓</span> : "copy badge markdown"}

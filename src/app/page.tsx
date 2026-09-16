@@ -1,4 +1,5 @@
 import Proofmark from "@/components/Proofmark";
+import Link from "next/link";
 import ScanBox from "@/components/ScanBox";
 import HijackDemo from "@/components/HijackDemo";
 import SeedsGrid from "@/components/SeedsGrid";
@@ -12,10 +13,10 @@ function Nav() {
   return (
     <nav className="fixed top-0 inset-x-0 z-40 border-b border-hair bg-bg/80 backdrop-blur-md">
       <div className="mx-auto max-w-4xl px-5 h-14 flex items-center gap-5">
-        <a href="/" className="flex items-center gap-2 text-amber">
+        <Link href="/" className="flex items-center gap-2 text-amber">
           <Proofmark className="h-5 w-5" />
           <span className="font-semibold tracking-tight">Toolproof</span>
-        </a>
+        </Link>
         <div className="ml-auto flex items-center gap-5 text-[13.5px] text-dim">
           <a href="#checks" className="hover:text-ink transition-colors">Checks</a>
           <a href="/mcp-security-scanner" className="hover:text-ink transition-colors">MCP scanner</a>
@@ -118,13 +119,14 @@ export default function Home() {
         <div className="mx-auto max-w-3xl px-5">
           <div className="lbl mb-5 text-center">The safety check for AI tools · free · no account</div>
           <h1 className="h-display text-center text-3xl sm:text-[40px] font-semibold leading-[1.15]">
-            Check an AI tool or MCP server
+            Your agent connects to tools
             <br />
-            before you connect to it.
+            <span className="text-amber">nobody has checked.</span>
           </h1>
           <p className="mt-4 text-center text-[15px] text-dim max-w-xl mx-auto">
-            Paste an MCP server or API URL. In a few seconds you get a letter
-            grade, what was found, and the evidence.
+            AI agents now reach MCP servers and APIs that can hide instructions
+            and steal credentials without the agent — or you — noticing. Paste
+            one, and see exactly what it would do.
           </p>
 
           <div className="mt-8">

@@ -1,16 +1,51 @@
 # Toolproof
 
-**The safety check for AI tools.** AI assistants connect to tools — servers,
-APIs, plugins — and those tools can hide tricks the AI obeys and humans never
-see. Toolproof checks any of them and issues a letter grade with an
-ed25519-signed receipt anyone can verify offline.
+**Your AI agent connects to tools it has never been checked against.** Claude
+Code, Codex, Cursor, Pi, Hermes — they all reach MCP servers and APIs now, and
+some of those tools hide instructions that steal credentials without the agent
+or you ever noticing. The tool description *is* the instruction your model
+obeys, and nobody reads it.
+
+**Toolproof stops it.** Paste a URL, get a letter grade and the exact rules
+that produced it. Free, no account.
 
 Live: https://toolproof-scan.vercel.app
 
-**Nobody scans things by hand — so the AI does it.** Paste the one-line rule
-into your agent's instructions (`/for-agents`) and call the signed API before
-connecting to an unfamiliar tool. Machines that fetch this domain read
-[`/agents.md`](public/agents.md).
+```
+npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70
+```
+
+Every verdict is an **ed25519-signed receipt** over canonical JSON that anyone
+can verify offline with the published public key — a grade is evidence, not an
+opinion. Nobody it scans pays for the verdict; that neutrality is the product,
+not a promise.
+
+## Two ways it protects you
+
+**Before you connect — check it.** Paste an MCP server or API, or let your
+agent check it itself:
+
+```json
+{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
+```
+
+The adapter exposes `check_tool(target)` and `lookup_rule(rule_id)` to Claude
+Desktop, Claude Code, Cursor and compatible MCP clients. One keyless GET works
+too — `/api/v1/verify?target=<url>` returns the signed passport.
+
+**In CI — pin it, and fail on drift.** Lock the approved capability surface;
+the check blocks when it changes, so a tool that quietly adds an exfil
+endpoint never reaches your pipeline:
+
+```bash
+npx -y toolproof-lock lock  https://mcp.example.com/mcp   # pin the baseline
+npx -y toolproof-lock check                             # CI gate — blocks on drift
+```
+
+Every decision appends a hash-chained signed receipt, so your team can later
+prove what was approved, when, and that the record was never rewritten.
+Auditors verify an export in the browser with nothing installed:
+[/evidence](https://toolproof-scan.vercel.app/evidence)
 
 ## What it checks
 
@@ -52,21 +87,15 @@ variable. It rejects targets that are unverified or score below its threshold.
 
 ## CLI & MCP adapter
 
-Both zero-dependency packages are now public on npm:
+Both zero-dependency packages are public on npm:
 
-```bash
-# Fail CI if the target is unverified or scores below 70
-npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70
-```
-
-```json
-{ "mcpServers": { "toolproof": { "command": "npx", "args": ["-y", "toolproof-mcp"] } } }
-```
-
-The adapter exposes `check_tool(target)` and `lookup_rule(rule_id)` to Claude
-Desktop, Claude Code, Cursor, and compatible MCP clients. See
-[toolproof-scan](https://www.npmjs.com/package/toolproof-scan) and
-[toolproof-mcp](https://www.npmjs.com/package/toolproof-mcp).
+- **[toolproof-scan](https://www.npmjs.com/package/toolproof-scan)** — the
+  scanner. `npx -y toolproof-scan <target> --fail-under 70` exits non-zero when
+  a target is unverified or falls below the chosen score.
+- **[toolproof-mcp](https://www.npmjs.com/package/toolproof-mcp)** — the guard
+  for your agent, above.
+- **toolproof-lock** — the drift gate. `lock` pins a signed baseline, `check`
+  fails closed in CI when it changes.
 
 ## toolproof.txt
 

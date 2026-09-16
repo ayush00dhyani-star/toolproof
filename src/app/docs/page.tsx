@@ -339,7 +339,7 @@ jobs:
         </section>
 
         <footer className="border-t border-line pt-8 pb-4 text-[11px] text-faint">
-          Toolproof — built by Ayush Dhyani ·{" "}
+          Toolproof — built by Ayush Sharma ·{" "}
           <a href="/terms" className="hover:text-ink">terms</a> ·{" "}
           <a href="/privacy" className="hover:text-ink">privacy</a> ·{" "}
           <a href="/security" className="hover:text-ink">security</a>

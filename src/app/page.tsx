@@ -314,7 +314,7 @@ export default function Home() {
             <span className="font-semibold text-[13px] tracking-tight">Toolproof</span>
           </div>
           <div className="text-[12.5px] text-faint">
-            Built by Ayush Dhyani — security researcher (Bugcrowd). A grade is
+            Built by Ayush Sharma — security researcher (Bugcrowd). A grade is
             a receipt, not a guarantee.
           </div>
           <div className="sm:ml-auto flex gap-5 text-[12.5px] text-dim">

@@ -5,18 +5,24 @@ filing takes minutes rather than hours of research.
 
 ---
 
-## READ THIS FIRST — the name question
+## The name — RESOLVED
 
-The repository, the LICENSE, and the ownership page currently say
-**"Ayush Dhyani."** You asked for filings under **"Ayush Sharma."**
+The repo, LICENSE, and ownership pages previously said **"Ayush Dhyani."**
+The owner has confirmed the legal name is **Ayush Sharma.** All public
+attributions have been corrected to Sharma — the LICENSE copyright line, the
+CLA's "Maintainer" definition, the ownership page, the docs footer, the
+homepage, and the directory metadata.
 
-A trademark registered to the wrong owner is **void** — not "fixable later,"
-void. Before filing anything, confirm your legal name as it appears on your
-ID, and tell me which is correct. If it is Sharma, the LICENSE, the ownership
-page, and the CLA all need correcting to match, because a registration that
-contradicts the published attribution is a defect an opponent can use.
+**A trademark registered to the wrong owner is void**, not correctable later,
+so the registration and the published attribution must agree. They now do.
 
-This is the one thing on this page I cannot decide for you.
+The GitHub handle `ayush00dhyani-star` is an account name, not a legal
+attribution, and is unchanged — renaming the org would break every link the
+launch posts and directory submissions point at. If you want it changed, do it
+after the filings are in and every inbound link has been redirected.
+
+### Owner
+- Name: **Ayush Sharma**
 
 ---
 
@@ -53,7 +59,6 @@ in any font, so a competitor cannot sidestep by restyling it. File the word
 mark first; the proofmark logo can follow.
 
 ### Owner
-- Name: **[CONFIRM — Sharma or Dhyani]**
 - Entity type: Individual (unless you have formed an LLC — if so, file in the
   LLC's name, and tell me, because the entity changes the form)
 - Address and email: required for the public record. Note this is published —
@@ -85,10 +90,14 @@ Two classes = **$500 in fees.** If you want to spend less, file Class 42 only
 — it covers the hosted service, which is the product people actually use. The
 CLI packages are supports, not the revenue.
 
-### First use in commerce
-- The date the site first went live and the packages first published. From the
-  repository history: **September 2026** — give me the exact first-publish
-  date and I will fill it.
+### First Use in Commerce
+- **Date of first use: 12 September 2026** — established from the repository
+  history: the scanner, signed passports and site were first published that
+  day (commit `2191f49`), and the `toolproof-scan` and `toolproof-mcp`
+  packages first shipped to npm the same day.
+- Use in commerce means the mark appearing on goods/services actually sold or
+  transported. For a free service, the operative event is public availability
+  of the service under the mark — which began 12 September 2026.
 
 ### Specimens (attach a screenshot per class)
 - **For Class 42:** a screenshot of the homepage at

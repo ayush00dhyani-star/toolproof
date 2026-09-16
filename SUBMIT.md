@@ -58,5 +58,5 @@ shared policy — never for a verdict.
 
 ## Author
 
-Ayush Dhyani — security researcher (Bugcrowd). Built by nobody who is paid by anybody
+Ayush Sharma — security researcher (Bugcrowd). Built by nobody who is paid by anybody
 we scan; that is the entire point of a trust layer.

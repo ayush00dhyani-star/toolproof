@@ -17,7 +17,7 @@ export default function OwnershipPage() {
       <section>
         <h2 className="text-lg font-semibold text-ink">1. Who owns this</h2>
         <p className="mt-3">
-          Toolproof is built and owned by Ayush Dhyani. The source code for the scanner, the
+          Toolproof is built and owned by Ayush Sharma. The source code for the scanner, the
           CLI packages, the rule catalog, and the site is published openly. The Service
           itself is operated at toolproof-scan.vercel.app.
         </p>

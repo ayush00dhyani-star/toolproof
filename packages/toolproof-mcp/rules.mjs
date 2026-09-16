@@ -150,6 +150,10 @@ export function enforceTools(tools) {
   const graded = [];
   const safe = [];
   for (const t of tools ?? []) {
+    // Skip non-object entries (null, undefined, primitives). A null slot in a
+    // malformed tools/list must never become a phantom "<unnamed>" tool that
+    // reaches the agent.
+    if (!t || typeof t !== "object") continue;
     const name = String(t?.name ?? "<unnamed>");
     const desc = String(t?.description ?? "");
     const findings = [

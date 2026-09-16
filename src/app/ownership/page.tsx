@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/ownership" },
 };
 
-const UPDATED = "15 September 2026";
+const UPDATED = "16 September 2026";
 
 export default function OwnershipPage() {
   return (
@@ -55,8 +55,18 @@ export default function OwnershipPage() {
       <section>
         <h2 className="text-lg font-semibold text-ink">3. What stays reserved</h2>
         <p className="mt-3">
-          The following are trademarks of Ayush Dhyani / Toolproof and are not licensed by
-          the MIT License:
+          The MIT License covers the code. It does not cover the marks that identify
+          Toolproof, and the reservation is written into the{" "}
+          <a
+            className="text-amber underline-offset-4 hover:underline"
+            href="https://github.com/ayush00dhyani-star/toolproof/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LICENSE
+          </a>{" "}
+          itself rather than only on this page. The following are reserved and are not
+          licensed by the open-source licence:
         </p>
         <ul className="mt-3 list-disc space-y-2 pl-5">
           <li>the name “Toolproof” and the Toolproof proofmark;</li>
@@ -94,12 +104,37 @@ export default function OwnershipPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-ink">5. Contributions</h2>
+        <h2 className="text-lg font-semibold text-ink">5. Contributions and the CLA</h2>
         <p className="mt-3">
-          Contributions are welcome. Unless you state otherwise in writing, a contribution is
-          submitted under the MIT License covering the code, with no claim to the Toolproof
-          marks. We do not accept contributions that carry patent or licensing obligations
-          incompatible with MIT.
+          The repository is public, and contributions are welcome. Because ownership of a
+          public project fragments the moment the first pull request lands, every
+          contribution is submitted under the Contributor License Agreement in the
+          repository —{" "}
+          <a
+            className="text-amber underline-offset-4 hover:underline"
+            href="https://github.com/ayush00dhyani-star/toolproof/blob/main/CLA.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CLA.md
+          </a>
+          .
+        </p>
+        <p className="mt-3">
+          The terms are the standard Apache-style arrangement, and it is worth being
+          explicit about what they are not. A contributor{" "}
+          <strong>retains ownership</strong> of their work — the agreement is a licence,
+          not an assignment. What it grants the project is a perpetual, irrevocable
+          licence to use, relicense, and distribute that contribution, together with a
+          patent licence for the claims the contribution necessarily reads on. It exists
+          so the project can be relicensed or defended later without tracking down every
+          contributor, and so a contribution that turns out to belong to someone else
+          cannot hold the whole project hostage.
+        </p>
+        <p className="mt-3">
+          Contributions made on behalf of an employer require that employer to accept the
+          same terms in writing. We do not accept contributions that carry patent or
+          licensing obligations incompatible with MIT.
         </p>
       </section>
 

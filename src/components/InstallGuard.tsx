@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Proofmark from "@/components/Proofmark";
 
-type Tab = "claude" | "cursor" | "rule";
+type Tab = "claude" | "cursor" | "rule" | "wrap";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "claude", label: "Claude Desktop" },
   { id: "cursor", label: "Cursor" },
   { id: "rule", label: "CLAUDE.md" },
+  { id: "wrap", label: "Stop it (wrap)" },
 ];
 
 const MCP_CONFIG = `{
@@ -29,6 +30,15 @@ GET https://toolproof-scan.vercel.app/api/v1/verify?target=<the url>
 Report the grade to the user. If the state is not "verified", or the
 grade is below B, tell the user what you found and ask before connecting.`;
 
+const WRAP_CONFIG = `{
+  "mcpServers": {
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "toolproof-mcp", "wrap", "--", "npx", "-y", "@stripe/mcp"]
+    }
+  }
+}`;
+
 const BODY: Record<Tab, { title: string; where: string; code: string }> = {
   claude: {
     title: "Add one block, every session is guarded",
@@ -44,6 +54,11 @@ const BODY: Record<Tab, { title: string; where: string; code: string }> = {
     title: "No config file? Paste a rule instead",
     where: "CLAUDE.md, AGENTS.md, .cursor/rules, or any system prompt. The agent verifies before it connects.",
     code: RULE,
+  },
+  wrap: {
+    title: "Wrap a server — malicious tools never reach the agent",
+    where: "Replace the real server with toolproof-wrap. It proxies the server, strips deceptive tools from tools/list, and tells the agent exactly what it blocked. Honest-but-sloppy tools pass through untouched.",
+    code: WRAP_CONFIG,
   },
 };
 

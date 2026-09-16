@@ -51,3 +51,6 @@ vitest.log
 
 # Local test/build output
 *.log
+
+# local scratch: fake servers, wrap test drivers, logs
+work/

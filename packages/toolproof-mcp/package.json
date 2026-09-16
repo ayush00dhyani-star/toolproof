@@ -1,20 +1,24 @@
 {
   "name": "toolproof-mcp",
-  "version": "0.2.0",
-  "description": "Trust grades + policy gate for MCP servers and APIs — let any AI check a tool before it connects, and let CI fail when a tool turns hostile.",
+  "version": "0.3.0",
+  "description": "Guard rail for the AI tool supply chain — wrap any MCP server to strip malicious tools before your agent sees them, grade every API, and fail CI when a tool turns hostile.",
   "homepage": "https://toolproof-scan.vercel.app",
   "bugs": "https://toolproof-scan.vercel.app/security",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "toolproof-mcp": "server.mjs",
-    "toolproof-gate": "gate.mjs"
+    "toolproof-gate": "gate.mjs",
+    "toolproof-wrap": "wrap.mjs",
+    "toolproof-mcp": "server.mjs"
   },
   "engines": {
     "node": ">=18"
   },
   "files": [
     "server.mjs",
+    "gate.mjs",
+    "wrap.mjs",
+    "rules.mjs",
     "README.md"
   ],
   "keywords": [

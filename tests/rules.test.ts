@@ -58,7 +58,33 @@ describe("TP-104 — embedded credential", () => {
     expect(findings[0].rule).toBe("TP-104");
     expect(findings[0].evidence).toContain("sk-abcdef1234567890abcd");
   });
+
+  // REGRESSION: the original api[_-]?key regex only accepted _ and - as
+  // separators, so the plain-English "API key: sk-..." form slipped past the
+  // wrapper BLOCK policy and reached the agent. Spaces must be allowed.
+  it("fires on a space-separated 'API key: value' (regression)", () => {
+    expect(rulesOf("API key: sk-1234567890abcdef1234567890abcdef")).toContain("TP-104");
+    expect(rulesOf("API KEY: sk-1234567890abcdef1234567890abcdef")).toContain("TP-104");
+    expect(rulesOf("api key: sk-live-1234567890abcdef1234567890")).toContain("TP-104");
+  });
+
+  it("still fires on compact separator forms", () => {
+    expect(rulesOf("apiKey: sk-1234567890abcdef1234567890")).toContain("TP-104");
+    expect(rulesOf("api-key: sk-1234567890abcdef1234567890")).toContain("TP-104");
+    expect(rulesOf("secret: abcdefghijklmnop1234567890")).toContain("TP-104");
+    expect(rulesOf("password: SUPERSECRET12345678")).toContain("TP-104");
+    expect(rulesOf("bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")).toContain("TP-104");
+  });
+
+  it("ignores credential mentions that carry no value (no false positives)", () => {
+    expect(rulesOf("API key rotation policy")).not.toContain("TP-104");
+    expect(rulesOf("password field is required")).not.toContain("TP-104");
+    expect(rulesOf("secret manager integration")).not.toContain("TP-104");
+    expect(rulesOf("api key endpoint docs")).not.toContain("TP-104");
+    expect(rulesOf("token bucket algorithm")).not.toContain("TP-104");
+  });
 });
+
 
 describe("TP-105 — scope creep", () => {
   it("fires on out-of-band capability claims", () => {

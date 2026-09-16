@@ -224,7 +224,7 @@ const TEXT_PATTERNS: {
     sev: "high",
     title: "Embedded credential",
     re:
-      /\b(?:api[_-]?key|secret|password|bearer|token)\b\s*[:=]\s*["']?[A-Za-z0-9+/_-]{16,}/i,
+      /\b(?:api[_\s-]?key|secret|password|bearer|token)\b\s*[:=]\s*["']?[A-Za-z0-9+/_-]{16,}/i,
     why: "A literal credential in tool text is compromised by definition.",
   },
   {
@@ -372,7 +372,7 @@ export function scanSchema(where: string, schema: unknown): Finding[] {
         why: "Destructive actions must require explicit opt-in. A default of true lets an agent trigger them by omission.",
       });
     }
-    if (/^(api[_-]?key|token|secret|password|access[_-]?token)$/.test(lname)) {
+    if (/^(api[_\s-]?key|token|secret|password|access[_\s-]?token)$/.test(lname)) {
       out.push({
         rule: "TP-304",
         sev: "medium",

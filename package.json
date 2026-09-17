@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "check:distribution": "node scripts/distribution-check.mjs",
+    "check:distribution:offline": "node scripts/distribution-check.mjs --offline",
     "publish:packages": "npm publish packages/toolproof-scan && npm publish packages/toolproof-mcp"
   },
   "dependencies": {

@@ -25,10 +25,18 @@
  * we never silently pass traffic we could not inspect.
  */
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { enforceTools } from "./rules.mjs";
 
-const VERSION = "0.3.0";
+const VERSION = (() => {
+  try {
+    const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+    return String(pkg?.version ?? "0.0.0");
+  } catch {
+    return "0.0.0";
+  }
+})();
 const log = (...a) => process.stderr.write(`[toolproof-wrap] ${a.join(" ")}\n`);
 
 function usage() {

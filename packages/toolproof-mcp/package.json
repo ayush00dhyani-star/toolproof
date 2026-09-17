@@ -6,6 +6,12 @@
   "bugs": "https://toolproof-scan.vercel.app/security",
   "license": "MIT",
   "type": "module",
+  "mcpName": "io.github.ayush00dhyani-star/toolproof",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayush00dhyani-star/toolproof.git",
+    "directory": "packages/toolproof-mcp"
+  },
   "bin": {
     "toolproof-gate": "gate.mjs",
     "toolproof-wrap": "wrap.mjs",
@@ -23,9 +29,15 @@
   ],
   "keywords": [
     "mcp",
-    "security",
+    "mcp-server",
+    "model-context-protocol",
+    "mcp-security",
+    "prompt-injection",
+    "agent-security",
+    "ai-agents",
+    "security-scanner",
+    "supply-chain",
     "trust",
-    "agents",
     "toolproof"
   ]
 }

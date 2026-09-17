@@ -19,7 +19,7 @@ checking them.
 So I built Toolproof. It scans the model-visible surface of an MCP server
 or API (tool names, descriptions, schemas, prompts, resources, server
 instructions, outbound hosts) and returns a letter grade with the evidence:
-16 rules covering hidden instructions, invisible unicode characters,
+15 rules covering hidden instructions, invisible unicode characters,
 exposed secrets, unsafe defaults, and missing auth.
 
 The part I care about: every verdict is an ed25519-signed passport over
@@ -114,7 +114,7 @@ I'm a security researcher. So I built a scanner.
 **2/** Toolproof grades an MCP server or API by its model-visible surface:
 tools, schemas, prompts, resources, instructions, outbound hosts.
 
-16 rules. Letter grade. Every verdict an ed25519-signed passport,
+15 rules. Letter grade. Every verdict an ed25519-signed passport,
 verifiable offline. No account, no key, nothing stored.
 
 **3/** It's also a lockfile.

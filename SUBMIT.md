@@ -8,7 +8,7 @@
 
 Toolproof scans the model-visible surface of an MCP server or API — the tool names,
 descriptions, schemas, prompts, resources, server instructions, outbound hosts — and
-returns a letter grade with the evidence behind it: 16 rules covering hidden instructions,
+returns a letter grade with the evidence behind it: 15 rules covering hidden instructions,
 invisible characters, exposed secrets, unsafe defaults, and missing auth.
 
 Every verdict is an ed25519-signed passport over canonical JSON, verifiable offline with

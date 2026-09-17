@@ -1,0 +1,48 @@
+{
+  "$comment": "Static server card (SEP-1649 shape). Registries and directory scanners read this instead of probing the server, so an MCP catalogue can index Toolproof without executing it. Mirrors packages/toolproof-mcp/server.mjs.",
+  "serverInfo": {
+    "name": "toolproof",
+    "version": "0.3.0"
+  },
+  "authentication": {
+    "required": false
+  },
+  "instructions": "Toolproof is the pre-connection trust check for MCP servers and APIs. Call check_tool with the endpoint you are about to use, then report the grade. If state is not \"verified\", or grade is below B, tell the user what was found and ask before connecting. A verdict is a signed, point-in-time receipt — not a guarantee that a service behaves safely.",
+  "tools": [
+    {
+      "name": "check_tool",
+      "description": "Check whether an MCP server or API is safe to connect to, BEFORE connecting. Returns a letter grade (A+ to F), the verification state, and any findings — hidden instructions, exposed secrets, unsafe defaults. Accepts full URLs or bare hosts like mcp.example.com/mcp.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "The MCP endpoint or API base URL to check (e.g. https://mcp.example.com/mcp)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["auto", "mcp", "api"],
+            "description": "Optional hint: mcp = MCP endpoint, api = API base URL, auto = detect"
+          }
+        },
+        "required": ["target"]
+      }
+    },
+    {
+      "name": "lookup_rule",
+      "description": "Explain what a Toolproof rule id means (e.g. TP-101) in plain words, so you can tell your user exactly what was flagged.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "description": "Rule id like TP-101"
+          }
+        },
+        "required": ["rule_id"]
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}

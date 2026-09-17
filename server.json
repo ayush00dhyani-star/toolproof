@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ayush00dhyani-star/toolproof",
+  "title": "Toolproof",
+  "description": "Trust grades for MCP servers and APIs: scan the model-visible surface (tool names, descriptions, schemas, prompts, resources, server instructions, outbound hosts) for hidden instructions, invisible unicode, exposed secrets and unsafe defaults, and return a letter grade with an ed25519-signed verdict that verifies offline. Also exposes a policy gate that fails CI when a tool's capability surface drifts.",
+  "version": "0.3.0",
+  "websiteUrl": "https://toolproof-scan.vercel.app",
+  "repository": {
+    "url": "https://github.com/ayush00dhyani-star/toolproof",
+    "source": "github",
+    "subfolder": "packages/toolproof-mcp"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "toolproof-mcp",
+      "version": "0.3.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tool": "toolproof",
+      "pricing": "free",
+      "license": "MIT",
+      "neutrality": "Paid by nobody it scans.",
+      "documentation": "https://toolproof-scan.vercel.app/docs",
+      "agentContract": "https://toolproof-scan.vercel.app/agents.md",
+      "verifyApi": "https://toolproof-scan.vercel.app/api/v1/verify?target=<url>",
+      "publicKey": "https://toolproof-scan.vercel.app/api/v1/pubkey"
+    }
+  }
+}

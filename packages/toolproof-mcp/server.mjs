@@ -11,6 +11,23 @@
  * stdout — logs go to stderr.
  */
 import { createInterface } from "node:readline";
+import { readFileSync } from "node:fs";
+
+/**
+ * The version reported to MCP clients must be the version that is actually
+ * installed. It was hardcoded once and drifted (0.1.1 inside a 0.2.1 package,
+ * then again inside 0.3.0), which is exactly the kind of quiet lie a trust
+ * tool cannot afford — `serverInfo.version` is what the client shows the user.
+ * package.json is always present in the published tarball, so read it.
+ */
+const VERSION = (() => {
+  try {
+    const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+    return String(pkg?.version ?? "0.0.0");
+  } catch {
+    return "0.0.0";
+  }
+})();
 
 const API = (process.env.TOOLPROOF_API ?? "https://toolproof-scan.vercel.app").replace(/\/$/, "");
 const PROTOCOL = "2025-06-18";
@@ -140,7 +157,7 @@ async function handle(msg) {
       result(id, {
         protocolVersion: PROTOCOL,
         capabilities: { tools: {} },
-      serverInfo: { name: "toolproof", version: "0.1.1" },
+      serverInfo: { name: "toolproof", version: VERSION },
       });
       return;
     case "ping":
@@ -160,7 +177,7 @@ async function handle(msg) {
   }
 }
 
-log(`toolproof-mcp 0.1.1 — api: ${API} — tools: check_tool, lookup_rule`);
+log(`toolproof-mcp ${VERSION} — api: ${API} — tools: check_tool, lookup_rule`);
 const rl = createInterface({ input: process.stdin, terminal: false });
 rl.on("line", (line) => {
   const trimmed = line.trim();

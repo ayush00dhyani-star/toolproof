@@ -24,7 +24,19 @@ import { createPublicKey, verify as cryptoVerify } from "node:crypto";
 
 const API = (process.env.TOOLPROOF_API ?? "https://toolproof-scan.vercel.app").replace(/\/$/, "");
 const DEFAULT_BASELINE = ".toolproof-baseline.json";
-const VERSION = "0.2.0";
+
+// Read the version from package.json instead of hardcoding it. This constant
+// has already drifted once (it said 0.2.0 inside the 0.3.0 package), and the
+// version is printed in banners and evidence receipts where a wrong value is
+// indistinguishable from a tampered one. package.json ships in the tarball.
+const VERSION = (() => {
+  try {
+    const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+    return String(pkg?.version ?? "0.0.0");
+  } catch {
+    return "0.0.0";
+  }
+})();
 
 const GRADES = ["F", "D-", "D", "D+", "C-", "C", "C+", "B-", "B", "B+", "A-", "A", "A+"];
 function gradeRank(g) {

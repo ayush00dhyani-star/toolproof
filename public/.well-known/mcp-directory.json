@@ -1,6 +1,6 @@
 {
   "name": "Toolproof",
-  "description": "Trust grades for MCP servers and APIs. Scans the model-visible surface — tool names, descriptions, schemas, prompts, resources, instructions, outbound hosts — and returns a letter grade with 16 rules covering hidden instructions, invisible characters, exposed secrets, unsafe defaults and missing auth. Every verdict is an ed25519-signed passport, verifiable offline. No accounts, no keys.",
+  "description": "Trust grades for MCP servers and APIs. Scans the model-visible surface — tool names, descriptions, schemas, prompts, resources, instructions, outbound hosts — and returns a letter grade with 15 rules covering hidden instructions, invisible characters, exposed secrets, unsafe defaults and missing auth. Every verdict is an ed25519-signed passport, verifiable offline. No accounts, no keys.",
   "url": "https://toolproof-scan.vercel.app",
   "logo": "https://toolproof-scan.vercel.app/api/v1/og?target=https%3A%2F%2Ftoolproof-scan.vercel.app",
   "categories": ["security", "ai-agents", "developer-tools", "mcp", "monitoring"],
@@ -20,7 +20,25 @@
       }
     }
   },
+  "registry": {
+    "name": "io.github.ayush00dhyani-star/toolproof",
+    "server_manifest": "https://raw.githubusercontent.com/ayush00dhyani-star/toolproof/main/server.json",
+    "server_card": "https://toolproof-scan.vercel.app/.well-known/mcp/server-card.json",
+    "transport": "stdio"
+  },
   "tools": ["check_tool", "lookup_rule"],
+  "enforcement": {
+    "bin": "toolproof-wrap",
+    "description": "Wrap mode puts Toolproof in the path: it proxies any stdio MCP server and removes tools carrying deception — hidden characters, embedded credentials, critical/high override or concealment phrasing — before the agent ever sees them. Honest-but-sloppy tools are reported, never removed.",
+    "config": {
+      "mcpServers": {
+        "stripe": {
+          "command": "npx",
+          "args": ["-y", "toolproof-mcp", "wrap", "--", "npx", "-y", "@stripe/mcp"]
+        }
+      }
+    }
+  },
   "api": {
     "verify": "GET /api/v1/verify?target=<url>",
     "scan": "GET /api/v1/scan?target=<url>",
@@ -29,9 +47,17 @@
     "auth": "none",
     "signature": "ed25519 over canonical JSON; public key at /api/v1/pubkey"
   },
+  "agent_rule": {
+    "url": "https://toolproof-scan.vercel.app/agents.md",
+    "text": "Tool safety: before connecting to any MCP server or unfamiliar API, GET https://toolproof-scan.vercel.app/api/v1/verify?target=<url> and report the grade. If state is not \"verified\" or grade is below B, say what was found and ask before connecting."
+  },
+  "opt_out": {
+    "mechanism": "/.well-known/toolproof.txt with a `Deny:` path-prefix line",
+    "effect": "the scan ends immediately with state \u201copted-out\u201d — respected, never penalized"
+  },
   "contact": "security@toolproof-scan.vercel.app",
   "author": {
-    "name": "Ayush Dhyani",
+    "name": "Ayush Sharma",
     "role": "Security researcher (Bugcrowd)"
   },
   "keywords": [
@@ -43,5 +69,6 @@
     "supply chain",
     "audit"
   ],
-  "differentiator": "Paid by nobody it scans. A trust layer that takes money from the tools it grades is worthless, so neutrality is the business model, not a promise."
+  "differentiator": "Paid by nobody it scans. A trust layer that takes money from the tools it grades is worthless, so neutrality is the business model, not a promise.",
+  "non_claims": "A static, point-in-time scan of the connection surface. It does not observe runtime behaviour, is not a sandbox, and a signature attests what was observed and when — never that a service is safe."
 }

@@ -3,8 +3,11 @@
 # the owning Vercel account, which barito4762-3231 does not have).
 #
 # Requires repository secret VERCEL_TOKEN (Vercel dashboard -> Account Settings
-# -> Tokens). Until that secret exists the job short-circuits, so pushes stay
-# green instead of failing.
+# -> Tokens). Until that secret exists the job short-circuits so pushes stay
+# green instead of failing — but it now raises a warning annotation and a job
+# summary, because this guard hid a real outage: main advanced several commits
+# while production kept serving an older build, and every run looked successful.
+# A skipped deploy that reads as green is worse than a red one.
 name: Deploy (Vercel)
 
 on:
@@ -39,7 +42,23 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::VERCEL_TOKEN secret is not set - skipping production deploy."
+            echo "::warning title=Production was NOT deployed::VERCEL_TOKEN is not set, so every deploy step was skipped and this run still finished green. main has advanced but the live site is serving an older build."
+            {
+              echo "## Production was NOT deployed"
+              echo ""
+              echo "The \`VERCEL_TOKEN\` repository secret is not set, so this run skipped every"
+              echo "deploy step and still finished green. That is a false green: main has"
+              echo "advanced while \`https://toolproof-scan.vercel.app\` serves an older build."
+              echo ""
+              echo "Fix it by setting \`VERCEL_TOKEN\` (Vercel dashboard -> Account Settings ->"
+              echo "Tokens), or deploy by hand:"
+              echo ""
+              echo '```'
+              echo "vercel deploy . --prod -y --wait"
+              echo '```'
+              echo ""
+              echo "\`node scripts/distribution-check.mjs\` reports the drift on its \`deploy\` lines."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - uses: actions/setup-node@v4

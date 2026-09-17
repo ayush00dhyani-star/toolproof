@@ -161,9 +161,22 @@ Done via the API, no manual step left:
 promoted or the live metadata keeps describing an older release:
 
 ```bash
-vercel deploy . --prod -y --no-wait --scope barito4762-3231s-projects
-node scripts/distribution-check.mjs        # every deploy line must say ok
+vercel deploy . --prod -y --wait        # the project is linked in .vercel/
+node scripts/distribution-check.mjs     # every deploy line must say ok
 ```
+
+**Why this is a manual step and should not be.** The `Deploy (Vercel)` workflow
+has been reporting success on every push while skipping all of its deploy steps,
+because the `VERCEL_TOKEN` repository secret was never set. That is a false
+green, and it had a real cost: `main` advanced through several commits while
+`toolproof-scan.vercel.app` kept serving an older build, including the directory
+metadata that the MCP catalogues read. Nothing failed, so nothing was noticed —
+`distribution-check` is what surfaced it.
+
+The guard now emits a `::warning::` annotation and a job summary that says
+plainly that production was **not** deployed. Set `VERCEL_TOKEN` (Vercel
+dashboard → Account Settings → Tokens) to make the workflow real; until then,
+trust the CLI command above and the `deploy` lines of `distribution-check`.
 
 ---
 

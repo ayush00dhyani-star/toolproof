@@ -115,6 +115,20 @@ npm run dev        # needs .env.local (signing keys) for signed passports
 npx tsx scripts/probe.mts [targets...]   # CLI probe, no server needed
 ```
 
+Distribution has its own check, because the ways this product breaks are not
+code failures — they are a published version behind the repo, a registry
+manifest naming a package that does not exist, live metadata disagreeing with
+the committed file, or an inflated claim in the launch copy:
+
+```bash
+npm run check:distribution:offline   # repo-only invariants, no network
+npm run check:distribution           # also npm, the live API, and deploy drift
+```
+
+It exits non-zero on a real inconsistency, runs on every push in
+`.github/workflows/distribution.yml`, and its `deploy` lines are the only
+reliable way to tell whether `main` is actually live.
+
 ## Deploy
 
 ```bash

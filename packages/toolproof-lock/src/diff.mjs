@@ -32,6 +32,9 @@ export const CATEGORY_POLICY_KEY = Object.freeze({
   "surface-truncated": null,
   "tool-duplicated": null,
   "fingerprint-changed": null,
+  "tool-not-allowed": null,
+  "tool-denied": null,
+  "grant-expired": null,
 });
 
 /** Categories that are hard-blocked by design (no policy key). */
@@ -41,6 +44,9 @@ export const IMPLICIT_BLOCK_CATEGORIES = Object.freeze([
   "surface-truncated",
   "tool-duplicated",
   "fingerprint-changed",
+  "tool-not-allowed",
+  "tool-denied",
+  "grant-expired",
 ]);
 
 export const ACTION_SEVERITY = Object.freeze({ informational: 0, review: 1, block: 2 });
@@ -474,6 +480,63 @@ export function diffManifests(lock, manifestLike, policy = DEFAULT_POLICY) {
         `target state is "${text(observed.state) || "unknown"}" but the policy requires "verified" — an unverified target cannot be gated against`,
       ),
     );
+  }
+
+  // --- scoped grants: a tool outside the permit-list is not approved -----
+  // The lockfile pins the whole surface; allowTools narrows what the agent may
+  // actually call. Anything outside it blocks rather than passing silently —
+  // "approved the server" must not mean "approved every tool on it."
+  const allowed = Array.isArray(active.allowTools) ? active.allowTools : null;
+  if (allowed) {
+    const allowedSet = new Set(allowed);
+    for (const name of [...observedTools.keys()].sort(cmpStr)) {
+      if (allowedSet.has(name)) continue;
+      changes.push(
+        change(
+          "tool-not-allowed",
+          "block",
+          `tool:${name}`,
+          `tool "${name}" is not on the policy's allow list — this grant covers only ${listWrapped(allowed)}, so the rest of the surface must be enabled deliberately`,
+        ),
+      );
+    }
+  }
+  const denied = Array.isArray(active.denyTools) ? active.denyTools : null;
+  if (denied) {
+    const deniedSet = new Set(denied);
+    for (const name of [...observedTools.keys()].sort(cmpStr)) {
+      if (!deniedSet.has(name)) continue;
+      changes.push(
+        change(
+          "tool-denied",
+          "block",
+          `tool:${name}`,
+          `tool "${name}" is on the policy's deny list — this tool was excluded from the grant`,
+        ),
+      );
+    }
+  }
+
+  // --- short-lived grants: an approval older than the policy is stale -----
+  // The boundary the commenter named: a clean scan today must not authorise a
+  // newly added side effect indefinitely. If the baseline aged past maxAgeHours
+  // it is no longer evidence about the current surface, so it fails closed.
+  if (typeof active.maxAgeHours === "number" && active.maxAgeHours > 0) {
+    const stamped = typeof lock.generatedAt === "string" ? Date.parse(lock.generatedAt) : NaN;
+    if (Number.isFinite(stamped)) {
+      const ageMs = Date.now() - stamped;
+      const limitMs = active.maxAgeHours * 3_600_000;
+      if (ageMs > limitMs) {
+        changes.push(
+          change(
+            "grant-expired",
+            "block",
+            "policy",
+            `the baseline is ${Math.round(ageMs / 3_600_000)}h old but the policy bounds approvals to ${active.maxAgeHours}h — the approval no longer describes the current surface, so it must be re-locked deliberately`,
+          ),
+        );
+      }
+    }
   }
 
   // --- fail-closed integrity checks -------------------------------------

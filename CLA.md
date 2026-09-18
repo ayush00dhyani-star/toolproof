@@ -23,7 +23,8 @@ agree to these terms in writing before your contribution is accepted.
   communicated electronically to the maintainers.
 - **"Project"** means the body of Toolproof source code, documentation, rule
   catalog, and formats, in all present and future repositories.
-- **"Maintainer"** means Ayush Sharma, the copyright holder of the Project.
+- **"Maintainer"** means the copyright holder of the Project, as named in the
+  LICENSE file.
 
 ## 2. Grant of copyright
 

@@ -378,3 +378,55 @@ test("a truncated observed surface blocks and cannot be downgraded by policy", (
   assert.equal(result.decision, "blocked");
   assert.equal(CATEGORY_POLICY_KEY["surface-truncated"], null);
 });
+
+// ---- scoped, time-boxed approvals -------------------------------------------
+// "approved the server" must never quietly mean "approved every tool on it",
+// and a clean scan from last quarter is not evidence about today's surface.
+
+test("a permit list blocks every tool outside the grant", () => {
+  const result = diffOf(null, { allowTools: "search_email" });
+  const notAllowed = byCategory(result, "tool-not-allowed");
+  assert.equal(notAllowed.length, 1, "legacy_ping is outside the permit list");
+  assert.equal(notAllowed[0].where, "tool:legacy_ping");
+  assert.equal(notAllowed[0].action, "block");
+  assert.match(notAllowed[0].message, /not on the policy's allow list/);
+  assert.equal(result.decision, "blocked");
+  assert.equal(exitCodeFor(result.decision), 2);
+  // A permit list that covers the whole surface adds no noise.
+  assert.deepEqual(diffOf(null, { allowTools: "search_email, legacy_ping" }).changes, []);
+});
+
+test("a deny list blocks the named tool and leaves the rest in sync", () => {
+  const result = diffOf(null, { denyTools: "search_email" });
+  const denied = byCategory(result, "tool-denied");
+  assert.equal(denied.length, 1);
+  assert.equal(denied[0].where, "tool:search_email");
+  assert.equal(denied[0].action, "block");
+  assert.match(denied[0].message, /excluded from the grant/);
+  assert.equal(result.decision, "blocked");
+  assert.deepEqual(byCategory(result, "tool-not-allowed"), []);
+});
+
+test("a grant that aged past maxAgeHours fails closed", () => {
+  const lock = buildLockfile(baseline());
+  lock.generatedAt = new Date(Date.now() - 48 * 3_600_000).toISOString();
+  const result = diffManifests(lock, baseline(), { maxAgeHours: 24 });
+  const expired = byCategory(result, "grant-expired");
+  assert.equal(expired.length, 1);
+  assert.equal(expired[0].where, "policy");
+  assert.equal(expired[0].action, "block");
+  assert.match(expired[0].message, /bounds approvals to 24h/);
+  assert.equal(result.decision, "blocked");
+  assert.equal(exitCodeFor(result.decision), 2);
+});
+
+test("a grant inside maxAgeHours stays in sync", () => {
+  // The baseline fixture is pinned to a fixed date, so age the window rather
+  // than the clock: a lock taken yesterday is still inside a 48h grant.
+  const lock = buildLockfile(baseline());
+  lock.generatedAt = new Date(Date.now() - 12 * 3_600_000).toISOString();
+  const result = diffManifests(lock, baseline(), { maxAgeHours: 24 });
+  assert.deepEqual(result.changes, []);
+  assert.equal(result.decision, "in-sync");
+  assert.equal(exitCodeFor(result.decision), 0);
+});

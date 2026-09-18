@@ -5,24 +5,43 @@ filing takes minutes rather than hours of research.
 
 ---
 
-## The name — RESOLVED
+## The name — attribution is private
 
-The repo, LICENSE, and ownership pages previously said **"Ayush Dhyani."**
-The owner has confirmed the legal name is **Ayush Sharma.** All public
-attributions have been corrected to Sharma — the LICENSE copyright line, the
-CLA's "Maintainer" definition, the ownership page, the docs footer, the
-homepage, and the directory metadata.
+The owner does not publish a personal name, and this repository must not either.
+An earlier pass corrected the attribution to a legal name; that name is now
+withdrawn from every public surface, because a personal name on a public
+repository — and worse, on a public trademark record — is a privacy cost with no
+upside. Attribution is the project, not a person.
 
-**A trademark registered to the wrong owner is void**, not correctable later,
-so the registration and the published attribution must agree. They now do.
+What the public surfaces say instead:
 
-The GitHub handle `ayush00dhyani-star` is an account name, not a legal
-attribution, and is unchanged — renaming the org would break every link the
-launch posts and directory submissions point at. If you want it changed, do it
-after the filings are in and every inbound link has been redirected.
+- `LICENSE` — "Copyright (c) 2026 The Toolproof Authors"
+- `CLA.md` — the Maintainer is "the copyright holder of the Project, as named in
+  the LICENSE file", so the chain stays internal and no name is required
+- ownership page, homepage, docs footer, `SUBMIT.md`, `llms-full.txt` and
+  `.well-known/mcp-directory.json` — the project or its maintainers, never a person
+
+**This is the one thing that changes for the filing, and it is the important one.**
+The registration and the published attribution must agree, so the owner recorded
+at the USPTO has to be whatever the LICENSE names. That is the argument for filing
+as an **entity** rather than as an individual: a USPTO record publishes the owner's
+name *and* address, so an individual filing publishes personal details permanently
+and cannot be taken back. Filing in an LLC's name keeps the public record on the
+entity and keeps the person out of it.
+
+Until that entity exists, do not file. Decide the entity first, then the LICENSE
+and the registration can be made to agree in a single pass — rather than filing
+under a name you then have to publish everywhere else to stay consistent.
+
+The GitHub handle `ayush00dhyani-star` is an account name, not a published
+attribution, and is unchanged — renaming the org would break every link the launch
+posts and directory submissions point at. It does carry a personal token, so treat
+it as pseudonymous at best; change it after the filings are in and every inbound
+link has been redirected.
 
 ### Owner
-- Name: **Ayush Sharma**
+- Rights holder to record: **the entity that will hold the mark.** Not an
+  individual name — see above.
 
 ---
 
@@ -130,15 +149,19 @@ are functional and not copyrightable; that is what the trademark covers).
 
 ## After filing — what I need from you
 
-1. The confirmed legal name.
-2. Whether an LLC exists (changes the owner field).
-3. The exact first-use-in-commerce date (first npm publish or first site live).
-4. A business address for the public record.
+1. The entity that will hold the mark (an LLC is the privacy-preserving answer —
+   see "The name — attribution is private" above).
+2. The exact first-use-in-commerce date (first npm publish or first site live).
+3. A business address for the public record — never a home address; the USPTO
+   record is public and permanent.
+4. Confirmation that the LICENSE's rights-holder designation matches whatever
+   owner goes on the form.
 
-With those four answers the filings are complete except for your signature and
-the card. If the answer to "which name" is Sharma, I will correct the LICENSE,
-the ownership page, and the CLA to match before you file, so the registration
-and the published attribution agree.
+With those answers the filings are complete except for your signature and the
+card. Whatever owner is recorded on the form, the LICENSE, the ownership page and
+the CLA must be made to say the same thing before you file, so the registration and
+the published attribution agree. No personal name needs to appear on any of them —
+but the LICENSE and the registration must name the *same* holder, entity or not.
 
 ---
 

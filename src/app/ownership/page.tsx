@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/ownership" },
 };
 
-const UPDATED = "16 September 2026";
+const UPDATED = "17 September 2026";
 
 export default function OwnershipPage() {
   return (
@@ -17,9 +17,19 @@ export default function OwnershipPage() {
       <section>
         <h2 className="text-lg font-semibold text-ink">1. Who owns this</h2>
         <p className="mt-3">
-          Toolproof is built and owned by Ayush Sharma. The source code for the scanner, the
-          CLI packages, the rule catalog, and the site is published openly. The Service
-          itself is operated at toolproof-scan.vercel.app.
+          Toolproof is built and owned by the Toolproof maintainers. The source code
+          for the scanner, the CLI packages, the rule catalog, and the site is
+          published openly, and the Service itself is operated at
+          toolproof-scan.vercel.app.
+        </p>
+        <p className="mt-3">
+          The maintainers publish no personal name or address anywhere in the
+          project — the attribution is the project, not a person. Who holds the
+          rights, and how that identity is kept private, is set out in the{" "}
+          <Link href="/terms" className="text-amber underline-offset-4 hover:underline">
+            Terms of Service
+          </Link>
+          .
         </p>
         <p className="mt-3">
           The MIT License in the repository covers the code: you may read, use, modify, fork,
@@ -141,7 +151,8 @@ export default function OwnershipPage() {
       <section>
         <h2 className="text-lg font-semibold text-ink">6. Contact</h2>
         <p className="mt-3">
-          For licensing, trademark, or ownership questions, contact{" "}
+          For licensing, trademark, or ownership questions — including a request
+          that requires the identity of the rights holder — contact{" "}
           <a
             className="text-amber underline-offset-4 hover:underline"
             href="mailto:security@toolproof-scan.vercel.app"

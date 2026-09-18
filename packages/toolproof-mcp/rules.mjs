@@ -142,19 +142,29 @@ export function scanSchema(where, schema) {
 
 /**
  * Enforce policy over a full tool list (the model-visible surface).
- * Returns { blocked, graded } where blocked tools are removed and graded
- * tools pass through with a report attached.
+ * Returns { blocked, graded, invalid, safe }: blocked tools are removed,
+ * graded tools pass through with a report attached, and invalid entries are
+ * omitted from the agent-visible surface entirely.
  */
 export function enforceTools(tools) {
   const blocked = [];
   const graded = [];
+  const invalid = [];
   const safe = [];
   for (const t of tools ?? []) {
     // Skip non-object entries (null, undefined, primitives). A null slot in a
     // malformed tools/list must never become a phantom "<unnamed>" tool that
     // reaches the agent.
     if (!t || typeof t !== "object") continue;
-    const name = String(t?.name ?? "<unnamed>");
+    // A tool with no usable name is not callable — MCP requires `name` — so it
+    // must not reach the agent, and inventing "<unnamed>" would put a phantom
+    // tool in the list. Omit it and report it rather than fabricate a name or
+    // forward an unlabelled entry.
+    const name = typeof t.name === "string" ? t.name.trim() : "";
+    if (name.length === 0) {
+      invalid.push({ reason: "no usable tool name", description: String(t.description ?? "") });
+      continue;
+    }
     const desc = String(t?.description ?? "");
     const findings = [
       ...scanText(`tools/${name}`, desc),
@@ -167,7 +177,7 @@ export function enforceTools(tools) {
       safe.push(t);
     }
   }
-  return { blocked, graded, safe };
+  return { blocked, graded, invalid, safe };
 }
 
 export { isBlock };

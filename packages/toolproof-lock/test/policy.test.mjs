@@ -28,6 +28,11 @@ test("DEFAULT_POLICY matches BRIEF §3", () => {
   assert.deepEqual(DEFAULT_POLICY, {
     minimumGrade: "B",
     requireVerified: true,
+    // Scoped, time-boxed approvals. Null = unbounded, the historical default,
+    // so every lockfile written before these keys existed keeps working.
+    maxAgeHours: null,
+    allowTools: null,
+    denyTools: null,
     onToolAdded: "review",
     onToolRemoved: "review",
     onDescriptionChanged: "review",
@@ -119,4 +124,36 @@ test("normalizePolicy handles minimumGrade aliases and numeric ranks", () => {
   assert.equal(normalizePolicy({ minimumGrade: 0 }).minimumGrade, "F");
   assert.equal(gradeRank(normalizePolicy({ minimumGrade: 0 }).minimumGrade), 0);
   assert.equal(gradeRank(normalizePolicy({ minimumGrade: "—" }).minimumGrade), -1);
+});
+
+test("normalizePolicy accepts scoped, time-boxed grants", () => {
+  // The flat-YAML subset has no numbers and no arrays, so "24" and "a, b"
+  // must both be accepted exactly as a policy author would type them.
+  const yamlish = normalizePolicy({
+    maxAgeHours: "24",
+    allowTools: "search_email, list_inbox",
+    denyTools: "send_email",
+  });
+  assert.equal(yamlish.maxAgeHours, 24);
+  assert.deepEqual(yamlish.allowTools, ["list_inbox", "search_email"]);
+  assert.deepEqual(yamlish.denyTools, ["send_email"]);
+
+  // Real arrays (inline JSON) work too, and duplicates collapse.
+  assert.deepEqual(normalizePolicy({ allowTools: ["b", "a", "b"] }).allowTools, ["a", "b"]);
+
+  // Unset means unbounded/null — every lockfile written before these keys
+  // existed must keep behaving exactly as it did.
+  const unset = normalizePolicy({});
+  assert.equal(unset.maxAgeHours, null);
+  assert.equal(unset.allowTools, null);
+  assert.equal(unset.denyTools, null);
+  assert.equal(normalizePolicy({ maxAgeHours: "null" }).maxAgeHours, null);
+  assert.equal(normalizePolicy({ allowTools: "" }).allowTools, null);
+});
+
+test("normalizePolicy rejects a nonsense window and non-tool names", () => {
+  assert.throws(() => normalizePolicy({ maxAgeHours: "0" }), /positive integer of hours/);
+  assert.throws(() => normalizePolicy({ maxAgeHours: "soon" }), /positive integer of hours/);
+  assert.throws(() => normalizePolicy({ maxAgeHours: "1.5" }), /positive integer of hours/);
+  assert.throws(() => normalizePolicy({ denyTools: "not a tool name!" }), /must be tool names/);
 });

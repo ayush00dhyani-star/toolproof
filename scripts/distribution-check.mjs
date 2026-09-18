@@ -350,13 +350,57 @@ async function checkDiscoveryDocuments() {
       } else {
         ok("discovery", `declared tools agree across card and directory (${cardTools.join(", ")})`);
       }
-      // The owner named in machine-readable metadata must be the legal owner.
-      if (/dhyani/i.test(JSON.stringify(dir.author ?? {}))) {
-        fail("discovery", `mcp-directory.json author "${dir.author?.name}" contradicts the ownership page`);
-      } else if (dir.author?.name) {
-        ok("discovery", `directory author is "${dir.author.name}"`);
+      // Attribution must be the project, never an individual. A published
+      // personal name is a privacy leak that only ever shows up in a diff, so
+      // guard the shape rather than a specific string: the forbidden name is
+      // deliberately not written down here, because this file is public too.
+      const authorName = String(dir.author?.name ?? "");
+      if (!authorName) {
+        warn("discovery", "mcp-directory.json declares no author");
+      } else if (/^Toolproof\b/i.test(authorName)) {
+        ok("discovery", `directory author is the project identity ("${authorName}")`);
+      } else if (/(^|\s)[A-Z][a-z]+\s+[A-Z][a-z]+/.test(authorName)) {
+        fail(
+          "discovery",
+          `mcp-directory.json publishes a personal name as the author ("${authorName}") — attribution must be the project, not an individual`,
+        );
+      } else {
+        warn("discovery", `directory author "${authorName}" is neither the project identity nor a recognisable name — confirm it is not someone's`);
       }
     }
+  }
+
+  // Attribution must credit the project, not a person. Anchored on the
+  // attribution verb so ordinary prose ("Model Context Protocol") cannot trip
+  // it, and the forbidden name is deliberately absent from this file because
+  // this file is published. The verb is spelled out per case rather than using
+  // /i, because the name half of this pattern must stay case-sensitive to mean
+  // anything.
+  const ATTRIBUTION = /\b(?:[Bb]uilt|[Mm]ade|[Cc]reated|[Oo]wned|[Mm]aintained|[Ww]ritten) by ([A-Z][a-z]+ [A-Z][a-z]+)/g;
+  const attributionSurfaces = [
+    "LICENSE",
+    "CLA.md",
+    "SUBMIT.md",
+    "public/llms.txt",
+    "public/llms-full.txt",
+    "public/agents.md",
+    "src/app/page.tsx",
+    "src/app/docs/page.tsx",
+    "src/app/ownership/page.tsx",
+  ].filter((f) => existsSync(resolve(ROOT, f)));
+
+  const leaks = [];
+  for (const file of attributionSurfaces) {
+    for (const match of readText(file).matchAll(ATTRIBUTION)) {
+      // "built by The Toolproof Authors" is the project, not a person.
+      if (/toolproof/i.test(match[1])) continue;
+      leaks.push(`${file}: "${match[0].replace(/\s+/g, " ")}"`);
+    }
+  }
+  if (leaks.length) {
+    fail("privacy", `a personal name is published as attribution:\n      ${leaks.join("\n      ")}`);
+  } else {
+    ok("privacy", `${attributionSurfaces.length} attribution surfaces name no individual`);
   }
 
   if (OFFLINE) {

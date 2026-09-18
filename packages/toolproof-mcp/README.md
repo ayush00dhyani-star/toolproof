@@ -38,6 +38,11 @@ a destructive verb in a legit database tool — these are graded and passed
 through untouched, reported via `toolproof_alerts`. You decide. That
 two-class split is the point: stop the malicious, keep the tools people love.
 
+**What is never forwarded at all:** a malformed entry with no usable name. MCP
+requires a name, so such a tool cannot be called; inventing one would hand your
+agent a phantom tool it never saw before. It is omitted from the list and
+reported as omitted, not renamed and not passed through.
+
 If the wrapped server cannot start, toolproof-wrap exits rather than pass
 traffic it could not inspect. It never silently forwards what it cannot see.
 

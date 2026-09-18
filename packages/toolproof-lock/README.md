@@ -191,6 +191,11 @@ Default policy, used when no `--policy` is passed:
 ```yaml
 minimumGrade: B
 requireVerified: true
+# Scoped, time-boxed approvals. All three default to null (unbounded), so a
+# policy written before these keys existed behaves exactly as it did.
+maxAgeHours: null        # e.g. 72 — an approval older than this fails closed
+allowTools: null         # e.g. search_email, list_inbox — only these may run
+denyTools: null          # e.g. send_email — never run these
 onToolAdded: review
 onToolRemoved: review
 onDescriptionChanged: review
@@ -198,6 +203,23 @@ onSchemaExpanded: block
 onNewOutboundHost: block
 onHighSeverityFinding: block
 ```
+
+### Scoped, time-boxed approvals
+
+Approving a server is not the same as approving every tool on it, and a clean
+scan from last quarter is not evidence about today's surface:
+
+- **`allowTools`** — a permit list. Any tool outside it is `tool-not-allowed`,
+  a hard block. Use it to hand an agent a narrow grant instead of the whole API.
+- **`denyTools`** — a block list. A named tool is `tool-denied`, a hard block,
+  no matter what the diff finds.
+- **`maxAgeHours`** — bounds how long a baseline counts as approval. Once the
+  lockfile is older than the window, `grant-expired` blocks and the surface has
+  to be re-locked deliberately. A stale approval fails closed; it never passes
+  quietly.
+
+All three are hard-blocked categories with no policy key, so no other setting
+can downgrade them.
 
 JSON works too, and a flat YAML subset (`key: value` lines, `#` comments, blank
 lines ignored). Actions are `informational`, `review`, or `block`.
@@ -214,6 +236,9 @@ lines ignored). Actions are `informational`, `review`, or `block`.
 | `grade-below-minimum` | observed grade below `minimumGrade` | — | block |
 | `not-verified` | `requireVerified` is set and the target is not verified | — | block |
 | `instruction-changed` | `instructions` text differs | `onDescriptionChanged` | review |
+| `tool-not-allowed` | a tool is outside `allowTools` | — | block |
+| `tool-denied` | a tool is named in `denyTools` | — | block |
+| `grant-expired` | the baseline is older than `maxAgeHours` | — | block |
 
 Grade ranks: `A+` 5, `A` 4, `B` 3, `C` 2, `D` 1, `F` 0, `—`/empty −1.
 

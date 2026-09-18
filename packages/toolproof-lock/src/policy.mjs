@@ -14,6 +14,9 @@ export const ACTION_VALUES = Object.freeze(["informational", "review", "block"])
 export const POLICY_KEYS = Object.freeze([
   "minimumGrade",
   "requireVerified",
+  "maxAgeHours",
+  "allowTools",
+  "denyTools",
   "onToolAdded",
   "onToolRemoved",
   "onDescriptionChanged",
@@ -26,6 +29,9 @@ export const POLICY_KEYS = Object.freeze([
 export const DEFAULT_POLICY = Object.freeze({
   minimumGrade: "B",
   requireVerified: true,
+  maxAgeHours: null,
+  allowTools: null,
+  denyTools: null,
   onToolAdded: "review",
   onToolRemoved: "review",
   onDescriptionChanged: "review",
@@ -42,6 +48,30 @@ const NO_GRADE = "—";
 
 const KEY_RE = /^[A-Za-z][A-Za-z0-9_-]*$/;
 const INT_RE = /^-?\d+$/;
+
+/**
+ * Normalizes a permit/deny tool list to a sorted array of names, or null when
+ * unset. Flat-YAML gives every value as a string, so "a, b" and "a" are both
+ * accepted, as is a real array from inline JSON.
+ */
+function normalizeToolList(value, key) {
+  if (value === undefined || value === null || value === "" || value === "null") return null;
+  const items = Array.isArray(value) ? value : String(value).split(",");
+  const seen = new Set();
+  for (const item of items) {
+    const name = String(item).trim();
+    if (name.length === 0) continue;
+    seen.add(name);
+  }
+  const sorted = [...seen].sort();
+  if (sorted.length === 0) return null;
+  if (sorted.some((name) => !KEY_RE.test(name))) {
+    throw new Error(
+      `normalizePolicy: ${key} entries must be tool names matching [A-Za-z][A-Za-z0-9_-]* (got ${JSON.stringify(sorted)})`,
+    );
+  }
+  return sorted;
+}
 
 function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -198,6 +228,29 @@ export function normalizePolicy(obj) {
       `normalizePolicy: requireVerified must be a boolean (got ${JSON.stringify(verifiedRaw)})`,
     );
   }
+
+  // Short-lived grants: maxAgeHours bounds how long an approval stays valid.
+  // Null/absent means unbounded (the historical default, so existing lockfiles
+  // keep working). A string like "24" is accepted because the flat-YAML subset
+  // has no numbers — every value arrives as text.
+  const ageRaw = obj.maxAgeHours === undefined ? DEFAULT_POLICY.maxAgeHours : obj.maxAgeHours;
+  if (ageRaw === null || ageRaw === undefined || ageRaw === "" || ageRaw === "null") {
+    out.maxAgeHours = null;
+  } else {
+    const age = typeof ageRaw === "number" ? ageRaw : Number(String(ageRaw).trim());
+    if (!Number.isFinite(age) || age <= 0 || !Number.isInteger(age)) {
+      throw new Error(
+        `normalizePolicy: maxAgeHours must be a positive integer of hours (got ${JSON.stringify(ageRaw)})`,
+      );
+    }
+    out.maxAgeHours = age;
+  }
+
+  // Scoped grants: restrict the approval to a subset of the surface. allowTools
+  // is a permit-list (only these may run); denyTools is a block-list. Both are
+  // accepted as comma-separated strings, single strings, or arrays.
+  out.allowTools = normalizeToolList(obj.allowTools, "allowTools");
+  out.denyTools = normalizeToolList(obj.denyTools, "denyTools");
 
   for (const key of POLICY_KEYS) {
     if (!key.startsWith("on")) continue;

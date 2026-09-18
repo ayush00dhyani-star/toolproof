@@ -19,5 +19,7 @@ Key surfaces:
 - [API docs](https://toolproof-scan.vercel.app/docs): keyless API — `/api/v1/verify?target=` (signed passport), `/api/v1/scan?target=` (full findings)
 - [MCP adapter](https://www.npmjs.com/package/toolproof-mcp): native `check_tool` and `lookup_rule` tools for Claude Desktop, Claude Code, Cursor and other MCP clients
 - [CLI gate](https://www.npmjs.com/package/toolproof-scan): `npx -y toolproof-scan <target> --fail-under 70` for terminals and CI
+- [Stop mode (wrap)](https://toolproof-scan.vercel.app/for-agents): `npx -y toolproof-mcp wrap -- <real server>` proxies an MCP server and removes deceptive tools before the agent sees them
+- [Lock gate](https://www.npmjs.com/package/toolproof-lock): `npx -y toolproof-lock lock|check` pins the approved capability surface and fails CI on drift, with signed audit evidence
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): instructions for agents that fetch this domain
 - [Tool owners](https://toolproof-scan.vercel.app/docs#toolproof-txt): serve `/.well-known/toolproof.txt` with `Deny: /` to refuse scanning (respected, never penalized)

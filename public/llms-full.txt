@@ -2,7 +2,7 @@
 
 > The safety check for AI tools. AI assistants connect to tools — MCP servers, APIs, plugins — and those tools can hide tricks the AI obeys and humans never see (invisible instructions in tool descriptions, prompt injection, exposed secrets, unsafe defaults, missing auth). Toolproof checks any tool and returns a letter grade (A+ … F) with a signed, offline-verifiable receipt. Free, keyless, no accounts, nothing stored.
 >
-> Built by Ayush Dhyani · https://toolproof-scan.vercel.app
+> Built and maintained independently · https://toolproof-scan.vercel.app
 
 ## The agent rule
 
@@ -27,6 +27,34 @@ grade is below B, tell the user what you found and ask before connecting.
 - [Machine contract](https://toolproof-scan.vercel.app/agents.md): rules for agents that fetch this domain.
 - Short link for a scan result: `https://toolproof-scan.vercel.app/t?target=<url>` (open URL space, noindex).
 
+## The three modes — check, stop, freeze
+
+```
+CHECK   npx -y toolproof-scan <target>                 grade a tool and print the evidence (advisory)
+STOP    npx -y toolproof-mcp wrap -- <real server>     proxy an MCP server and remove deceptive tools
+                                                       from tools/list before the agent sees them
+FREEZE  npx -y toolproof-lock lock <target>            pin the approved capability surface (toolproof.lock)
+        npx -y toolproof-lock check                    CI gate: exit 2 blocked / 1 review / 0 in sync
+```
+
+Check answers "is this safe to use?". Wrap is what actually stops an attack: the
+agent never learns the blocked tool exists, and is told what was removed and why.
+Tools carrying deception are removed (hidden characters, embedded credentials,
+critical/high override or concealment phrasing); honest-but-sloppy tools — a docs
+URL, missing auth — are forwarded untouched and reported. A tool entry with no
+usable name is omitted rather than renamed, because MCP requires a name and a
+fabricated one would put a tool in the agent's list that never existed.
+
+Freeze is the team control: the lockfile pins tools, prompts, resources,
+instructions and outbound hosts; the check applies a policy to a semantic diff
+and fails closed on capability drift. Policy can scope an approval to a named
+tool list (`allowTools` / `denyTools`) and bound it in time (`maxAgeHours`), so
+a clean scan from last quarter cannot authorise today's deploy. Every decision is
+appended to a hash-chained, ed25519-signed evidence file (`.toolproof/evidence.jsonl`)
+carrying fingerprints, decision, policy, actor and time — never prompt content,
+tool arguments, results or credentials. Exported bundles verify offline in the
+browser at /evidence with nothing installed.
+
 ## API
 
 Base: `https://toolproof-scan.vercel.app`. One GET per verdict. No keys, no accounts. Responses are cache-friendly (s-maxage), rate-limited to 30 scans/min per IP. Every scan result is signed.
@@ -35,6 +63,7 @@ Endpoints:
 
 - `GET /api/v1/scan?target=&kind=auto|mcp|api` — full scan report: findings with evidence, positives, metadata.
 - `GET /api/v1/verify?target=&kind=` — signed passport: the verdict an agent should consult before calling a tool. ed25519 over canonical JSON.
+- `GET /api/v1/manifest?target=&kind=` — canonical capability surface (tools, prompts, resources, instructions, outbound hosts, OpenAPI paths) as the lockfile consumes it.
 - `GET /api/v1/registry` — starter registry, scanned live. Cached 15 min.
 - `GET /api/v1/badge?target=&kind=&style=grade|flat` — SVG badge for READMEs and dashboards. Cached 10 min.
 - `GET /api/v1/feed` — per-node, in-memory view of the newest scans (shared cross-user ledger ships with v1).

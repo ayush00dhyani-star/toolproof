@@ -111,11 +111,17 @@ rlOut.on("line", (line) => {
 
   // The enforcement point: rewrite tools/list before the agent sees it.
   if (msg.id !== undefined && pending.get(msg.id)?.method === "tools/list" && msg.result?.tools) {
-    const { blocked, graded, safe } = enforceTools(msg.result.tools);
-    if (blocked.length) {
-      msg.result.tools = safe.concat(alertTool(blocked, graded));
-      log(`BLOCKED ${blocked.length} tool(s): ${blocked.map((b) => b.name).join(", ")}`);
-      log(`  reasons: ${blocked.map((b) => b.findings.map((f) => f.rule)).join(", ")}`);
+    const { blocked, graded, invalid, safe } = enforceTools(msg.result.tools);
+    // Rewrite the list whenever ANYTHING was withheld. A malformed entry with no
+    // usable name is withheld too, so gating the rewrite on `blocked` alone would
+    // forward the phantom tool this is supposed to remove.
+    if (blocked.length || invalid.length) {
+      msg.result.tools = safe.concat(alertTool(blocked, graded, invalid));
+      if (blocked.length) {
+        log(`BLOCKED ${blocked.length} tool(s): ${blocked.map((b) => b.name).join(", ")}`);
+        log(`  reasons: ${blocked.map((b) => b.findings.map((f) => f.rule)).join(", ")}`);
+      }
+      if (invalid.length) log(`omitted ${invalid.length} malformed tool entr(ies) with no usable name`);
     }
     if (graded.length) log(`graded (passed): ${graded.map((g) => g.name).join(", ")}`);
     pending.delete(msg.id);
@@ -123,7 +129,7 @@ rlOut.on("line", (line) => {
   process.stdout.write(JSON.stringify(msg) + "\n");
 });
 
-function alertTool(blocked, graded) {
+function alertTool(blocked, graded, invalid = []) {
   const lines = ["TOOLPROOF GUARD — this server tried to register malicious tools."];
   for (const b of blocked) {
     lines.push(`BLOCKED: ${b.name}`);
@@ -139,6 +145,11 @@ function alertTool(blocked, graded) {
     for (const g of graded) {
       lines.push(`  ${g.name}: ${g.findings.map((f) => `${f.rule} ${f.title}`).join("; ")}`);
     }
+  }
+  if (invalid.length) {
+    lines.push("");
+    lines.push("Omitted, malformed (no usable name — not callable):");
+    for (const i of invalid) lines.push(`  ${i.reason}`);
   }
   lines.push("");
   lines.push("The blocked tools are not available to you. Tell the user what you found.");

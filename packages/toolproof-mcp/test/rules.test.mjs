@@ -92,7 +92,11 @@ test("enforceTools removes deceptive tools and passes sloppy ones through", () =
   const { blocked, graded, safe } = enforceTools(tools);
   const blockedNames = blocked.map((b) => b.name).sort();
   assert.deepEqual(blockedNames, ["innocent_exfil", "leaked_key", "sneaky_hidden"]);
-  assert.deepEqual(graded.map((g) => g.name).sort(), ["honest_but_sloppy", "search_docs"]);
+  // `graded` is the flagged-but-forwarded set, not every tool that passed: it is
+  // what the wrap alert prints under "flagged, but NOT blocked". A tool with no
+  // findings is not "graded" — it simply passes. Only honest_but_sloppy qualifies.
+  assert.deepEqual(graded.map((g) => g.name).sort(), ["honest_but_sloppy"]);
+  assert.equal(graded[0].findings.length > 0, true, "a graded tool always carries findings");
   // the agent-visible surface keeps the honest tools only
   assert.deepEqual(safe.map((t) => t.name).sort(), ["honest_but_sloppy", "search_docs"]);
   assert.equal(safe.length + blocked.length, tools.length);
@@ -112,16 +116,21 @@ test("isBlock separates deception from sloppiness", () => {
 });
 
 test("enforceTools tolerates malformed input", () => {
-  const { blocked, graded, safe } = enforceTools([
+  const { blocked, graded, invalid, safe } = enforceTools([
     { name: "no_desc" },
     { description: "no name" },
     null,
     undefined,
+    { name: "   ", description: "blank name" },
     { name: "ok", description: "a fine tool" },
   ]);
   assert.equal(blocked.length, 0);
   assert.equal(safe.length, 2, "no_desc and ok pass; null/undefined skipped");
   assert.equal(graded.length, 0);
+  // A tool with no usable name is not callable, so it must not reach the agent
+  // as a phantom "<unnamed>" entry — it is withheld and reported instead.
+  assert.equal(invalid.length, 2, "the nameless and blank-named entries are withheld");
+  assert.equal(safe.some((t) => t.name === undefined), false);
 });
 
 test("clean text yields no findings", () => {

@@ -5,7 +5,7 @@ import Proofmark from "@/components/Proofmark";
 export const metadata: Metadata = {
   title: "Enterprise — MCP supply-chain policy for teams",
   description:
-    "Put the AI tool supply chain under policy: cryptographically verified trust verdicts, CI enforcement with toolproof-gate, and signed audit evidence your compliance team can replay.",
+    "Put the AI tool supply chain under policy: cryptographically verified trust verdicts, CI enforcement with the toolproof lock gate, and signed audit evidence your compliance team can replay.",
   alternates: { canonical: "/enterprise" },
 };
 
@@ -18,14 +18,14 @@ const TIERS = [
       "Unlimited trust cards & grades",
       "Watchlist with diff-on-change alerts",
       "check_tool MCP server (Claude, Cursor, …)",
-      "toolproof-gate CLI — MIT licensed",
+      "toolproof CLI + lock gate — MIT licensed",
       "Signed passports (ed25519) on every verdict",
     ],
     cta: { href: "/", label: "start scanning →" },
   },
   {
     name: "Team",
-    price: "from $490/mo",
+    price: "from $49/mo",
     tagline: "Policy as code for the whole org.",
     items: [
       "Org-wide baselines, managed centrally",
@@ -92,18 +92,20 @@ export default function EnterprisePage() {
           <div className="card space-y-4 px-5 py-5">
             <div>
               <h2 className="text-[15px] font-semibold text-ink">
-                <code className="mono text-amber">toolproof-gate</code> — fail the build when a tool turns hostile
+                <code className="mono text-amber">toolproof-lock</code> — fail the build when a tool turns hostile
               </h2>
               <p className="mt-2 text-[13px] leading-6 text-dim">
-                A committed baseline of every MCP server you depend on. CI
-                re-verifies on every run: signature checked client-side
-                (ed25519), grade gated by policy, and any change to a
-                tool&apos;s model-visible instructions blocks the merge — the
-                same discipline you already apply to dependencies, applied to
-                the instructions your agents read.
+                Commit a signed baseline of every MCP server you depend on. CI
+                re-checks it on every run: the surface is re-observed, a semantic
+                diff is applied against your policy, and a tool that gained reach
+                — a new parameter, a new outbound host, rewritten instructions —
+                blocks the merge. Approvals can be scoped to a named tool list and
+                bounded in time, so a grant made last quarter cannot authorise
+                today&apos;s deploy. The same discipline you already apply to
+                dependencies, applied to the instructions your agents read.
               </p>
-              <pre className="mono mt-3 overflow-auto rounded-md border border-hair bg-black/20 p-3 text-[11.5px] leading-5 text-dim">{`npx toolproof-gate --init https://mcp.example.com/mcp --min-grade B
-npx toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
+              <pre className="mono mt-3 overflow-auto rounded-md border border-hair bg-black/20 p-3 text-[11.5px] leading-5 text-dim">{`npx -y toolproof-lock lock https://mcp.example.com/mcp       # pin the approved surface (commit toolproof.lock)
+npx -y toolproof-lock check --policy=toolproof.policy.json   # CI gate: exit 2 blocked / 1 review`}</pre>
             </div>
             <div>
               <h2 className="text-[15px] font-semibold text-ink">Signed evidence, not screenshots</h2>
@@ -161,10 +163,13 @@ npx toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
           <div className="lbl mb-4">the value math</div>
           <div className="card px-5 py-5 text-[13px] leading-6 text-dim">
             One poisoned MCP tool can exfiltrate every conversation it touches —
-            customer data, credentials, code. The average enterprise tooling
-            incident costs six figures; enforcement + evidence here costs less
-            than the coffee budget of the incident review. It isn&apos;t a line
-            item, it&apos;s the cheapest control you&apos;ll add this year.
+            customer data, credentials, code — and a normal code review would not
+            show it, because the text is invisible to a human reader. That is the
+            whole argument for the control: not a new process, but the review
+            discipline you already apply to dependencies, applied to the
+            instructions your agents read. We will not quote an industry
+            incident-cost figure at you — the cost of the control is on this page,
+            and the free tier is the whole product, not a trial.
           </div>
         </section>
 

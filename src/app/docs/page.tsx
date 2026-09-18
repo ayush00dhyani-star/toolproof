@@ -45,6 +45,33 @@ export default function DocsPage() {
             </a>. Machines that fetch this domain read{" "}
             <a href="/agents.md" className="text-amber underline-offset-4 hover:underline">/agents.md</a>.
           </p>
+          <div className="mt-6 card divide-y divide-line text-[12.5px] leading-6">
+            {[
+              {
+                n: "1",
+                t: "Check a tool by hand",
+                d: "Paste a link on the homepage, or send the curl below. Nothing to install.",
+              },
+              {
+                n: "2",
+                t: "Let your agent check",
+                d: "Paste the one-line rule into CLAUDE.md or AGENTS.md, or install npx -y toolproof-mcp. Wrap mode removes malicious tools instead of merely warning about them.",
+              },
+              {
+                n: "3",
+                t: "Gate it in CI",
+                d: "npx -y toolproof-scan <target> --fail-under 70 fails a build on a bad grade; npx -y toolproof-lock pins the approved surface and fails on drift.",
+              },
+            ].map((s) => (
+              <div key={s.n} className="flex gap-4 px-5 py-3">
+                <span className="mono text-[11px] text-amber shrink-0 pt-0.5">{s.n}</span>
+                <span>
+                  <span className="text-ink font-medium">{s.t}</span>{" "}
+                  <span className="text-dim">— {s.d}</span>
+                </span>
+              </div>
+            ))}
+          </div>
           <pre className="mt-6 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`curl "https://<host>/api/v1/verify?target=https://mcp.context7.com/mcp"`}</pre>
         </section>
 
@@ -242,16 +269,18 @@ Canary: 9f2e4d1c7b`}</pre>
           <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx -y toolproof-scan https://mcp.example.com/mcp --fail-under 70`}</pre>
           <h2 className="mt-8 text-xl font-bold">Baselines &amp; signed audit evidence.</h2>
           <p className="mt-3 text-[13px] leading-7 text-dim max-w-2xl">
-            For teams: commit a baseline of every MCP server you depend on and
-            let CI re-verify it on every push — signature checked locally
-            (ed25519), grade gated by policy, and any change to a tool&apos;s
-            model-visible instructions blocks the merge. Every check appends a
-            JSONL audit line with the full signed passport, replayable by any
-            auditor. Details and plans on the{" "}
+            Commit a signed baseline of the capability surface you approved,
+            then re-check it on every push. The check recomputes the surface,
+            applies your policy, and exits non-zero when a tool gained reach —
+            not when something merely moved. Every decision is appended to a
+            hash-chained evidence file an auditor verifies offline, with
+            nothing installed. The walkthrough is on the{" "}
+            <Link href="/lock" className="text-amber underline-offset-4 hover:underline">lock gate page</Link>
+            ; hosted re-checks and shared policy are on the{" "}
             <Link href="/enterprise" className="text-amber underline-offset-4 hover:underline">enterprise page</Link>.
           </p>
-          <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx -y toolproof-gate --init https://mcp.example.com/mcp --min-grade B
-npx -y toolproof-gate --audit audit.jsonl   # in CI: exit 1 on drift`}</pre>
+          <pre className="mt-5 overflow-x-auto card p-5 text-[12px] leading-6 text-dim">{`npx -y toolproof-lock lock https://mcp.example.com/mcp      # pin the approved surface (commit toolproof.lock)
+npx -y toolproof-lock check --policy=toolproof.policy.json  # CI gate: exit 2 when a change is blocked`}</pre>
         </section>
 
         <section id="badge-embed" className="scroll-mt-16">
@@ -339,7 +368,7 @@ jobs:
         </section>
 
         <footer className="border-t border-line pt-8 pb-4 text-[11px] text-faint">
-          Toolproof — built by Ayush Sharma ·{" "}
+          Toolproof ·{" "}
           <a href="/terms" className="hover:text-ink">terms</a> ·{" "}
           <a href="/privacy" className="hover:text-ink">privacy</a> ·{" "}
           <a href="/security" className="hover:text-ink">security</a>

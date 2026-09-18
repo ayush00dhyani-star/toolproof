@@ -58,5 +58,5 @@ shared policy — never for a verdict.
 
 ## Author
 
-Ayush Sharma — security researcher (Bugcrowd). Built by nobody who is paid by anybody
-we scan; that is the entire point of a trust layer.
+Built and maintained independently by the Toolproof maintainers — by nobody who is
+paid by anybody we scan; that is the entire point of a trust layer.

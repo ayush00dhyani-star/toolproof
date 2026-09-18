@@ -188,8 +188,8 @@ export default function Home() {
           </div>
 
           <p className="mt-4 text-center text-[13px] text-faint">
-            No sign-up · nothing you paste is stored · want your agent to check
-            for you?{" "}
+            No sign-up, no API key. Want your agent to do this check for you
+            automatically?{" "}
             <a href="#integrate" className="underline-offset-4 hover:underline">
               three ways to add it
             </a>
